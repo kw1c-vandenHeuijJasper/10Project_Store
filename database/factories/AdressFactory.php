@@ -17,10 +17,10 @@ class AdressFactory extends Factory
     public function definition(): array
     {
         return [
-            'house_number' => 'house_number',
-            'street_name' => 'street_name',
-            'zip_code' => 'zip_code',
-            'city' => 'city',
+            'house_number' => '1a',
+            'street_name' => 'first street',
+            'zip_code' => '0123 af',
+            'city' => 'new york',
             'customer_id' => 1,
         ];
     }

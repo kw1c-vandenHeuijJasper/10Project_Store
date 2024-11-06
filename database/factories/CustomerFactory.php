@@ -17,10 +17,10 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'name',
-            'phone_number' => 'phone_number',
-            'email' => 'email',
-            'password' => 'password',
+            'name' => 'John Doe',
+            'phone_number' => '001',
+            'email' => 'john@doe.com',
+            'password' => 'SecurePassword123',
             'date_of_birth' => '01-01-0001',
         ];
     }

@@ -15,10 +15,13 @@ return new class extends Migration
     {
         Schema::create('order_product', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Order::class)->nullable(); //TODO
-            $table->foreignIdFor(Product::class)->nullable(); //TODO
+            $table->foreignId('order_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            // $table->foreignIdFor(Order::class)->constrained()->cascadeOnDelete();
+            // $table->foreignIdFor(Product::class)->constrained()->cascadeOnDelete();
+            // $table->primary(['order_id', 'product_id']);
             $table->integer('amount');
-            $table->decimal('price_per_product'); //TODO foreign key??
+            $table->float('price', 2);
             $table->timestamps();
         });
     }
