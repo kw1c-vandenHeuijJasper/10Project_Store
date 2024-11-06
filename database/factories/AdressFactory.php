@@ -17,11 +17,12 @@ class AdressFactory extends Factory
     public function definition(): array
     {
         return [
-            'house_number' => '1a',
-            'street_name' => 'first street',
-            'zip_code' => '0123 af',
-            'city' => 'new york',
-            'customer_id' => 1,
+            'house_number' => rand(1, 80) . fake()->randomElement([null, 'a', 'b', 'c']),
+            'street_name' => fake()->streetName(),
+            'zip_code' => fake()->postcode(),
+            'city' => fake()->city(),
+            'customer_id' => \App\Models\Customer::get()->random()->pluck('id')[0],
+            'primary' => false,
         ];
     }
 }

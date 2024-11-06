@@ -14,9 +14,9 @@ class Customer extends Model
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
     use HasFactory;
 
-    public function adress(): BelongsToMany
+    public function adresses(): HasMany
     {
-        return $this->belongsToMany(Adress::class);
+        return $this->hasMany(Adress::class);
     }
 
     public function orders(): HasMany

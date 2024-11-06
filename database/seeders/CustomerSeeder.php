@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Adress;
 use App\Models\Customer;
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
@@ -13,6 +14,8 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        Customer::factory()->create();
+        Customer::factory(10)->has(
+            Adress::factory(3)
+        );
     }
 }

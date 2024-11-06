@@ -16,12 +16,13 @@ class CustomerFactory extends Factory
      */
     public function definition(): array
     {
+        //TODO password on all customer things
         return [
-            'name' => 'John Doe',
-            'phone_number' => '001',
-            'email' => 'john@doe.com',
-            'password' => 'SecurePassword123',
-            'date_of_birth' => '01-01-0001',
+            'name' => fake()->name(),
+            'phone_number' => fake()->phoneNumber(),
+            'email' => fake()->email(),
+            'password' => \Illuminate\Support\Facades\Hash::make(fake()->password()),
+            'date_of_birth' => fake()->date('Y-m-d', '31-12-2010'),
         ];
     }
 }
