@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Adress;
+use App\Models\Address;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->integer('order_number');
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Adress::class, 'shipping_adress_id')->constrained('addresses')->cascadeOnDelete(); //verzend
-            $table->foreignIdFor(Adress::class, 'invoice_adress_id')->constrained('addresses')->cascadeOnDelete(); //factuur
+            // $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete(); //verzend
+            // $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete(); //factuur
             $table->timestamps();
         });
     }

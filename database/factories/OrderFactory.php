@@ -17,10 +17,12 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
+        // dd(Customer::get());
+
         return [
             'order_number' => rand(1, 5),
             //pick a random EXISTING customer id
-            'customer_id' => Customer::all()->random()->id,
+            'customer_id' => Customer::inRandomOrder()->get()->first()->id,
         ];
     }
 }

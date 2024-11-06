@@ -16,19 +16,18 @@ class OrderSeeder extends Seeder
     {
         Order::factory(25)->create();
 
+        // dd(Order::get());
 
-        $collection = Product::inRandomOrder()->limit(55)->get()->map(function ($item) {
-            return [
-                'product_id' => $item->id,
-                'amount' => random_int(1, 10),
-                'price' => $item->price,
-            ];
+        Order::get()->each(function ($order) {
+            $products = Product::inRandomOrder()->limit(random_int(1, 3))->get()->map(function ($item) {
+                return [
+                    'product_id' => $item->id,
+                    'amount' => random_int(1, 10),
+                    'price' => $item->price,
+                ];
+            });
+
+            $order->products()->attach($products);
         });
-        $left_to_generate = 5;
-        while ($left_to_generate > 0) {
-            $left_to_generate--;
-            Order::get()->random()->products()->attach($collection);
-            dump($left_to_generate);
-        }
     }
 }

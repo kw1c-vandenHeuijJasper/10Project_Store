@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
-class Adress extends Model
+class Address extends Model
 {
-    /** @use HasFactory<\Database\Factories\AdressFactory> */
+    /** @use HasFactory<\Database\Factories\AddressFactory> */
     use HasFactory;
 
     public function customer(): BelongsTo

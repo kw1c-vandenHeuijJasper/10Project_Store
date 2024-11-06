@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\Order;
-use App\Models\Adress;
+use App\Models\Address;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,9 +14,9 @@ class Customer extends Model
     /** @use HasFactory<\Database\Factories\CustomerFactory> */
     use HasFactory;
 
-    public function adresses(): HasMany
+    public function addresses(): HasMany
     {
-        return $this->hasMany(Adress::class);
+        return $this->hasMany(Address::class);
     }
 
     public function orders(): HasMany
