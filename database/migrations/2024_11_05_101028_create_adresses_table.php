@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('street_name');
             $table->string('zip_code');
             $table->string('city');
-            $table->foreignIdFor(Customer::class)->nullable(); //TODO
+            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }

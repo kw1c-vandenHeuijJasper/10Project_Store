@@ -24,7 +24,11 @@ class OrderSeeder extends Seeder
                 'price' => $item->price,
             ];
         });
-
-        Order::first()->products()->attach($collection);
+        $left_to_generate = 5;
+        while ($left_to_generate > 0) {
+            $left_to_generate--;
+            Order::get()->random()->products()->attach($collection);
+            dump($left_to_generate);
+        }
     }
 }
