@@ -16,13 +16,13 @@ class AddressFactory extends Factory
      */
     public function definition(): array
     {
+        // dump(\App\Models\Customer::factory()->create());
         return [
             'house_number' => rand(1, 80) . fake()->randomElement([null, 'a', 'b', 'c']),
             'street_name' => fake()->streetName(),
             'zip_code' => fake()->postcode(),
             'city' => fake()->city(),
-            'customer_id' => \App\Models\Customer::get()->random()->pluck('id')[0],
-            'primary' => false,
+            'customer_id' => \App\Models\Customer::factory(),
         ];
     }
 }

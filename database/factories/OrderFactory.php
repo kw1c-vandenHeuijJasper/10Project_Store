@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -10,6 +12,25 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrderFactory extends Factory
 {
+
+    public function withRandomNumberOfProducts(int $min, int $max)
+    {
+        return $this->afterCreating(function (Order $order) use ($min, $max) {
+            $limit = random_int($min, $max);
+
+            $products = Product::inRandomOrder()->limit($limit)->get()->mapWithKeys(function ($item) {
+                return [
+                    $item->id => [
+                        'amount' => random_int(1, 10),
+                        'price' => $item->price,
+                    ]
+                ];
+            });
+
+            $order->products()->attach($products);
+        });
+    }
+
     /**
      * Define the model's default state.
      *
@@ -17,12 +38,13 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        // dd(Customer::get());
+        $customer = Customer::inRandomOrder()->first();
 
         return [
             'order_number' => rand(1, 5),
-            //pick a random EXISTING customer id
-            'customer_id' => Customer::inRandomOrder()->get()->first()->id,
+            'customer_id' => $customer->id,
+            'shipping_address_id' => $customer->addresses->random()->id,
+            'invoice_address_id' => $customer->addresses->random()->id,
         ];
     }
 }

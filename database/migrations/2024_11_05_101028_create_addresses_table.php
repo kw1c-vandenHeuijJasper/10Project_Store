@@ -19,7 +19,6 @@ return new class extends Migration
             $table->string('zip_code');
             $table->string('city');
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
-            $table->boolean('primary');
             $table->timestamps();
         });
     }

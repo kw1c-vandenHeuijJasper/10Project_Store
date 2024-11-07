@@ -6,6 +6,7 @@ use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
 use App\Filament\Resources\CustomerResource\RelationManagers\AddressResourceRelationManager;
+use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
 use App\Models\Customer;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -29,7 +30,6 @@ class CustomerResource extends Resource
                 \Filament\Forms\Components\TextInput::make('name')
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('phone_number')
-                    ->placeholder("No ()'s allowed")
                     ->tel()
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('email')
@@ -37,6 +37,7 @@ class CustomerResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('password')
                     ->password()
+                    ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                     ->required(),
                 \Filament\Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
@@ -79,7 +80,8 @@ class CustomerResource extends Resource
     public static function getRelations(): array
     {
         return [
-            AddressRelationManager::class
+            AddressRelationManager::class,
+            OrdersRelationManager::class
         ];
     }
 

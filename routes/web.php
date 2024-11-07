@@ -1,7 +1,9 @@
 <?php
 
 use App\Models\Order;
+use App\Models\Address;
 use App\Models\Product;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -10,13 +12,8 @@ Route::get('/', function () {
 });
 
 Route::get('/tinker', function () {
-    dump(Order::count() . ' total count');
-    foreach (Order::all() as $order) {
-        if ($order->products()->get()->pluck('pivot')->toArray() !== []) {
-            dump(
-                $order->products()->get()->pluck('pivot')->toArray(),
-                ...$order->products()->get()->pluck('pivot')->pluck('order_id')
-            );
-        }
-    }
+    dd("There's nothing here yet 😭");
 });
+
+//TODO
+// Make everything searchable/sortable...

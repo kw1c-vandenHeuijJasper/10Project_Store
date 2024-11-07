@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class CustomerFactory extends Factory
 {
+
+    protected static ?string $password;
     /**
      * Define the model's default state.
      *
@@ -16,12 +18,11 @@ class CustomerFactory extends Factory
      */
     public function definition(): array
     {
-        //TODO password on all customer things
         return [
             'name' => fake()->name(),
             'phone_number' => fake()->phoneNumber(),
             'email' => fake()->email(),
-            'password' => \Illuminate\Support\Facades\Hash::make(fake()->password()),
+            'password' => static::$password ??= \Illuminate\Support\Facades\Hash::make(fake()->password()),
             'date_of_birth' => fake()->date('Y-m-d', '31-12-2010'),
         ];
     }

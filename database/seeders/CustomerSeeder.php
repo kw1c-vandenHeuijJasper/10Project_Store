@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Order;
 use App\Models\Address;
 use App\Models\Customer;
 use Illuminate\Database\Seeder;
@@ -14,8 +15,8 @@ class CustomerSeeder extends Seeder
      */
     public function run(): void
     {
-        Customer::factory(10)->has(
-            Address::factory(3)
-        )->create();
+        Customer::factory(10)
+            ->has(Address::factory(3))
+            ->create();
     }
 }

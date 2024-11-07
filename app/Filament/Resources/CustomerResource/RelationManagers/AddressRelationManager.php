@@ -26,12 +26,6 @@ class AddressRelationManager extends RelationManager
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('city')
                     ->required(),
-                // TODO customer assignment
-                // \Filament\Forms\Components\Select::make('customer_id')
-                //     ->label('Customer')
-                //     ->searchable()
-                //     ->options(\App\Models\Customer::pluck('name', 'id'))
-                //     ->required(),
             ]);
     }
 
