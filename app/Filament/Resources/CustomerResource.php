@@ -3,19 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers;
 use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
-use App\Filament\Resources\CustomerResource\RelationManagers\AddressResourceRelationManager;
 use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
 use App\Models\Customer;
-use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 
 class CustomerResource extends Resource
 {
@@ -37,7 +31,7 @@ class CustomerResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('password')
                     ->password()
-                    ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                    ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                     ->required(),
                 \Filament\Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
@@ -45,12 +39,12 @@ class CustomerResource extends Resource
                 \Filament\Forms\Components\Actions::make([
                     \Filament\Forms\Components\Actions\Action::make('star')
                         ->icon('heroicon-m-star')
-                        ->action(fn() => dd('star')),
+                        ->action(fn () => dd('star')),
 
                     \Filament\Forms\Components\Actions\Action::make('Other Option')
                         ->icon('heroicon-m-x-mark')
                         ->color('danger')
-                        ->action(fn() => dd('the other option')),
+                        ->action(fn () => dd('the other option')),
                 ]),
             ]);
     }
@@ -66,7 +60,8 @@ class CustomerResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('email'),
                 \Filament\Tables\Columns\TextColumn::make('password')
                     ->toggleable(isToggledHiddenByDefault: true),
-                \Filament\Tables\Columns\TextColumn::make('date_of_birth'),
+                \Filament\Tables\Columns\TextColumn::make('date_of_birth')
+                    ->date('d-m-Y'),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('updated_at')
@@ -89,7 +84,7 @@ class CustomerResource extends Resource
     {
         return [
             AddressRelationManager::class,
-            OrdersRelationManager::class
+            OrdersRelationManager::class,
         ];
     }
 

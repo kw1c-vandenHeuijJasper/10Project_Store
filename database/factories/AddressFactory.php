@@ -18,7 +18,7 @@ class AddressFactory extends Factory
     {
         // dump(\App\Models\Customer::factory()->create());
         return [
-            'house_number' => rand(1, 80) . fake()->randomElement([null, 'a', 'b', 'c']),
+            'house_number' => rand(1, 80).fake()->randomElement([null, 'a', 'b', 'c']),
             'street_name' => fake()->streetName(),
             'zip_code' => fake()->postcode(),
             'city' => fake()->city(),

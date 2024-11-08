@@ -2,9 +2,9 @@
 
 namespace Database\Factories;
 
+use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
-use App\Models\Customer;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -12,7 +12,6 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrderFactory extends Factory
 {
-
     public function withRandomNumberOfProducts(int $min, int $max)
     {
         return $this->afterCreating(function (Order $order) use ($min, $max) {
@@ -23,7 +22,7 @@ class OrderFactory extends Factory
                     $item->id => [
                         'amount' => random_int(1, 10),
                         'price' => $item->price,
-                    ]
+                    ],
                 ];
             });
 

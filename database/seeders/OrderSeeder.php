@@ -3,11 +3,8 @@
 namespace Database\Seeders;
 
 use App\Models\Order;
-use App\Models\Address;
 use App\Models\Product;
-use App\Models\Customer;
 use Illuminate\Database\Seeder;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class OrderSeeder extends Seeder
 {
