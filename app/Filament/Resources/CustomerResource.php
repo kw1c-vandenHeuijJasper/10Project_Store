@@ -41,6 +41,17 @@ class CustomerResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
+
+                \Filament\Forms\Components\Actions::make([
+                    \Filament\Forms\Components\Actions\Action::make('star')
+                        ->icon('heroicon-m-star')
+                        ->action(fn() => dd('star')),
+
+                    \Filament\Forms\Components\Actions\Action::make('Other Option')
+                        ->icon('heroicon-m-x-mark')
+                        ->color('danger')
+                        ->action(fn() => dd('the other option')),
+                ]),
             ]);
     }
 
@@ -60,9 +71,6 @@ class CustomerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('updated_at')
                     ->toggleable(isToggledHiddenByDefault: true),
-
-
-
             ])
             ->filters([
                 //
