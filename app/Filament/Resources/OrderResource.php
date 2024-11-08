@@ -2,12 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OrderResource\Pages;
-use App\Models\Order;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Order;
+use App\Models\Address;
+use App\Models\Customer;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Filament\Resources\OrderResource\Pages;
 
 class OrderResource extends Resource
 {
@@ -15,17 +17,30 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 \Filament\Forms\Components\TextInput::make('order_number')
+                    ->integer()
+                    ->minValue(Order::first()->id)
+                    ->maxValue(Order::latest('id')->first()->id)
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('customer_id')
+                    ->integer()
+                    ->minValue(Customer::first()->id)
+                    ->maxValue(Customer::latest('id')->first()->id)
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('shipping_address_id')
+                    ->integer()
+                    ->minValue(Address::first()->id)
+                    ->maxValue(Address::latest('id')->first()->id)
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('invoice_address_id')
+                    ->integer()
+                    ->minValue(Address::first()->id)
+                    ->maxValue(Address::latest('id')->first()->id)
                     ->required(),
             ]);
     }
@@ -37,7 +52,7 @@ class OrderResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('order_number'),
-                \Filament\Tables\Columns\TextColumn::make('customer_id'),
+                \Filament\Tables\Columns\TextColumn::make('customer.name'),
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id'),
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id'),
                 \Filament\Tables\Columns\TextColumn::make('created_at')

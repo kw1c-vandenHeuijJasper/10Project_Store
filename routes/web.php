@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Order;
+use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -15,3 +17,4 @@ Route::get('/tinker', function () {
 //TODO
 // Make everything searchable/sortable... globalsearch etc.
 // make all id's in resources max = highest id etc
+// enum for type

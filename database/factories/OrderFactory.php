@@ -12,6 +12,27 @@ use Illuminate\Database\Eloquent\Factories\Factory;
  */
 class OrderFactory extends Factory
 {
+    public function configure(): static
+    {
+        return $this->withRandomNumberOfProducts(1, 5);
+        // $min = 1;
+        // $max = 1;
+        // return $this->afterCreating(function (Order $order) use ($min, $max) {
+        //     $limit = random_int($min, $max);
+
+        //     $products = Product::inRandomOrder()->limit($limit)->get()->mapWithKeys(function ($item) {
+        //         return [
+        //             $item->id => [
+        //                 'amount' => random_int(1, 10),
+        //                 'price' => $item->price,
+        //             ],
+        //         ];
+        //     });
+
+        //     $order->products()->attach($products);
+        // });
+    }
+
     public function withRandomNumberOfProducts(int $min, int $max)
     {
         return $this->afterCreating(function (Order $order) use ($min, $max) {
@@ -38,7 +59,6 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         $customer = Customer::inRandomOrder()->first();
-
         return [
             'order_number' => rand(1, 5),
             'customer_id' => $customer->id,
