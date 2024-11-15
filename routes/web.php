@@ -14,11 +14,12 @@ Route::get('/tinker', function () {
 
     $i = random_int(1, 999999999);
     $foo = Str::padLeft($i, 9, 0);
-    $foo = 'ORD#'.$foo;
+    $foo = 'ORD#' . $foo;
     dd($foo);
 });
 
-//TODO
-// Make everything searchable/sortable... globalsearch etc.
-// make all id's in resources max = highest id etc
-// enum for type  (product)
+// TODO LIST
+// [ ]Make everything searchable/sortable... globalsearch etc.
+// [ ]enum for type  (product)
+// [ ]Invoices must be of a suitcase icon
+// [ ]When ordering, the selected amount of items you ordered needs to be subtracted from the stock.

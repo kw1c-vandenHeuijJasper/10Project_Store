@@ -15,7 +15,7 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
 
     public static function form(Form $form): Form
     {
@@ -23,7 +23,6 @@ class ProductResource extends Resource
             ->schema([
                 \Filament\Forms\Components\TextInput::make('name')
                     ->required(),
-                // TODO
                 \Filament\Forms\Components\Textarea::make('description')
                     ->required(),
                 \Filament\Forms\Components\Placeholder::make('Price Guide Placeholder')
@@ -56,6 +55,8 @@ class ProductResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('name'),
+                \Filament\Tables\Columns\TextColumn::make('description')
+                    ->limit(25),
                 \Filament\Tables\Columns\TextColumn::make('price')
                     ->formatStateUsing(function ($state) {
                         (string) $input = $state;
@@ -72,17 +73,15 @@ class ProductResource extends Resource
                         if ($partone == '' || $partone == $input) {
                             $partone = '0';
                         }
-                        $output = $partone.','.$parttwo;
+                        $output = $partone . ',' . $parttwo;
                         if (strlen($input) == 1) {
-                            $output = '0,0'.$input;
+                            $output = '0,0' . $input;
                         }
 
                         return $output;
                     })
                     ->prefix('€')
                     ->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('description')
-                    ->limit(25),
                 \Filament\Tables\Columns\TextColumn::make('stock'),
 
                 //TODO enum and selectColumn
