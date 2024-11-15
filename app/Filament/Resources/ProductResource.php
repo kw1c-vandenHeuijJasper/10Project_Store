@@ -2,18 +2,14 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Illuminate\Support\Str;
 use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Illuminate\Database\Eloquent\Builder;
-use App\Filament\Resources\ProductResource\Pages;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Resources\ProductResource\RelationManagers;
+use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
@@ -62,10 +58,10 @@ class ProductResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('name'),
                 \Filament\Tables\Columns\TextColumn::make('price')
                     ->formatStateUsing(function ($state) {
-                        (string)$input = $state;
+                        (string) $input = $state;
 
                         $input = str($input)->remove(' ')->toString();
-                        (string)$parttwo = substr($input, -2);
+                        (string) $parttwo = substr($input, -2);
 
                         if ($input[0] === '0') {
                             $trimmed_input = ltrim($input, '0');
@@ -73,13 +69,14 @@ class ProductResource extends Resource
                             $trimmed_input = $input;
                         }
                         $partone = Str::of($trimmed_input)->chopEnd($parttwo);
-                        if ($partone == "" || $partone == $input) {
+                        if ($partone == '' || $partone == $input) {
                             $partone = '0';
                         }
-                        $output = $partone . ',' . $parttwo;
+                        $output = $partone.','.$parttwo;
                         if (strlen($input) == 1) {
-                            $output = '0,0' . $input;
+                            $output = '0,0'.$input;
                         }
+
                         return $output;
                     })
                     ->prefix('€')

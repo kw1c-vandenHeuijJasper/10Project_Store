@@ -35,7 +35,6 @@ class OrderFactory extends Factory
         });
     }
 
-
     /**
      * Define the model's default state.
      *
@@ -44,14 +43,15 @@ class OrderFactory extends Factory
     public function definition(): array
     {
         $customer = Customer::inRandomOrder()->first();
+
         return [
             // 'order_number' => rand(1, 5),
             'order_number' => function () {
                 $i = random_int(1, 999999999);
                 $preOrder = \Illuminate\Support\Str::padLeft($i, 9, 0);
-                return 'ORD#' . $preOrder;
-            },
 
+                return 'ORD#'.$preOrder;
+            },
 
             'customer_id' => $customer->id,
             'shipping_address_id' => $customer->addresses->random()->id,

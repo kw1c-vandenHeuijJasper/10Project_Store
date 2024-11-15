@@ -3,16 +3,13 @@
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
 use Filament\Forms;
-use Filament\Tables;
+use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Forms\Form;
+use Filament\Resources\RelationManagers\RelationManager;
+use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
-use Filament\Forms\Components\Actions;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Filament\Resources\RelationManagers\RelationManager;
 use Illuminate\Support\HtmlString;
 
 class ProductsRelationManager extends RelationManager
@@ -47,6 +44,7 @@ class ProductsRelationManager extends RelationManager
                     ->prefix('€')
                     ->getStateUsing(function ($record) {
                         $total = self::moneyFormat(($record->pivot->price) * ($record->amount));
+
                         return new HtmlString($total);
                     }),
 
@@ -68,20 +66,21 @@ class ProductsRelationManager extends RelationManager
                         $products = $this->getRelationship()->get();
 
                         $prices = $products->map(function ($product) {
-                            return (int)$product->pivot->price * (int)$product->pivot->amount;
+                            return (int) $product->pivot->price * (int) $product->pivot->amount;
                         });
 
                         $totalPrice = $prices->sum();
 
                         $totalPrice = self::moneyFormat($totalPrice);
-                        return new HtmlString('The total price = €' . ($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
+
+                        return new HtmlString('The total price = €'.($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
                     })
                     ->color('secondary')
                     ->disabled(),
                 // Tables\Actions\CreateAction::make(),
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
-                    ->form(fn(\Filament\Tables\Actions\AttachAction $action): array => [
+                    ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->reactive()
                             ->live()
@@ -122,7 +121,7 @@ class ProductsRelationManager extends RelationManager
                             ->live()
                             ->label('Total Price')
                             ->content(function (Get $get, Set $set) {
-                                return '€' . $get('total');
+                                return '€'.$get('total');
                             }),
                     ]),
             ])
@@ -138,10 +137,10 @@ class ProductsRelationManager extends RelationManager
 
     public static function moneyFormat($state)
     {
-        (string)$input = $state;
+        (string) $input = $state;
 
         $input = str($input)->remove(' ')->toString();
-        (string)$parttwo = substr($input, -2);
+        (string) $parttwo = substr($input, -2);
 
         if ($input[0] === '0') {
             $trimmed_input = ltrim($input, '0');
@@ -149,13 +148,14 @@ class ProductsRelationManager extends RelationManager
             $trimmed_input = $input;
         }
         $partone = \Illuminate\Support\Str::of($trimmed_input)->chopEnd($parttwo);
-        if ($partone == "" || $partone == $input) {
+        if ($partone == '' || $partone == $input) {
             $partone = '0';
         }
-        $output = $partone . ',' . $parttwo;
+        $output = $partone.','.$parttwo;
         if (strlen($input) == 1) {
-            $output = '0,0' . $input;
+            $output = '0,0'.$input;
         }
+
         return $output;
     }
 
@@ -165,14 +165,14 @@ class ProductsRelationManager extends RelationManager
         $price = \App\Models\Product::where('id', $get('recordId'))->pluck('price')->first();
         $set('price', $price);
 
-        (int)$total = (int)$get('amount') * (int)$get('price');
+        (int) $total = (int) $get('amount') * (int) $get('price');
         Log::warning($total);
 
         $set('total', $total);
         if ($get('total')) {
-            (string)$input = $get('total');
+            (string) $input = $get('total');
             $input = str($input)->remove(' ')->toString();
-            (string)$parttwo = substr($input, -2);
+            (string) $parttwo = substr($input, -2);
 
             if ($input[0] === '0') {
                 $trimmed_input = ltrim($input, '0');
@@ -180,12 +180,12 @@ class ProductsRelationManager extends RelationManager
                 $trimmed_input = $input;
             }
             $partone = \Illuminate\Support\Str::of($trimmed_input)->chopEnd($parttwo);
-            if ($partone == "" || $partone == $input) {
+            if ($partone == '' || $partone == $input) {
                 $partone = '0';
             }
-            $total = $partone . ',' . $parttwo;
+            $total = $partone.','.$parttwo;
             if (strlen($input) == 1) {
-                $total = '0,0' . $input;
+                $total = '0,0'.$input;
             }
         }
         $set('total', $total);

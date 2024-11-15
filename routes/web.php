@@ -1,8 +1,7 @@
 <?php
 
-use App\Models\Order;
-use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 Route::get('/', function () {
     \Illuminate\Support\Facades\Auth::loginUsingId(1);
@@ -15,10 +14,9 @@ Route::get('/tinker', function () {
 
     $i = random_int(1, 999999999);
     $foo = Str::padLeft($i, 9, 0);
-    $foo = 'ORD#' . $foo;
+    $foo = 'ORD#'.$foo;
     dd($foo);
 });
-
 
 //TODO
 // Make everything searchable/sortable... globalsearch etc.
