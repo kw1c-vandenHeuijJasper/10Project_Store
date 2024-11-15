@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -68,6 +69,34 @@ class OrderResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('customer.name'),
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id'),
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id'),
+                \Filament\Tables\Columns\TextColumn::make('amount of products')
+                    ->getStateUsing(function ($record) {
+                        $products = $record->products;
+                        foreach ($products as $product) {
+                            $count[] = $product->pivot->amount;
+                        }
+                        if (!isset($count)) {
+                            return 'NOT FOUND';
+                        }
+                        $count = collect($count);
+                        return new HtmlString($count->sum());
+                    })
+                    ->toggleable(),
+                \Filament\Tables\Columns\TextColumn::make('Total price')
+                    ->prefix('€')
+                    ->getStateUsing(function ($record) {
+                        $products = $record->products;
+                        foreach ($products as $product) {
+                            $total[] = ($product->pivot->price) * ($product->pivot->amount);
+                        }
+                        if (!isset($total)) {
+                            return 'NOT FOUND';
+                        }
+                        $total = collect($total)->sum();
+
+                        return ProductsRelationManager::moneyFormat($total);
+                    })
+                    ->toggleable(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('updated_at')

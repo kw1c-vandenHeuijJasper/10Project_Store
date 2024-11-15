@@ -31,9 +31,12 @@ class ProductsRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->limit(25),
-                Tables\Columns\TextInputColumn::make('amount')
-                    // TODO maxvalue = geselecteerde product zijn stock
-                    // ->maxValue()
+
+                \Filament\Tables\Columns\TextInputColumn::make('amount')
+                    ->rules(function ($record): array {
+                        $max = 'max:' . (int) $record->stock;
+                        return ['numeric', $max];
+                    })
                     ->width('5%'),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Agreed price')
@@ -59,10 +62,6 @@ class ProductsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                // Tables\Actions\Action::make('totalPriceLabel')
-                //     ->label(new HtmlString('The total price = ' . $total_price))
-                //     ->color('secondary')
-                //     ->disabled(),
                 Tables\Actions\Action::make('totalPriceLabel')
                     ->label(function () {
                         $products = $this->getRelationship()->get();
@@ -79,7 +78,7 @@ class ProductsRelationManager extends RelationManager
                     })
                     ->color('secondary')
                     ->disabled(),
-                // Tables\Actions\CreateAction::make(),
+
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
                     ->form(fn(\Filament\Tables\Actions\AttachAction $action): array => [
@@ -98,6 +97,18 @@ class ProductsRelationManager extends RelationManager
                             ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::updateTotals($get, $set);
+                            })
+                            ->minValue(1)
+                            ->rules(function (Get $get): array {
+                                $recordId = $get('recordId');
+                                if ($recordId) {
+                                    $record = \App\Models\Product::find($recordId);
+                                    if ($record) {
+                                        $maxStock = (int) $record->stock;
+                                        return ['numeric', 'max:' . $maxStock];
+                                    }
+                                }
+                                return ['numeric'];
                             }),
 
                         \Filament\Forms\Components\Placeholder::make('Price Guide Placeholder')
