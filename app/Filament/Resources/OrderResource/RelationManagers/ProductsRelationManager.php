@@ -32,6 +32,8 @@ class ProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('name')
                     ->limit(25),
                 Tables\Columns\TextInputColumn::make('amount')
+                    // TODO maxvalue = geselecteerde product zijn stock
+                    // ->maxValue()
                     ->width('5%'),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Agreed price')
@@ -73,14 +75,14 @@ class ProductsRelationManager extends RelationManager
 
                         $totalPrice = self::moneyFormat($totalPrice);
 
-                        return new HtmlString('The total price = €'.($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
+                        return new HtmlString('The total price = €' . ($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
                     })
                     ->color('secondary')
                     ->disabled(),
                 // Tables\Actions\CreateAction::make(),
                 Tables\Actions\AttachAction::make()
                     ->preloadRecordSelect()
-                    ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
+                    ->form(fn(\Filament\Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->reactive()
                             ->live()
@@ -121,7 +123,7 @@ class ProductsRelationManager extends RelationManager
                             ->live()
                             ->label('Total Price')
                             ->content(function (Get $get, Set $set) {
-                                return '€'.$get('total');
+                                return '€' . $get('total');
                             }),
                     ]),
             ])
@@ -151,9 +153,9 @@ class ProductsRelationManager extends RelationManager
         if ($partone == '' || $partone == $input) {
             $partone = '0';
         }
-        $output = $partone.','.$parttwo;
+        $output = $partone . ',' . $parttwo;
         if (strlen($input) == 1) {
-            $output = '0,0'.$input;
+            $output = '0,0' . $input;
         }
 
         return $output;
@@ -183,9 +185,9 @@ class ProductsRelationManager extends RelationManager
             if ($partone == '' || $partone == $input) {
                 $partone = '0';
             }
-            $total = $partone.','.$parttwo;
+            $total = $partone . ',' . $parttwo;
             if (strlen($input) == 1) {
-                $total = '0,0'.$input;
+                $total = '0,0' . $input;
             }
         }
         $set('total', $total);

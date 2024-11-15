@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_number')->unique();
+            $table->string('order_number')->unique()->nullable();
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete(); //verzend
             $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete(); //factuur

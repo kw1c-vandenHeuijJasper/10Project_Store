@@ -31,21 +31,10 @@ class CustomerResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('password')
                     ->password()
-                    ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                    ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                     ->required(),
                 \Filament\Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
-
-                \Filament\Forms\Components\Actions::make([
-                    \Filament\Forms\Components\Actions\Action::make('star')
-                        ->icon('heroicon-m-star')
-                        ->action(fn () => dd('star')),
-
-                    \Filament\Forms\Components\Actions\Action::make('Other Option')
-                        ->icon('heroicon-m-x-mark')
-                        ->color('danger')
-                        ->action(fn () => dd('the other option')),
-                ]),
             ]);
     }
 

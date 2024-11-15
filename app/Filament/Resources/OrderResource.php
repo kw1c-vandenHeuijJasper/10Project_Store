@@ -24,20 +24,36 @@ class OrderResource extends Resource
             ->schema([
                 \Filament\Forms\Components\TextInput::make('order_number')
                     ->readOnly(),
-                \Filament\Forms\Components\TextInput::make('customer_id')
-                    ->integer()
-                    ->minValue(Customer::first()->id)
-                    ->maxValue(Customer::latest('id')->first()->id)
+
+                \Filament\Forms\Components\Select::make('customer_id')
+                    ->options(Customer::pluck('name', 'id'))
+                    ->searchable()
+                    ->preload()
+                    ->required()
+                    ->reactive(),
+
+                \Filament\Forms\Components\Select::make('shipping_address_id')
+                    ->label('Shipping Address')
+                    ->options(function (callable $get) {
+                        $customerId = $get('customer_id');
+                        if ($customerId) {
+                            return Address::where('customer_id', $customerId)->pluck('street_name', 'id');
+                        }
+                        return [];
+                    })
+                    ->searchable()
                     ->required(),
-                \Filament\Forms\Components\TextInput::make('shipping_address_id')
-                    ->integer()
-                    ->minValue(Address::first()->id)
-                    ->maxValue(Address::latest('id')->first()->id)
-                    ->required(),
-                \Filament\Forms\Components\TextInput::make('invoice_address_id')
-                    ->integer()
-                    ->minValue(Address::first()->id)
-                    ->maxValue(Address::latest('id')->first()->id)
+
+                \Filament\Forms\Components\Select::make('invoice_address_id')
+                    ->label('Invoice Address')
+                    ->options(function (callable $get) {
+                        $customerId = $get('customer_id');
+                        if ($customerId) {
+                            return Address::where('customer_id', $customerId)->pluck('street_name', 'id');
+                        }
+                        return [];
+                    })
+                    ->searchable()
                     ->required(),
             ]);
     }
