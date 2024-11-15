@@ -10,6 +10,7 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Filament\Resources\OrderResource\Pages;
+use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
 
 class OrderResource extends Resource
 {
@@ -23,10 +24,7 @@ class OrderResource extends Resource
         return $form
             ->schema([
                 \Filament\Forms\Components\TextInput::make('order_number')
-                    ->integer()
-                    ->minValue(Order::first()->id)
-                    ->maxValue(Order::latest('id')->first()->id)
-                    ->required(),
+                    ->readOnly(),
                 \Filament\Forms\Components\TextInput::make('customer_id')
                     ->integer()
                     ->minValue(Customer::first()->id)
@@ -76,7 +74,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            ProductsRelationManager::class,
         ];
     }
 

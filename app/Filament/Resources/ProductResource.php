@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\ProductResource\Pages;
-use App\Filament\Resources\ProductResource\RelationManagers;
-use App\Models\Product;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Product;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use Illuminate\Database\Eloquent\Builder;
+use App\Filament\Resources\ProductResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\ProductResource\RelationManagers;
 
 class ProductResource extends Resource
 {
@@ -25,12 +27,27 @@ class ProductResource extends Resource
             ->schema([
                 \Filament\Forms\Components\TextInput::make('name')
                     ->required(),
+                // TODO
+                \Filament\Forms\Components\Textarea::make('description')
+                    ->required(),
+                \Filament\Forms\Components\Placeholder::make('Price Guide Placeholder')
+                    ->label('Price Guide')
+                    ->content(new HtmlString(
+                        '<div style="background-color:grey">
+                            The price system is an integer, so input 7 = 0,07 in decimal. <br>
+                            input 701 = 7,01 in decimal
+                        </div>'
+                    )),
                 \Filament\Forms\Components\TextInput::make('price')
+                    ->integer()
+                    ->prefix('€')
                     ->required(),
-                \Filament\Forms\Components\TextInput::make('description')
-                    ->required(),
+
                 \Filament\Forms\Components\TextInput::make('stock')
+                    ->minValue(0)
+                    ->integer()
                     ->required(),
+                //TODO select and enum
                 \Filament\Forms\Components\TextInput::make('type')
                     ->required(),
             ]);
@@ -44,6 +61,27 @@ class ProductResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('name'),
                 \Filament\Tables\Columns\TextColumn::make('price')
+                    ->formatStateUsing(function ($state) {
+                        (string)$input = $state;
+
+                        $input = str($input)->remove(' ')->toString();
+                        (string)$parttwo = substr($input, -2);
+
+                        if ($input[0] === '0') {
+                            $trimmed_input = ltrim($input, '0');
+                        } else {
+                            $trimmed_input = $input;
+                        }
+                        $partone = Str::of($trimmed_input)->chopEnd($parttwo);
+                        if ($partone == "" || $partone == $input) {
+                            $partone = '0';
+                        }
+                        $output = $partone . ',' . $parttwo;
+                        if (strlen($input) == 1) {
+                            $output = '0,0' . $input;
+                        }
+                        return $output;
+                    })
                     ->prefix('€')
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('description')

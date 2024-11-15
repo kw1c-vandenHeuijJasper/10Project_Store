@@ -1,7 +1,7 @@
 <?php
 
 use App\Models\Order;
-use App\Models\Product;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,10 +11,16 @@ Route::get('/', function () {
 });
 
 Route::get('/tinker', function () {
-    dd("There's nothing here yet 😭");
+    // dd("There's nothing here yet 😭");
+
+    $i = random_int(1, 999999999);
+    $foo = Str::padLeft($i, 9, 0);
+    $foo = 'ORD#' . $foo;
+    dd($foo);
 });
+
 
 //TODO
 // Make everything searchable/sortable... globalsearch etc.
 // make all id's in resources max = highest id etc
-// enum for type
+// enum for type  (product)
