@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -19,11 +20,13 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => fake()->name(),
+            'user_id' => User::factory()->create(),
             'phone_number' => fake()->phoneNumber(),
-            'email' => fake()->email(),
-            'password' => static::$password ??= \Illuminate\Support\Facades\Hash::make(fake()->password()),
             'date_of_birth' => fake()->date('Y-m-d', '31-12-2010'),
+
+            // 'name' => fake()->name(),
+            // 'email' => fake()->email(),
+            // 'password' => static::$password ??= \Illuminate\Support\Facades\Hash::make(fake()->password()),
         ];
     }
 }

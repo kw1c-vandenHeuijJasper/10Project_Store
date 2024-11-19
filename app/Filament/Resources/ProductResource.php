@@ -73,9 +73,9 @@ class ProductResource extends Resource
                         if ($partone == '' || $partone == $input) {
                             $partone = '0';
                         }
-                        $output = $partone . ',' . $parttwo;
+                        $output = $partone.','.$parttwo;
                         if (strlen($input) == 1) {
-                            $output = '0,0' . $input;
+                            $output = '0,0'.$input;
                         }
 
                         return $output;

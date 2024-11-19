@@ -14,9 +14,9 @@ class OrderObserver
         $order->update([
             'order_number' => function () {
                 $i = random_int(1, 999999999);
-                (string)$preOrder = \Illuminate\Support\Str::padLeft($i, 9, 0);
+                (string) $preOrder = \Illuminate\Support\Str::padLeft($i, 9, 0);
 
-                return 'ORD#' . $preOrder;
+                return 'ORD#'.$preOrder;
             },
         ]);
     }
