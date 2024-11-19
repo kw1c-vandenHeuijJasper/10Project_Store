@@ -70,9 +70,21 @@ class OrderResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('order_number'),
                 \Filament\Tables\Columns\TextColumn::make('customer.user.name'),
-                \Filament\Tables\Columns\TextColumn::make('shipping_address_id'),
-                \Filament\Tables\Columns\TextColumn::make('invoice_address_id'),
+
+                \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
+                    ->label('Shipping address')
+                    ->formatStateUsing(function ($state) {
+                        return self::getAddresses($state);
+                    }),
+
+                \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
+                    ->label('Invoice address')
+                    ->formatStateUsing(function ($state) {
+                        return self::getAddresses($state);
+                    }),
+
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
+                    ->alignCenter()
                     ->getStateUsing(function ($record) {
                         $products = $record->products;
                         foreach ($products as $product) {
@@ -133,5 +145,11 @@ class OrderResource extends Resource
             'create' => Pages\CreateOrder::route('/create'),
             'edit' => Pages\EditOrder::route('/{record}/edit'),
         ];
+    }
+
+    // TODO improve query count
+    public static function getAddresses($state)
+    {
+        return Address::whereId($state)->first()->street_name;
     }
 }
