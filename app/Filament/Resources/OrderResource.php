@@ -27,7 +27,8 @@ class OrderResource extends Resource
                     ->readOnly(),
 
                 \Filament\Forms\Components\Select::make('customer_id')
-                    ->options(Customer::pluck('name', 'id'))
+                    ->relationship(name: 'customer.user', titleAttribute: 'name')
+                    // ->options(Customer::pluck('user.name', 'id'))
                     ->searchable()
                     ->preload()
                     ->required()
@@ -40,6 +41,7 @@ class OrderResource extends Resource
                         if ($customerId) {
                             return Address::where('customer_id', $customerId)->pluck('street_name', 'id');
                         }
+
                         return [];
                     })
                     ->searchable()
@@ -52,6 +54,7 @@ class OrderResource extends Resource
                         if ($customerId) {
                             return Address::where('customer_id', $customerId)->pluck('street_name', 'id');
                         }
+
                         return [];
                     })
                     ->searchable()
@@ -66,7 +69,7 @@ class OrderResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('order_number'),
-                \Filament\Tables\Columns\TextColumn::make('customer.name'),
+                \Filament\Tables\Columns\TextColumn::make('customer.user.name'),
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id'),
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id'),
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
@@ -75,10 +78,11 @@ class OrderResource extends Resource
                         foreach ($products as $product) {
                             $count[] = $product->pivot->amount;
                         }
-                        if (!isset($count)) {
+                        if (! isset($count)) {
                             return 'NOT FOUND';
                         }
                         $count = collect($count);
+
                         return new HtmlString($count->sum());
                     })
                     ->toggleable(),
@@ -89,7 +93,7 @@ class OrderResource extends Resource
                         foreach ($products as $product) {
                             $total[] = ($product->pivot->price) * ($product->pivot->amount);
                         }
-                        if (!isset($total)) {
+                        if (! isset($total)) {
                             return 'NOT FOUND';
                         }
                         $total = collect($total)->sum();

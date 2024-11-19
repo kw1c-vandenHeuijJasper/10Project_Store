@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Str;
 
 Route::get('/', function () {
     \Illuminate\Support\Facades\Auth::loginUsingId(1);
@@ -12,17 +11,14 @@ Route::get('/', function () {
 Route::get('/tinker', function () {
     // dd("There's nothing here yet 😭");
 
-    $i = random_int(1, 999999999);
-    $foo = Str::padLeft($i, 9, 0);
-    $foo = 'ORD#' . $foo;
-    dd($foo);
+    dd(
+        rand(1, 80).fake()->randomElement([null, 'a', 'b', 'c'])
+    );
 });
 
 // TODO LIST
 // [ ]Make everything searchable/sortable... globalsearch etc.
 // [ ]enum for type  (product)
 // [ ]When ordering, the selected amount of items you ordered needs to be subtracted from the stock.
-
-
 
 // [ ]Invoices must be of a suitcase icon
