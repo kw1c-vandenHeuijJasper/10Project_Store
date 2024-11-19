@@ -21,5 +21,8 @@ Route::get('/tinker', function () {
 // TODO LIST
 // [ ]Make everything searchable/sortable... globalsearch etc.
 // [ ]enum for type  (product)
-// [ ]Invoices must be of a suitcase icon
 // [ ]When ordering, the selected amount of items you ordered needs to be subtracted from the stock.
+
+
+
+// [ ]Invoices must be of a suitcase icon

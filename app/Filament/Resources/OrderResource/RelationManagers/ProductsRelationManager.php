@@ -31,13 +31,15 @@ class ProductsRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->limit(25),
-
-                \Filament\Tables\Columns\TextInputColumn::make('amount')
-                    ->rules(function ($record): array {
-                        $max = 'max:' . (int) $record->stock;
-                        return ['numeric', $max];
-                    })
-                    ->width('5%'),
+                Tables\Columns\TextColumn::make('amount'),
+                // TODO MAYBE, breaks observer things, I dont want it being updated.
+                //I only want the created event to do something and also deleted event
+                // \Filament\Tables\Columns\TextInputColumn::make('amount')
+                //     ->rules(function ($record): array {
+                //         $max = 'max:' . (int) $record->stock;
+                //         return ['numeric', $max];
+                //     })
+                //     ->width('5%'),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Agreed price')
                     ->formatStateUsing(function ($state) {
