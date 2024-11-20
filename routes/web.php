@@ -10,9 +10,10 @@ Route::get('/', function () {
 
 Route::get('/tinker', function () {
     // dd("There's nothing here yet 😭");
-
+    // TODO
     dd(
-        rand(1, 80).fake()->randomElement([null, 'a', 'b', 'c'])
+        $customerUserId = \App\Models\Customer::inRandomOrder()->first()->id,
+        \App\Models\Customer::where('user_id', $customerUserId)->get(),
     );
 });
 

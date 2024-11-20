@@ -2,16 +2,18 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Tables;
+use App\Models\Order;
+use App\Models\Address;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use App\Models\Customer;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\HtmlString;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
-use App\Models\Address;
-use App\Models\Customer;
-use App\Models\Order;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
-use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -28,35 +30,26 @@ class OrderResource extends Resource
 
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->relationship(name: 'customer.user', titleAttribute: 'name')
-                    // ->options(Customer::pluck('user.name', 'id'))
                     ->searchable()
                     ->preload()
                     ->required()
-                    ->reactive(),
+                    ->reactive()
+                    ->afterStateUpdated(fn(Get $get, Set $set) => $set(
+                        'addresses',
+                        \App\Models\Customer::whereId($get('customer_id'))?->first()?->addresses->pluck('street_name', 'id')
+                    )),
 
                 \Filament\Forms\Components\Select::make('shipping_address_id')
                     ->label('Shipping Address')
-                    ->options(function (callable $get) {
-                        $customerId = $get('customer_id');
-                        if ($customerId) {
-                            return Address::where('customer_id', $customerId)->pluck('street_name', 'id');
-                        }
-
-                        return [];
-                    })
+                    ->live()
+                    ->options(fn(callable $get) => $get('addresses'))
                     ->searchable()
                     ->required(),
 
                 \Filament\Forms\Components\Select::make('invoice_address_id')
                     ->label('Invoice Address')
-                    ->options(function (callable $get) {
-                        $customerId = $get('customer_id');
-                        if ($customerId) {
-                            return Address::where('customer_id', $customerId)->pluck('street_name', 'id');
-                        }
-
-                        return [];
-                    })
+                    ->live()
+                    ->options(fn(callable $get) => $get('addresses'))
                     ->searchable()
                     ->required(),
             ]);
@@ -64,24 +57,23 @@ class OrderResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $savedAddresses = Address::pluck('street_name', 'id')->toArray();
+
         return $table
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('order_number'),
-                \Filament\Tables\Columns\TextColumn::make('customer.user.name'),
+                \Filament\Tables\Columns\TextColumn::make('customer.user.name')
+                    ->label('Customer'),
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(function ($state) {
-                        return self::getAddresses($state);
-                    }),
+                    ->formatStateUsing(fn($state) => self::getAddresses($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(function ($state) {
-                        return self::getAddresses($state);
-                    }),
+                    ->formatStateUsing(fn($state) => self::getAddresses($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -148,8 +140,8 @@ class OrderResource extends Resource
     }
 
     // TODO improve query count
-    public static function getAddresses($state)
+    public static function getAddresses($state, $savedAddresses)
     {
-        return Address::whereId($state)->first()->street_name;
+        return $savedAddresses[$state] ?? 'NOT FOUND';
     }
 }
