@@ -2,18 +2,18 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables;
-use App\Models\Order;
-use App\Models\Address;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use App\Models\Customer;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Illuminate\Support\HtmlString;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
+use App\Models\Address;
+use App\Models\Customer;
+use App\Models\Order;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -24,6 +24,7 @@ class OrderResource extends Resource
     public static function form(Form $form): Form
     {
         $savedAddresses = Address::pluck('street_name', 'id')->toArray();
+
         return $form
             ->schema([
                 \Filament\Forms\Components\TextInput::make('order_number')
@@ -32,7 +33,7 @@ class OrderResource extends Resource
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn(Customer $customer) => [$customer->id => $customer->user->name]
+                            fn (Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     // ->relationship(name: 'customer.user', titleAttribute: 'name')
@@ -52,6 +53,7 @@ class OrderResource extends Resource
                     ->live()
                     ->options(function (Get $get, Set $set) {
                         self::getAddresses($get('customer_id'), $set);
+
                         return $get('addresses');
                     })
                     ->searchable()
@@ -62,6 +64,7 @@ class OrderResource extends Resource
                     ->live()
                     ->options(function (Get $get, Set $set) {
                         self::getAddresses($get('customer_id'), $set);
+
                         return $get('addresses');
                     })
                     ->searchable()
@@ -83,11 +86,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
