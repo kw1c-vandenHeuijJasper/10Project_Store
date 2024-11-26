@@ -23,33 +23,47 @@ class OrderResource extends Resource
 
     public static function form(Form $form): Form
     {
+        $savedAddresses = Address::pluck('street_name', 'id')->toArray();
         return $form
             ->schema([
                 \Filament\Forms\Components\TextInput::make('order_number')
                     ->readOnly(),
 
                 \Filament\Forms\Components\Select::make('customer_id')
-                    ->relationship(name: 'customer.user', titleAttribute: 'name')
+                    ->options(function () {
+                        return Customer::with('user')->get()->mapWithKeys(
+                            fn(Customer $customer) => [$customer->id => $customer->user->name]
+                        );
+                    })
+                    // ->relationship(name: 'customer.user', titleAttribute: 'name')
                     ->searchable()
-                    ->preload()
+                    // ->preload()
                     ->required()
                     ->reactive()
-                    ->afterStateUpdated(fn(Get $get, Set $set) => $set(
-                        'addresses',
-                        \App\Models\Customer::whereId($get('customer_id'))?->first()?->addresses->pluck('street_name', 'id')
-                    )),
+                    ->afterStateUpdated(
+                        function (Set $set) {
+                            $set('shipping_address_id', null);
+                            $set('invoice_address_id', null);
+                        }
+                    ),
 
                 \Filament\Forms\Components\Select::make('shipping_address_id')
                     ->label('Shipping Address')
                     ->live()
-                    ->options(fn(callable $get) => $get('addresses'))
+                    ->options(function (Get $get, Set $set) {
+                        self::getAddresses($get('customer_id'), $set);
+                        return $get('addresses');
+                    })
                     ->searchable()
                     ->required(),
 
                 \Filament\Forms\Components\Select::make('invoice_address_id')
                     ->label('Invoice Address')
                     ->live()
-                    ->options(fn(callable $get) => $get('addresses'))
+                    ->options(function (Get $get, Set $set) {
+                        self::getAddresses($get('customer_id'), $set);
+                        return $get('addresses');
+                    })
                     ->searchable()
                     ->required(),
             ]);
@@ -69,11 +83,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn($state) => self::getAddresses($state, $savedAddresses)),
+                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn($state) => self::getAddresses($state, $savedAddresses)),
+                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -97,12 +111,12 @@ class OrderResource extends Resource
                         foreach ($products as $product) {
                             $total[] = ($product->pivot->price) * ($product->pivot->amount);
                         }
-                        if (! isset($total)) {
-                            return 'NOT FOUND';
-                        }
-                        $total = collect($total)->sum();
 
-                        return ProductsRelationManager::moneyFormat($total);
+                        $total ?? 'NOT FOUND';
+
+                        $sum = collect($total)->sum();
+
+                        return ProductsRelationManager::moneyFormat($sum);
                     })
                     ->toggleable(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
@@ -139,9 +153,15 @@ class OrderResource extends Resource
         ];
     }
 
-    // TODO improve query count
-    public static function getAddresses($state, $savedAddresses)
+    public static function getAddresses($state, Set $set)
     {
-        return $savedAddresses[$state] ?? 'NOT FOUND';
+        $addresses = Address::where('customer_id', $state)->pluck('street_name', 'id');
+        $set('addresses', $addresses);
+    }
+
+    // TODO improve pivot query count on table view????
+    public static function getAddressesTable($state, $savedAddresses)
+    {
+        return $savedAddresses[$state] ?? null;
     }
 }

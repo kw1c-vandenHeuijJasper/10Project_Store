@@ -31,6 +31,10 @@ class CustomerResource extends Resource
                                 ->required(),
                             \Filament\Forms\Components\Toggle::make('is_admin')
                                 ->inline(false)
+                                ->onIcon('heroicon-m-x-circle')
+                                ->offIcon('heroicon-m-star')
+                                ->onColor('success')
+                                ->offColor('danger')
                                 ->label('Is Admin')
                                 ->required(),
                             \Filament\Forms\Components\TextInput::make('email')
@@ -40,7 +44,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -92,8 +96,12 @@ class CustomerResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('user.email')
                     ->label('Email'),
                 \Filament\Tables\Columns\ToggleColumn::make('user.is_admin')
-                    ->disabled()
-                    ->label('Admin'),
+                    ->label('Admin')
+                    ->onIcon('heroicon-s-star')
+                    ->offIcon('heroicon-s-x-mark')
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->disabled(),
                 \Filament\Tables\Columns\TextColumn::make('user.password')
                     ->label('Password')
                     ->toggleable(isToggledHiddenByDefault: true),

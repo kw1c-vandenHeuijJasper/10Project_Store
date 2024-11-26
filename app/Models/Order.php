@@ -24,4 +24,14 @@ class Order extends Model
     {
         return $this->belongsToMany(Product::class)->withPivot('amount', 'price', 'created_at', 'updated_at');
     }
+
+    public function shipping_address_id(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
+    }
+
+    public function invoice_address_id(): BelongsTo
+    {
+        return $this->belongsTo(Address::class);
+    }
 }
