@@ -44,6 +44,7 @@ class ProductResource extends Resource
                     ->required(),
                 //TODO select and enum
                 \Filament\Forms\Components\TextInput::make('type')
+                    ->placeholder('Example: Laptop, Keyboard, Shipping Container...')
                     ->required(),
             ]);
     }

@@ -11,6 +11,7 @@ use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\HtmlString;
 
 class CustomerResource extends Resource
@@ -50,6 +51,31 @@ class CustomerResource extends Resource
                     })
                     ->createOptionUsing(function ($data) {
                         return User::create($data);
+                    })
+                    ->editOptionForm(function () {
+                        return [
+                            \Filament\Forms\Components\TextInput::make('name')
+                                ->label('Name')
+                                ->required(),
+                            \Filament\Forms\Components\Toggle::make('is_admin')
+                                ->inline(false)
+                                ->onIcon('heroicon-m-x-circle')
+                                ->offIcon('heroicon-m-star')
+                                ->onColor('success')
+                                ->offColor('danger')
+                                ->label('Is Admin')
+                                ->required(),
+                            \Filament\Forms\Components\TextInput::make('email')
+                                ->label('Email')
+                                ->email()
+                                ->required(),
+                            \Filament\Forms\Components\TextInput::make('password')
+                                ->label('Password')
+                                ->placeholder('Confirm password or make a new one to confirm edit')
+                                ->password()
+                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->required(),
+                        ];
                     })
                     ->unique()
                     ->label('Connected user')
@@ -113,8 +139,13 @@ class CustomerResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                \Filament\Tables\Filters\Filter::make('user.is_admin')
+                    ->label('Is admin')
+                    ->toggle()
+                    ->query(function (Builder $query) {
+                        return $query->whereRelation('user', 'is_admin', '=', true);
+                    }),
+            ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

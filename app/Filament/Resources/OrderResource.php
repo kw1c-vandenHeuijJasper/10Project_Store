@@ -31,7 +31,7 @@ class OrderResource extends Resource
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn(Customer $customer) => [$customer->id => $customer->user->name]
+                            fn (Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     ->searchable()
@@ -82,11 +82,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -115,6 +115,7 @@ class OrderResource extends Resource
                         $total ?? 'NOT FOUND';
 
                         $sum = collect($total)->sum();
+
                         return ProductsRelationManager::moneyFormat($sum);
                     })
                     ->toggleable(),
@@ -195,7 +196,7 @@ class OrderResource extends Resource
                         $totalPriceRaw = collect($allPrices ?? null)->sum();
                         $totalPrice = ProductsRelationManager::moneyFormat($totalPriceRaw);
 
-                        return new HtmlString('The total price of all orders = ' . '€' . $totalPrice);
+                        return new HtmlString('The total price of all orders = '.'€'.$totalPrice);
                     })
                     ->color('secondary')
                     ->disabled(),
