@@ -17,6 +17,9 @@ class OrdersRelationManager extends RelationManager
 
     public function table(Table $table): Table
     {
-        return \App\Filament\Resources\OrderResource::getAllOrdersPrice($table);
+        return \App\Filament\Resources\OrderResource::getAllOrdersPrice($table)
+            // Disable clicking & removes edit action
+            ->recordAction(null)
+            ->actions([]);
     }
 }
