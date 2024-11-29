@@ -5,6 +5,8 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CustomerResource\Pages;
 use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
 use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
+use App\Filament\Resources\CustomerResource\Widgets\StatsOverview;
+use App\Filament\Resources\CustomerResource\Widgets\totalPriceOfAllOrders;
 use App\Models\Customer;
 use App\Models\User;
 use Filament\Forms\Form;
@@ -45,7 +47,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -73,7 +75,7 @@ class CustomerResource extends Resource
                                 ->label('Password')
                                 ->placeholder('Confirm password or make a new one to confirm edit')
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -170,6 +172,20 @@ class CustomerResource extends Resource
             'index' => Pages\ListCustomers::route('/'),
             'create' => Pages\CreateCustomer::route('/create'),
             'edit' => Pages\EditCustomer::route('/{record}/edit'),
+        ];
+    }
+
+    public static function getWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\CustomerResource\Widgets\StatsOverview::class
+        ];
+    }
+
+    public static function getHeaderWidgets(): array
+    {
+        return [
+            \App\Filament\Resources\CustomerResource\Widgets\StatsOverview::class,
         ];
     }
 }

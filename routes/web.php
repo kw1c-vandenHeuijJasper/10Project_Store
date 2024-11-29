@@ -1,7 +1,8 @@
 <?php
 
-use App\Models\Customer;
 use App\Models\User;
+use App\Models\Order;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -13,20 +14,7 @@ Route::get('/', function () {
 Route::get('/tinker', function () {
     // dd("There's nothing here yet 😭");
 
-    // ik wil alle user.names's waar een customer de user_id van heeft
-    // get all user_id's then look in that user's id and get the name
-
-    Customer::pluck('user_id')->mapWithKeys(
-        function ($id) {
-            dump([$id => \App\Models\User::whereId($id)->first()->name]);
-        }
-    );
-
-    // Customer::with('user')->get()->each(
-    //     function (Customer $customer) {
-    //         dump($customer->user->name);
-    //     }
-    // );
+    return Customer::find(29)->orders->map(fn($order) => $order->products->sum('pivot.total'))->sum();
 });
 
 // TODO LIST

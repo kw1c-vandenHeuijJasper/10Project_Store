@@ -31,7 +31,7 @@ class OrderResource extends Resource
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn (Customer $customer) => [$customer->id => $customer->user->name]
+                            fn(Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     ->searchable()
@@ -82,11 +82,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -162,44 +162,5 @@ class OrderResource extends Resource
     public static function getAddressesTable($state, $savedAddresses)
     {
         return $savedAddresses[$state] ?? null;
-    }
-
-    // For relationmanager
-    public static function getAllOrdersPrice(Table $table)
-    {
-        return self::table($table)
-            ->headerActions([
-                \Filament\Tables\Actions\Action::make('totalPriceOfAllOrders')
-                    ->label(function ($livewire) {
-                        $customer = $livewire?->ownerRecord;
-
-                        $orders = $customer?->orders;
-
-                        //returns collections with instances of products
-                        $collection = $orders->map(function ($order) {
-                            return $order?->products;
-                        });
-
-                        //returns collection of collections which have the prices
-                        $prices = $collection->map(function ($products) {
-                            return $products->map(function ($product) {
-                                $price_per_product = $product?->pivot?->price * $product?->pivot?->amount;
-
-                                return $price_per_product;
-                            });
-                        });
-                        foreach ($prices as $pricesCollection) {
-                            foreach ($pricesCollection as $pricesArray) {
-                                $allPrices[] = $pricesArray ?? null;
-                            }
-                        }
-                        $totalPriceRaw = collect($allPrices ?? null)->sum();
-                        $totalPrice = ProductsRelationManager::moneyFormat($totalPriceRaw);
-
-                        return new HtmlString('The total price of all orders = '.'€'.$totalPrice);
-                    })
-                    ->color('secondary')
-                    ->disabled(),
-            ]);
     }
 }
