@@ -1,7 +1,5 @@
 <?php
 
-use App\Models\Order;
-use App\Models\Product;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -19,7 +17,7 @@ return new class extends Migration
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->integer('amount')->default(1);
             $table->unsignedBigInteger('price');
-            $table->unsignedBigInteger('total')->storedAs("amount * price");
+            $table->unsignedBigInteger('total')->storedAs('amount * price');
             $table->timestamps();
         });
     }

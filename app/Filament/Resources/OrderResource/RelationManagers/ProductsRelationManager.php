@@ -11,6 +11,7 @@ use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 
 class ProductsRelationManager extends RelationManager
 {
@@ -82,11 +83,10 @@ class ProductsRelationManager extends RelationManager
                     ->disabled(),
 
                 Tables\Actions\AttachAction::make()
-                    ->preloadRecordSelect()
+                    // ->preloadRecordSelect()
                     ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->reactive()
-                            ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::updateTotals($get, $set);
                             }),
@@ -96,7 +96,6 @@ class ProductsRelationManager extends RelationManager
                             ->default(1)
                             ->required()
                             ->reactive()
-                            ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::updateTotals($get, $set);
                             })
@@ -164,7 +163,7 @@ class ProductsRelationManager extends RelationManager
         } else {
             $trimmed_input = $input;
         }
-        $partone = \Illuminate\Support\Str::of($trimmed_input)->chopEnd($parttwo);
+        $partone = Str::of($trimmed_input)->chopEnd($parttwo);
         if ($partone == '' || $partone == $input) {
             $partone = '0';
         }

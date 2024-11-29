@@ -26,12 +26,14 @@ class OrderResource extends Resource
         return $form
             ->schema([
                 \Filament\Forms\Components\TextInput::make('order_number')
+                    ->placeholder('Will be automatically generated')
                     ->readOnly(),
 
                 \Filament\Forms\Components\Select::make('customer_id')
+                    ->label('Customer')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn(Customer $customer) => [$customer->id => $customer->user->name]
+                            fn (Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     ->searchable()
@@ -82,11 +84,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()

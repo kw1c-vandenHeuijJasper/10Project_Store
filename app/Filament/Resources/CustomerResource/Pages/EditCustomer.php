@@ -14,7 +14,7 @@ class EditCustomer extends EditRecord
     public static function getWidgets(): array
     {
         return [
-            StatsOverview::class
+            StatsOverview::class,
         ];
     }
 
@@ -26,7 +26,7 @@ class EditCustomer extends EditRecord
     public function getHeaderWidgets(): array
     {
         return [
-            StatsOverview::class
+            StatsOverview::class,
         ];
     }
 
