@@ -1,5 +1,6 @@
 <?php
 
+use App\Helpers\Money;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -9,7 +10,10 @@ Route::get('/', function () {
 });
 
 Route::get('/tinker', function () {
-    dd("There's nothing here yet 😭");
+    // dd("There's nothing here yet 😭");
+    dd(
+        Money::format(1131312)
+    );
 });
 
 // TODO LIST

@@ -41,4 +41,18 @@ class Money
     {
         return '€'.$input;
     }
+
+    public static function toInteger(string $input): int
+    {
+
+        $withoutCommas = Str::of($input)
+            ->explode(
+                ','
+            )->toArray();
+        $withoutDots = Str::of(implode($withoutCommas))
+            ->explode('.')
+            ->toArray();
+
+        return implode($withoutDots);
+    }
 }
