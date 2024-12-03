@@ -9,12 +9,14 @@ use App\Models\Customer;
 use App\Models\User;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Filament\Forms\Get;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
 
 class CustomerResource extends Resource
 {
@@ -61,8 +63,8 @@ class CustomerResource extends Resource
                                 ->required(),
                             \Filament\Forms\Components\Toggle::make('is_admin')
                                 ->inline(false)
-                                ->onIcon('heroicon-m-x-circle')
-                                ->offIcon('heroicon-m-star')
+                                ->offIcon('heroicon-m-x-circle')
+                                ->onIcon('heroicon-m-star')
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->label('Is Admin')
@@ -74,7 +76,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -88,8 +90,8 @@ class CustomerResource extends Resource
                                 ->required(),
                             \Filament\Forms\Components\Toggle::make('is_admin')
                                 ->inline(false)
-                                ->onIcon('heroicon-m-x-circle')
-                                ->offIcon('heroicon-m-star')
+                                ->onIcon('heroicon-m-star')
+                                ->offIcon('heroicon-m-x-circle')
                                 ->onColor('success')
                                 ->offColor('danger')
                                 ->label('Is Admin')
@@ -108,7 +110,7 @@ class CustomerResource extends Resource
                                 ->required(),
                         ];
                     })
-                    ->unique()
+                    ->unique(ignoreRecord: true)
                     ->label('Connected user')
                     ->searchable()
                     ->preload()
@@ -117,15 +119,8 @@ class CustomerResource extends Resource
 
                 \Filament\Forms\Components\Toggle::make('isAdmin')
                     ->inline(false)
-                    ->formatStateUsing(function (\Filament\Forms\Get $get) {
-                        $isAdmin = User::find($get('user_id'))?->is_admin;
-                        if ($isAdmin) {
-                            $isAdmin = true;
-                        } else {
-                            $isAdmin = false;
-                        }
-
-                        return $isAdmin;
+                    ->formatStateUsing(function (Get $get): bool {
+                        return (bool) User::find($get('user_id'))?->is_admin == true ? true : false;
                     })
                     ->onColor('success')
                     ->offColor('danger')
@@ -179,9 +174,18 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Is admin')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
                     ->query(function (Builder $query) {
                         return $query->whereRelation('user', 'is_admin', true);
+                    }),
+                \Filament\Tables\Filters\Filter::make('has_Orders')
+                    ->default(false)
+                    ->label('Has Orders')
+                    ->toggle()
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(function (Builder $query) {
+                        //where customer has 1 or more orders
+                        return $query->has('orders');
                     }),
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
