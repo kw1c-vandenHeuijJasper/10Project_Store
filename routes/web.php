@@ -9,12 +9,13 @@ Route::get('/', function () {
 });
 
 Route::get('/tinker', function () {
-    // dd("There's nothing here yet 😭");
-});
+    dd("There's nothing here yet 😭");
+})->name('tinker');
 
 // TODO LIST
-// [ ]Make everything searchable/sortable... globalsearch etc.
-// [ ]enum for type  (product)
+// [ ]Customer panel
+
+// [ ]Enum for type  (product)
 // [ ]When ordering, the selected amount of items you ordered needs to be subtracted from the stock.
 
-// [ ]Invoices must be of a suitcase icon
+// [ ]Maybe Invoices must be of a suitcase icon

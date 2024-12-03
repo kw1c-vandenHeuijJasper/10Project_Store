@@ -29,7 +29,7 @@ class StatsOverview extends BaseWidget
                 return new HtmlString(
                     '<span style=color:lime;>'.
                         Money::prefix().
-                        '</span> '.
+                        '</span>'.
                         '<span style=color:lime;text-decoration:underline;>'.
                         Money::format($total_price).
                         '</span>'

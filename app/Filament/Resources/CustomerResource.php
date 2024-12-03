@@ -2,19 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Models\User;
-use Filament\Tables;
-use App\Models\Customer;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Filament\Forms\Components\Toggle;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Contracts\Support\Htmlable;
 use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
 use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
+use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
+use App\Models\Customer;
+use App\Models\User;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 
 class CustomerResource extends Resource
 {
@@ -24,7 +24,7 @@ class CustomerResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'order_number';
 
-    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
         return $record->user->name;
     }
@@ -74,7 +74,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -179,7 +179,7 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Is admin')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(function (Builder $query) {
                         return $query->whereRelation('user', 'is_admin', true);
                     }),

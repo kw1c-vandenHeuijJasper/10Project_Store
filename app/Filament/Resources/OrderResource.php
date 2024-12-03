@@ -2,21 +2,21 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables;
-use App\Models\Order;
-use App\Helpers\Money;
-use App\Models\Address;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use App\Models\Customer;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Illuminate\Support\HtmlString;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Contracts\Support\Htmlable;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
+use App\Helpers\Money;
+use App\Models\Address;
+use App\Models\Customer;
+use App\Models\Order;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -26,7 +26,7 @@ class OrderResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'order_number';
 
-    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
         return $record->order_number;
     }
@@ -45,7 +45,7 @@ class OrderResource extends Resource
             'Customer' => $record->customer->user->name,
             'Shipping Address' => Address::find($record->shipping_address_id)->street_name,
             'Invoice Address' => Address::find($record->invoice_address_id)->street_name,
-            //TODO add amount of products and total price. Find out how to get to the pivot table from $record.
+            //TODO add products count and total price. Find out how to get to the pivot table from $record.
         ];
     }
 
@@ -61,7 +61,7 @@ class OrderResource extends Resource
                     ->label('Customer')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn(Customer $customer) => [$customer->id => $customer->user->name]
+                            fn (Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     ->searchable()
@@ -113,11 +113,11 @@ class OrderResource extends Resource
                     ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -136,7 +136,6 @@ class OrderResource extends Resource
                     ->toggleable(),
                 \Filament\Tables\Columns\TextColumn::make('Total price')
                     ->getStateUsing(function ($record) {
-                        //TODO $set this and let the relationmanager use these prices, for less queries
                         $products = $record->products;
                         foreach ($products as $product) {
                             $total[] = ($product->pivot->price) * ($product->pivot->amount);

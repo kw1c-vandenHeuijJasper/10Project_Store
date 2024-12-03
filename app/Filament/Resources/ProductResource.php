@@ -15,8 +15,6 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    //TODO choose icon
-    // protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
     protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     public static function form(Form $form): Form
@@ -57,7 +55,7 @@ class ProductResource extends Resource
                     ->limit(25),
                 \Filament\Tables\Columns\TextColumn::make('price')
                     ->formatStateUsing(
-                        fn($state) => Money::prefix(Money::format($state))
+                        fn ($state) => Money::prefix(Money::format($state))
                     )
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('stock'),
