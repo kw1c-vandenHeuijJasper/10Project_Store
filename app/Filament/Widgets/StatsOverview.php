@@ -2,12 +2,14 @@
 
 namespace App\Filament\Widgets;
 
-use App\Helpers\Money;
 use App\Models\Order;
+use App\Helpers\Money;
+use App\Models\Customer;
 use App\Models\OrderProduct;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use App\Models\Product;
 use Illuminate\Support\HtmlString;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class StatsOverview extends BaseWidget
 {
@@ -25,8 +27,12 @@ class StatsOverview extends BaseWidget
                 ->map(fn($pivot) => $pivot->amount * $pivot->price)
                 ->sum()
         );
+        (int)$totalAsInt = round(Money::toInteger($total));
 
         $orderCount = Order::count();
+        $customerCount = Customer::count();
+        $productCount = Product::count();
+
         return [
             Stat::make(
                 'Total price',
@@ -35,7 +41,6 @@ class StatsOverview extends BaseWidget
                         '<span style=color:lime;text-decoration:underline;>' . $total . '</span>'
                 )
             )->description('of all orders combined'),
-            Stat::make('Amount of orders', $orderCount),
             Stat::make(
                 'Average price',
                 function () use ($total, $orderCount) {
@@ -50,6 +55,17 @@ class StatsOverview extends BaseWidget
                     );
                 }
             )->description('per order'),
+            Stat::make(
+                'Average spend',
+                fn() => new HtmlString(
+                    '<span style=color:lime;>' . Money::prefix() . '</span>' .
+                        '<span style=color:lime;text-decoration:underline;>' .
+                        Money::format($totalAsInt / $customerCount) . '</span>'
+                )
+            )->description('per customer'),
+            Stat::make('Amount of products', $productCount),
+            Stat::make('Amount of orders', $orderCount),
+            Stat::make('Amount of customers', $customerCount),
         ];
     }
 }

@@ -1,10 +1,11 @@
 <?php
 
 use App\Helpers\Money;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    \Illuminate\Support\Facades\Auth::loginUsingId(1);
+    Auth::loginUsingId(1);
 
     return redirect('/admin');
 });
