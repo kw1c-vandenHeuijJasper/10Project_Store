@@ -2,6 +2,7 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class Money
@@ -42,9 +43,11 @@ class Money
         return '€'.$input;
     }
 
+    /**
+     * Converts already formatted prices to integers
+     */
     public static function toInteger(string $input): int
     {
-
         $withoutCommas = Str::of($input)
             ->explode(
                 ','
@@ -53,6 +56,16 @@ class Money
             ->explode('.')
             ->toArray();
 
-        return implode($withoutDots);
+        return round(implode($withoutDots));
+    }
+
+    public static function HtmlString(string|int $input, bool $prefixed = false): HtmlString
+    {
+        $prefixed = $prefixed == true ? Money::prefix() : false;
+
+        return new HtmlString(
+            '<span style=color:lime;>'.$prefixed.'</span>'.
+                '<span style=color:lime;text-decoration:underline;>'.$input.'</span>'
+        );
     }
 }
