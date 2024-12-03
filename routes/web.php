@@ -10,7 +10,7 @@ Route::get('/', function () {
 
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
-})->name('tinker');
+});
 
 // TODO LIST
 // [ ]Customer panel
