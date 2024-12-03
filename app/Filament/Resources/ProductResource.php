@@ -15,7 +15,9 @@ class ProductResource extends Resource
 {
     protected static ?string $model = Product::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    //TODO choose icon
+    // protected static ?string $navigationIcon = 'heroicon-o-inbox-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-cube';
 
     public static function form(Form $form): Form
     {
@@ -27,17 +29,11 @@ class ProductResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\Placeholder::make('Price Guide Placeholder')
                     ->label('Price Guide')
-                    ->content(new HtmlString(
-                        '<div style="background-color:grey">
-                            The price system is an integer, so input 7 = 0,07 in decimal. <br>
-                            input 701 = 7,01 in decimal
-                        </div>'
-                    )),
+                    ->content(new HtmlString('Prices are saved as an integer, so 72 is 0,72')),
                 \Filament\Forms\Components\TextInput::make('price')
                     ->integer()
                     ->prefix('€')
                     ->required(),
-
                 \Filament\Forms\Components\TextInput::make('stock')
                     ->minValue(0)
                     ->integer()

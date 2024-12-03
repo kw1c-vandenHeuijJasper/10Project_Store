@@ -2,9 +2,11 @@
 
 namespace App\Filament\Resources\CustomerResource\Widgets;
 
-use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use App\Helpers\Money;
+use Illuminate\Support\HtmlString;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
 
 class StatsOverview extends BaseWidget
 {
@@ -21,9 +23,16 @@ class StatsOverview extends BaseWidget
     {
         return [
             Stat::make('Total price', function () {
-                $total_price = $this->record->orders->map(fn ($order) => $order->products->sum('pivot.total'))->sum();
+                $total_price = $this->record->orders->map(
+                    fn($order) => $order->products->sum('pivot.total')
+                )->sum();
 
-                return '€ '.ProductsRelationManager::moneyFormat($total_price);
+                return new HtmlString(
+                    '<span style=color:lime;>€</span> ' .
+                        '<span style=color:lime;text-decoration:underline;>' .
+                        Money::format($total_price) .
+                        '</span>'
+                );
             })
                 ->description('of all orders combined'),
         ];

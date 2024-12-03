@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\OrderResource\Pages;
-use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
-use App\Models\Address;
-use App\Models\Customer;
+use Filament\Tables;
 use App\Models\Order;
-use Filament\Forms\Form;
+use App\Helpers\Money;
+use App\Models\Address;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
-use Filament\Resources\Resource;
-use Filament\Tables;
+use App\Models\Customer;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
 use Illuminate\Support\HtmlString;
+use App\Filament\Resources\OrderResource\Pages;
+use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
 
 class OrderResource extends Resource
 {
@@ -33,7 +34,7 @@ class OrderResource extends Resource
                     ->label('Customer')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn (Customer $customer) => [$customer->id => $customer->user->name]
+                            fn(Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     ->searchable()
@@ -84,11 +85,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -113,12 +114,10 @@ class OrderResource extends Resource
                         foreach ($products as $product) {
                             $total[] = ($product->pivot->price) * ($product->pivot->amount);
                         }
-
                         $total ?? 'NOT FOUND';
 
                         $sum = collect($total)->sum();
-
-                        return ProductsRelationManager::moneyFormat($sum);
+                        return Money::format($sum);
                     })
                     ->toggleable(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')

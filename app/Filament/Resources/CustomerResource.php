@@ -7,12 +7,12 @@ use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationMana
 use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
 use App\Models\Customer;
 use App\Models\User;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\HtmlString;
 
 class CustomerResource extends Resource
 {
@@ -84,24 +84,21 @@ class CustomerResource extends Resource
                     ->relationship(name: 'user', titleAttribute: 'name')
                     ->required(),
 
-                // TODO maybe use toggle because this is the admin panel, and only admins should be allowed here
-                \Filament\Forms\Components\Placeholder::make('isAdmin')
-                    ->content(
-                        function (\Filament\Forms\Get $get) {
-                            if (! isset(User::whereId($get('user_id'))->first()->is_admin)) {
-                                $isAdmin = 'False';
-                            } else {
-                                $isAdmin = User::whereId($get('user_id'))->first()->is_admin;
-                                if ($isAdmin) {
-                                    $isAdmin = 'True';
-                                } else {
-                                    $isAdmin = 'False';
-                                }
-                            }
-
-                            return new HtmlString($isAdmin);
+                \Filament\Forms\Components\Toggle::make('isAdmin')
+                    ->inline(false)
+                    ->formatStateUsing(function (\Filament\Forms\Get $get) {
+                        $isAdmin = User::find($get('user_id'))->is_admin;
+                        if ($isAdmin) {
+                            $isAdmin = true;
+                        } else {
+                            $isAdmin = false;
                         }
-                    ),
+
+                        return $isAdmin;
+                    })
+                    ->onColor('success')
+                    ->offColor('danger')
+                    ->disabled(),
                 \Filament\Forms\Components\TextInput::make('phone_number')
                     ->tel()
                     ->required(),
@@ -140,10 +137,12 @@ class CustomerResource extends Resource
             ])
             ->filters([
                 \Filament\Tables\Filters\Filter::make('user.is_admin')
+                    ->default(false)
                     ->label('Is admin')
                     ->toggle()
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(function (Builder $query) {
-                        return $query->whereRelation('user', 'is_admin', '=', true);
+                        return $query->whereRelation('user', 'is_admin', true);
                     }),
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
