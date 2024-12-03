@@ -49,16 +49,18 @@ class Money
     public static function toInteger(string $input): int
     {
         $withoutCommas = Str::of($input)
-            ->explode(
-                ','
-            )->toArray();
+            ->explode(',')
+            ->toArray();
         $withoutDots = Str::of(implode($withoutCommas))
             ->explode('.')
             ->toArray();
 
-        return round(implode($withoutDots));
+        return round(implode($withoutDots), 0, PHP_ROUND_HALF_EVEN);
     }
 
+    /**
+     * Returns standard widget htmlstring styling
+     */
     public static function HtmlString(string|int $input, bool $prefixed = false): HtmlString
     {
         $prefixed = $prefixed == true ? Money::prefix() : false;
