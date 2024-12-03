@@ -111,14 +111,9 @@ class ProductsRelationManager extends RelationManager
                                 return ['numeric'];
                             }),
 
-                        \Filament\Forms\Components\Placeholder::make('Price Guide Placeholder')
+                        \Filament\Forms\Components\Placeholder::make('Price Guide')
                             ->label('Price Guide')
-                            ->content(new HtmlString(
-                                '<div style="background-color:grey">
-                                    The price system is an integer, so 7 = 0,07 in decimal. <br>
-                                    input 701 = 7,01 in decimal
-                                </div>'
-                            )),
+                            ->content(new HtmlString('Prices are saved as an integer, so 72 is 0,72')),
 
                         Forms\Components\TextInput::make('price')
                             ->label('Price for one')

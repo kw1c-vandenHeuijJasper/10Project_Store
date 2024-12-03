@@ -29,9 +29,9 @@ class Money
         if ($partone == '' || $partone == $input) {
             $partone = '0';
         }
-        $output = $partone.','.$parttwo;
+        $output = $partone . ',' . $parttwo;
         if (strlen($input) == 1) {
-            $output = '0,0'.$input;
+            $output = '0,0' . $input;
         }
 
         return $output;
@@ -42,6 +42,6 @@ class Money
      */
     public static function prefix(string|int|null $input = null): string
     {
-        return '€ '.$input;
+        return '€' . $input;
     }
 }

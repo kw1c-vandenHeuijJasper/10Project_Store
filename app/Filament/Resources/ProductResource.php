@@ -27,7 +27,7 @@ class ProductResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\Textarea::make('description')
                     ->required(),
-                \Filament\Forms\Components\Placeholder::make('Price Guide Placeholder')
+                \Filament\Forms\Components\Placeholder::make('Price Guide')
                     ->label('Price Guide')
                     ->content(new HtmlString('Prices are saved as an integer, so 72 is 0,72')),
                 \Filament\Forms\Components\TextInput::make('price')
