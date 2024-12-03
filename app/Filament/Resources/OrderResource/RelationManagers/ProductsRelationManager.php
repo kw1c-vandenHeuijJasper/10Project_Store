@@ -49,12 +49,10 @@ class ProductsRelationManager extends RelationManager
                     }),
                 \Filament\Tables\Columns\TextColumn::make('total')
                     ->label('Total Price')
-                    ->prefix('€')
                     ->getStateUsing(function ($record) {
-                        $total = ($record->pivot->price) * ($record->amount);
-                        $total = Money::format($total);
-
-                        return new HtmlString($total);
+                        return new HtmlString(Money::prefix(
+                            Money::format(($record->pivot->price) * ($record->amount))
+                        ));
                     }),
 
                 \Filament\Tables\Columns\TextColumn::make('created_at')
@@ -74,17 +72,16 @@ class ProductsRelationManager extends RelationManager
                             return (int) $product->pivot->price * (int) $product->pivot->amount;
                         });
 
-                        $totalPrice = $prices->sum();
+                        $totalPrice = Money::format($prices->sum());
 
-                        $totalPrice = Money::format($totalPrice);
-                        return new HtmlString('The total price = €' . ($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
+                        return new HtmlString('Total price: '.Money::prefix(($totalPrice > 0 ? $totalPrice : 'UNKNOWN')));
                     })
                     ->color('secondary')
                     ->disabled(),
 
                 Tables\Actions\AttachAction::make()
                     // ->preloadRecordSelect()
-                    ->form(fn(\Filament\Tables\Actions\AttachAction $action): array => [
+                    ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->reactive()
                             ->afterStateUpdated(function (Get $get, Set $set) {
@@ -107,7 +104,7 @@ class ProductsRelationManager extends RelationManager
                                     if ($record) {
                                         $maxStock = (int) $record->stock;
 
-                                        return ['numeric', 'max:' . $maxStock];
+                                        return ['numeric', 'max:'.$maxStock];
                                     }
                                 }
 
@@ -137,7 +134,7 @@ class ProductsRelationManager extends RelationManager
                             ->live()
                             ->label('Total Price')
                             ->content(function (Get $get, Set $set) {
-                                return '€' . $get('total');
+                                return Money::prefix($get('total'));
                             }),
                     ]),
             ])

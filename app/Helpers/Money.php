@@ -13,12 +13,10 @@ class Money
 
     /**
      * Formats int or string to a standard money format
-     * 
-     * @param string|integer $input
-     * @return string
      */
     public static function format(string|int $input): string
     {
+        //TODO improve code
         $input = str($input)->remove(' ')->toString();
         (string) $parttwo = substr($input, -2);
 
@@ -31,9 +29,9 @@ class Money
         if ($partone == '' || $partone == $input) {
             $partone = '0';
         }
-        $output = $partone . ',' . $parttwo;
+        $output = $partone.','.$parttwo;
         if (strlen($input) == 1) {
-            $output = '0,0' . $input;
+            $output = '0,0'.$input;
         }
 
         return $output;
@@ -41,12 +39,9 @@ class Money
 
     /**
      * Prefixes any string or int with €
-     *
-     * @param string|integer $input
-     * @return string
      */
-    public static function prefix(string|int $input): string
+    public static function prefix(string|int|null $input = null): string
     {
-        return '€ ' . $input;
+        return '€ '.$input;
     }
 }

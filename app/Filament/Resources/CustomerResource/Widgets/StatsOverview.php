@@ -3,10 +3,9 @@
 namespace App\Filament\Resources\CustomerResource\Widgets;
 
 use App\Helpers\Money;
-use Illuminate\Support\HtmlString;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\HtmlString;
 
 class StatsOverview extends BaseWidget
 {
@@ -24,13 +23,15 @@ class StatsOverview extends BaseWidget
         return [
             Stat::make('Total price', function () {
                 $total_price = $this->record->orders->map(
-                    fn($order) => $order->products->sum('pivot.total')
+                    fn ($order) => $order->products->sum('pivot.total')
                 )->sum();
 
                 return new HtmlString(
-                    '<span style=color:lime;>€</span> ' .
-                        '<span style=color:lime;text-decoration:underline;>' .
-                        Money::format($total_price) .
+                    '<span style=color:lime;>'.
+                        Money::prefix().
+                        '</span> '.
+                        '<span style=color:lime;text-decoration:underline;>'.
+                        Money::format($total_price).
                         '</span>'
                 );
             })

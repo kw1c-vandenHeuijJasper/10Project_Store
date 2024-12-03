@@ -3,13 +3,13 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
+use App\Helpers\Money;
 use App\Models\Product;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Support\HtmlString;
-use Illuminate\Support\Str;
 
 class ProductResource extends Resource
 {
@@ -55,29 +55,9 @@ class ProductResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('description')
                     ->limit(25),
                 \Filament\Tables\Columns\TextColumn::make('price')
-                    ->formatStateUsing(function ($state) {
-                        (string) $input = $state;
-
-                        $input = str($input)->remove(' ')->toString();
-                        (string) $parttwo = substr($input, -2);
-
-                        if ($input[0] === '0') {
-                            $trimmed_input = ltrim($input, '0');
-                        } else {
-                            $trimmed_input = $input;
-                        }
-                        $partone = Str::of($trimmed_input)->chopEnd($parttwo);
-                        if ($partone == '' || $partone == $input) {
-                            $partone = '0';
-                        }
-                        $output = $partone.','.$parttwo;
-                        if (strlen($input) == 1) {
-                            $output = '0,0'.$input;
-                        }
-
-                        return $output;
-                    })
-                    ->prefix('€')
+                    ->formatStateUsing(
+                        fn ($state) => Money::prefix(Money::format($state))
+                    )
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('stock'),
 

@@ -2,19 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use Filament\Tables;
-use App\Models\Order;
-use App\Helpers\Money;
-use App\Models\Address;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use App\Models\Customer;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Illuminate\Support\HtmlString;
 use App\Filament\Resources\OrderResource\Pages;
 use App\Filament\Resources\OrderResource\RelationManagers\ProductsRelationManager;
+use App\Helpers\Money;
+use App\Models\Address;
+use App\Models\Customer;
+use App\Models\Order;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -34,7 +34,7 @@ class OrderResource extends Resource
                     ->label('Customer')
                     ->options(function () {
                         return Customer::with('user')->get()->mapWithKeys(
-                            fn(Customer $customer) => [$customer->id => $customer->user->name]
+                            fn (Customer $customer) => [$customer->id => $customer->user->name]
                         );
                     })
                     ->searchable()
@@ -85,11 +85,11 @@ class OrderResource extends Resource
 
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),
+                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
                 \Filament\Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
@@ -107,7 +107,6 @@ class OrderResource extends Resource
                     })
                     ->toggleable(),
                 \Filament\Tables\Columns\TextColumn::make('Total price')
-                    ->prefix('€')
                     ->getStateUsing(function ($record) {
                         //TODO $set this and let the relationmanager use these prices, for less queries
                         $products = $record->products;
@@ -117,7 +116,9 @@ class OrderResource extends Resource
                         $total ?? 'NOT FOUND';
 
                         $sum = collect($total)->sum();
-                        return Money::format($sum);
+                        $formatted = Money::format($sum);
+
+                        return Money::prefix($formatted);
                     })
                     ->toggleable(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
