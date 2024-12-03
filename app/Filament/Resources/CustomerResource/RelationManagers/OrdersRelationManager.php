@@ -18,7 +18,7 @@ class OrdersRelationManager extends RelationManager
     public function table(Table $table): Table
     {
         return \App\Filament\Resources\OrderResource::table($table)
-            ->recordAction(null)
-            ->actions([]);
+            ->actions([])
+            ->recordAction(null);
     }
 }

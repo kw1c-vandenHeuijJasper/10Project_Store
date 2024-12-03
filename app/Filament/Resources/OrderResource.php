@@ -106,10 +106,11 @@ class OrderResource extends Resource
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
-                \Filament\Tables\Columns\TextColumn::make('order_number'),
+                \Filament\Tables\Columns\TextColumn::make('order_number')
+                    ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('customer.user.name')
-                    ->label('Customer'),
-
+                    ->label('Customer')
+                    ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->formatStateUsing(fn($state) => self::getAddressesTable($state, $savedAddresses)),

@@ -2,23 +2,52 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\CustomerResource\Pages;
-use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
-use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
-use App\Models\Customer;
 use App\Models\User;
-use Filament\Forms\Components\Toggle;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Customer;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Filament\Forms\Components\Toggle;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Contracts\Support\Htmlable;
+use App\Filament\Resources\CustomerResource\Pages;
+use App\Filament\Resources\CustomerResource\RelationManagers\OrdersRelationManager;
+use App\Filament\Resources\CustomerResource\RelationManagers\AddressRelationManager;
 
 class CustomerResource extends Resource
 {
     protected static ?string $model = Customer::class;
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
+
+    protected static ?string $recordTitleAttribute = 'order_number';
+
+    public static function getGlobalSearchResultTitle(Model $record): string | Htmlable
+    {
+        return $record->user->name;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return [
+            'user.name',
+            'user.email',
+            'phone_number',
+            'date_of_birth',
+
+        ];
+    }
+
+    public static function getGlobalSearchResultDetails(Model $record): array
+    {
+        return [
+            'Email' => $record->user->email,
+            'Phone Number' => $record->phone_number,
+            'Date Of Birth' => $record->date_of_birth,
+        ];
+    }
 
     public static function form(Form $form): Form
     {
@@ -45,7 +74,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -71,9 +100,11 @@ class CustomerResource extends Resource
                                 ->required(),
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
-                                ->placeholder('Confirm password or make a new one to confirm edit')
+                                ->revealable()
+                                // ->dehydrateStateUsing(fn($state) => dd($state))
+                                // ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => \Illuminate\Support\Facades\Hash::make($state))
+                                ->placeholder('Confirm password or make a new one to confirm edit')
                                 ->required(),
                         ];
                     })
@@ -87,7 +118,7 @@ class CustomerResource extends Resource
                 \Filament\Forms\Components\Toggle::make('isAdmin')
                     ->inline(false)
                     ->formatStateUsing(function (\Filament\Forms\Get $get) {
-                        $isAdmin = User::find($get('user_id'))->is_admin;
+                        $isAdmin = User::find($get('user_id'))?->is_admin;
                         if ($isAdmin) {
                             $isAdmin = true;
                         } else {
@@ -114,9 +145,12 @@ class CustomerResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('user.name')
+                    ->searchable()
                     ->label('Name'),
-                \Filament\Tables\Columns\TextColumn::make('phone_number'),
+                \Filament\Tables\Columns\TextColumn::make('phone_number')
+                    ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('user.email')
+                    ->searchable()
                     ->label('Email'),
                 \Filament\Tables\Columns\ToggleColumn::make('user.is_admin')
                     ->label('Admin')
@@ -133,7 +167,8 @@ class CustomerResource extends Resource
                     ->counts('orders')
                     ->alignCenter(),
                 \Filament\Tables\Columns\TextColumn::make('date_of_birth')
-                    ->date('d-m-Y'),
+                    ->date('d-m-Y')
+                    ->searchable(),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
                 \Filament\Tables\Columns\TextColumn::make('updated_at')
@@ -144,7 +179,7 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Is admin')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
                     ->query(function (Builder $query) {
                         return $query->whereRelation('user', 'is_admin', true);
                     }),
