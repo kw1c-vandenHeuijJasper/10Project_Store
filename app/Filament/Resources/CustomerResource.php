@@ -128,6 +128,10 @@ class CustomerResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('user.password')
                     ->label('Password')
                     ->toggleable(isToggledHiddenByDefault: true),
+                \Filament\Tables\Columns\TextColumn::make('orders_count')
+                    ->label('Amount of orders')
+                    ->counts('orders')
+                    ->alignCenter(),
                 \Filament\Tables\Columns\TextColumn::make('date_of_birth')
                     ->date('d-m-Y'),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
