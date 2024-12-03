@@ -76,7 +76,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -174,7 +174,7 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Is admin')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(function (Builder $query) {
                         return $query->whereRelation('user', 'is_admin', true);
                     }),
@@ -182,9 +182,8 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Has Orders')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(function (Builder $query) {
-                        //where customer has 1 or more orders
                         return $query->has('orders');
                     }),
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
