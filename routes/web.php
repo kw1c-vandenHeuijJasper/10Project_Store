@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Customer;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -11,8 +10,6 @@ Route::get('/', function () {
 
 Route::get('/tinker', function () {
     // dd("There's nothing here yet 😭");
-
-    return Customer::find(29)->orders->map(fn ($order) => $order->products->sum('pivot.total'))->sum();
 });
 
 // TODO LIST
