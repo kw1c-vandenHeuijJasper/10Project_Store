@@ -66,7 +66,7 @@ class OrderResource extends Resource
                     })
                     ->searchable()
                     ->required()
-                    ->reactive()
+                    ->live()
                     ->afterStateUpdated(
                         function (Set $set) {
                             $set('shipping_address_id', null);

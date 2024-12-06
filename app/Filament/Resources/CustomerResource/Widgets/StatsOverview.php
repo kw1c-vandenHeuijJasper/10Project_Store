@@ -5,7 +5,6 @@ namespace App\Filament\Resources\CustomerResource\Widgets;
 use App\Helpers\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
-use Illuminate\Support\HtmlString;
 
 class StatsOverview extends BaseWidget
 {
@@ -26,16 +25,8 @@ class StatsOverview extends BaseWidget
                     fn ($order) => $order->products->sum('pivot.total')
                 )->sum();
 
-                return new HtmlString(
-                    '<span style=color:lime;>'.
-                        Money::prefix().
-                        '</span>'.
-                        '<span style=color:lime;text-decoration:underline;>'.
-                        Money::format($total_price).
-                        '</span>'
-                );
-            })
-                ->description('of all orders combined'),
+                return Money::HtmlString(Money::format($total_price), true);
+            })->description('of all orders combined'),
         ];
     }
 }

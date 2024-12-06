@@ -74,7 +74,7 @@ class ProductsRelationManager extends RelationManager
 
                         $totalPrice = Money::format($prices->sum());
 
-                        return new HtmlString('Total price: '.Money::prefix(($totalPrice > 0 ? $totalPrice : 'UNKNOWN')));
+                        return new HtmlString('Total price: '.Money::prefix($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
                     })
                     ->color('secondary')
                     ->disabled(),
@@ -83,7 +83,7 @@ class ProductsRelationManager extends RelationManager
                     // ->preloadRecordSelect()
                     ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
-                            ->reactive()
+                            ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::updateTotals($get, $set);
                             }),
@@ -92,7 +92,7 @@ class ProductsRelationManager extends RelationManager
                             ->integer()
                             ->default(1)
                             ->required()
-                            ->reactive()
+                            ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
                                 self::updateTotals($get, $set);
                             })
@@ -125,10 +125,8 @@ class ProductsRelationManager extends RelationManager
                             ->prefix('€'),
 
                         Forms\Components\Placeholder::make('total')
-                            ->reactive()
-                            ->live()
                             ->label('Total Price')
-                            ->content(function (Get $get, Set $set) {
+                            ->content(function (Get $get) {
                                 return Money::prefix($get('total'));
                             }),
                     ]),
