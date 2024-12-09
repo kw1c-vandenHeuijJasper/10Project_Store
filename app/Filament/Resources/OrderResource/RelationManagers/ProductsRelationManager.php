@@ -37,12 +37,10 @@ class ProductsRelationManager extends RelationManager
                     ->alignCenter(),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Agreed price')
-                    ->formatStateUsing(fn ($state) => Money::prefix(Money::format($state))),
+                    ->formatStateUsing(fn ($state) => Money::prefixFormat(($state))),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total Price')
-                    ->getStateUsing(fn ($record) => new HtmlString(Money::prefix(
-                        Money::format($record->pivot->price * $record->amount)
-                    ))),
+                    ->formatStateUsing(fn ($record) => Money::prefixFormat($record->total)),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -53,23 +51,19 @@ class ProductsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
+                //TODO widget-ify please this hurts my soul
                 Tables\Actions\Action::make('totalPriceLabel')
                     ->label(function () {
                         $products = $this->getRelationship()->get();
+                        $totals = $products->map(fn ($product) => $product->pivot->total);
 
-                        $prices = $products->map(function ($product) {
-                            return (int) $product->pivot->price * (int) $product->pivot->amount;
-                        });
-
-                        $totalPrice = Money::format($prices->sum());
-
-                        return new HtmlString('Total price: '.Money::prefix($totalPrice > 0 ? $totalPrice : 'UNKNOWN'));
+                        return new HtmlString('Total price: '.Money::prefixFormat($totals->sum()));
                     })
                     ->color('secondary')
                     ->disabled(),
 
                 Tables\Actions\AttachAction::make()
-                    ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
+                    ->form(fn (Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
@@ -86,14 +80,14 @@ class ProductsRelationManager extends RelationManager
                             })
                             ->minValue(1)
                             ->rules(function (Get $get): array {
+                                //TODO make better
                                 $recordId = $get('recordId');
                                 if ($recordId) {
                                     $record = Product::find($recordId);
-                                    if ($record) {
-                                        $maxStock = (int) $record->stock;
 
-                                        return ['numeric', 'max:'.$maxStock];
-                                    }
+                                    $maxStock = $record->stock;
+
+                                    return ['numeric', 'max:'.$maxStock];
                                 }
 
                                 return ['numeric'];

@@ -5,10 +5,11 @@ namespace App\Filament\Resources\CustomerResource\Widgets;
 use App\Helpers\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Model;
 
 class StatsOverview extends BaseWidget
 {
-    public ?\Illuminate\Database\Eloquent\Model $record = null;
+    public ?Model $record = null;
 
     protected int|string|array $columnSpan = 1;
 

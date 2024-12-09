@@ -44,6 +44,14 @@ class Money
     }
 
     /**
+     * Prefixes and formats
+     */
+    public static function prefixFormat(string|int $input = ''): string
+    {
+        return self::prefix(self::format($input));
+    }
+
+    /**
      * Converts already formatted prices to integers
      */
     public static function toInteger(string $input): int

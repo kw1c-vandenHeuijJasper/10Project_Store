@@ -103,8 +103,6 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->revealable()
-                                // ->dehydrateStateUsing(fn($state) => dd($state))
-                                // ->dehydrateStateUsing(fn(string $state): string => \Illuminate\Support\Facades\Hash::make($state))
                                 ->password()
                                 ->placeholder('Confirm password or make a new one to confirm edit')
                                 ->required(),
@@ -176,12 +174,14 @@ class CustomerResource extends Resource
                     ->toggle()
                     ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(fn (Builder $query) => $query->whereRelation('user', 'is_admin', true)),
+
                 \Filament\Tables\Filters\Filter::make('has_orders')
                     ->default(false)
                     ->label('Has Orders')
                     ->toggle()
                     ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(fn (Builder $query) => $query->has('orders')),
+
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -8,6 +8,8 @@ use App\Helpers\Money;
 use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\OrderProduct;
+use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
 use Filament\Forms\Set;
@@ -15,8 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\HtmlString;
 
 class OrderResource extends Resource
 {
@@ -45,6 +47,7 @@ class OrderResource extends Resource
             'Customer' => $record->customer->user->name,
             'Shipping Address' => Address::find($record->shipping_address_id)->street_name,
             'Invoice Address' => Address::find($record->invoice_address_id)->street_name,
+            'Total price' => Money::prefixFormat(OrderProduct::whereOrderId($record->id)->pluck('total')->sum()),
             //TODO add products count and total price. Find out how to get to the pivot table from $record.
         ];
     }
@@ -99,68 +102,48 @@ class OrderResource extends Resource
     public static function table(Table $table): Table
     {
         $savedAddresses = Address::pluck('street_name', 'id')->toArray();
+        $orderProduct = OrderProduct::get();
 
         return $table
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
-                \Filament\Tables\Columns\TextColumn::make('order_number')
+                Tables\Columns\TextColumn::make('order_number')
                     ->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('customer.user.name')
+                Tables\Columns\TextColumn::make('customer.user.name')
                     ->label('Customer')
                     ->searchable(),
-                \Filament\Tables\Columns\TextColumn::make('shipping_address_id')
+                Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
-                \Filament\Tables\Columns\TextColumn::make('invoice_address_id')
+                Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
                     ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
 
-                \Filament\Tables\Columns\TextColumn::make('amount of products')
+                Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(function ($record) {
-                        $products = $record->products;
-                        foreach ($products as $product) {
-                            $count[] = $product->pivot->amount;
-                        }
-
-                        if (! isset($count)) {
-                            return 'NOT FOUND';
-                        }
-
-                        $count = collect($count);
-
-                        return new HtmlString($count->sum());
-                    })
+                    ->getStateUsing(fn ($record) => $orderProduct
+                        ->where('order_id', $record->id)->pluck('amount')->sum())
                     ->toggleable(),
-                \Filament\Tables\Columns\TextColumn::make('Total price')
-                    ->getStateUsing(function ($record) {
-                        $products = $record->products;
-                        foreach ($products as $product) {
-                            $total[] = ($product->pivot->price) * ($product->pivot->amount);
-                        }
-
-                        if (! isset($total)) {
-                            $total = 0;
-                        }
-
-                        $total ?? 'NOT FOUND';
-
-                        $sum = collect($total)->sum();
-                        $formatted = Money::format($sum);
-
-                        return Money::prefix($formatted);
-                    })
+                Tables\Columns\TextColumn::make('total')
+                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                        $orderProduct->where('order_id', $record->id)->pluck('total')->sum()
+                    ))
                     ->toggleable(),
-                \Filament\Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
-                \Filament\Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('updated_at')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
-            ])
+                Tables\Filters\Filter::make('has_products')
+                    ->default(false)
+                    ->label('Has product(s)')
+                    ->toggle()
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->query(fn (Builder $query) => $query->has('products')),
+            ], layout: Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])

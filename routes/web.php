@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -16,11 +15,11 @@ Route::get('/tinker', function () {
 
 // 
 // TODO LIST
-// [ ]customer filter - when Has Orders filter is true show has products in order ???
+
+// when customer has no addresses, disable those fields in order edit/create
+
+// [ ]Order status - Only subtract stock if status is done (make enum and db column)
 
 // [ ]Customer panel
-
 // [ ]Enum for type  (product)
-// [ ]When ordering, the selected amount of items you ordered needs to be subtracted from the stock.
-
 // [ ]Maybe Invoices must be of a suitcase icon

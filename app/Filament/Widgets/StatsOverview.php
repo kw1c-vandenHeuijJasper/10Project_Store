@@ -23,10 +23,11 @@ class StatsOverview extends BaseWidget
     {
         $total = Money::format(
             OrderProduct::get()
-                ->map(fn ($pivot) => $pivot->amount * $pivot->price)
+                ->pluck('total')
                 ->sum()
         );
-        (int) $totalAsInt = round(Money::toInteger($total));
+
+        $totalAsInt = Money::toInteger($total);
 
         $orderCount = Order::count();
         $customerCount = Customer::count();
@@ -38,11 +39,9 @@ class StatsOverview extends BaseWidget
 
             Stat::make(
                 'Average price',
-                function () use ($total, $orderCount) {
-                    (int) $divided = Money::toInteger($total) / $orderCount;
-                    (int) $rounded = (int) round($divided);
-
-                    (int) $formatted = (string) Money::format($rounded);
+                function () use ($totalAsInt, $orderCount) {
+                    $divided = Money::toInteger($totalAsInt) / $orderCount;
+                    $formatted = (string) Money::format($divided);
 
                     return Money::HtmlString($formatted, true);
                 }
