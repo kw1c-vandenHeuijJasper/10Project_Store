@@ -47,8 +47,8 @@ class OrderResource extends Resource
             'Customer' => $record->customer->user->name,
             'Shipping Address' => Address::find($record->shipping_address_id)->street_name,
             'Invoice Address' => Address::find($record->invoice_address_id)->street_name,
-            'Total price' => Money::prefixFormat(OrderProduct::whereOrderId($record->id)->pluck('total')->sum()),
-            //TODO add products count and total price. Find out how to get to the pivot table from $record.
+            'Total Price' => Money::prefixFormat(OrderProduct::whereOrderId($record->id)->pluck('total')->sum()),
+            'Product Count' => OrderProduct::whereOrderId($record->id)->pluck('amount')->sum(),
         ];
     }
 
@@ -56,14 +56,15 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
+
                 \Filament\Forms\Components\TextInput::make('order_number')
                     ->placeholder('Will be automatically generated')
                     ->readOnly(),
 
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->options(fn () => Customer::with('user')->get()->mapWithKeys(
-                        fn (Customer $customer) => [$customer->id => $customer->user->name]
+                    ->options(fn() => Customer::with('user')->get()->mapWithKeys(
+                        fn(Customer $customer) => [$customer->id => $customer->user->name]
                     ))
                     ->searchable()
                     ->required()
@@ -73,7 +74,22 @@ class OrderResource extends Resource
                             $set('shipping_address_id', null);
                             $set('invoice_address_id', null);
                         }
-                    ),
+                    )
+                    ->suffix('Go to customer')
+                    ->suffixActions([
+                        \Filament\Forms\Components\Actions\Action::make('here')
+                            ->label('here')
+                            ->icon('heroicon-o-arrow-right')
+                            ->color('primary')
+                            ->url(fn(Get $get) => CustomerResource::getUrl() . '/' . $get('customer_id') . '/edit'),
+
+                        \Filament\Forms\Components\Actions\Action::make('new tab')
+                            ->label('in new tab')
+                            ->icon('heroicon-o-arrow-right-circle')
+                            ->color('success')
+                            ->url(fn(Get $get) => CustomerResource::getUrl() . '/' . $get('customer_id') . '/edit')
+                            ->openUrlInNewTab(),
+                    ]),
 
                 \Filament\Forms\Components\Select::make('shipping_address_id')
                     ->label('Shipping Address')
@@ -115,19 +131,21 @@ class OrderResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
-                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
-
+                    ->formatStateUsing(
+                        fn($state) => self::getAddressesTable($state, $savedAddresses)
+                    ),
                 Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
-                    ->formatStateUsing(fn ($state) => self::getAddressesTable($state, $savedAddresses)),
-
+                    ->formatStateUsing(
+                        fn($state) => self::getAddressesTable($state, $savedAddresses)
+                    ),
                 Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn ($record) => $orderProduct
+                    ->getStateUsing(fn($record) => $orderProduct
                         ->where('order_id', $record->id)->pluck('amount')->sum())
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                    ->getStateUsing(fn($record) => Money::prefixFormat(
                         $orderProduct->where('order_id', $record->id)->pluck('total')->sum()
                     ))
                     ->toggleable(),
@@ -141,8 +159,16 @@ class OrderResource extends Resource
                     ->default(false)
                     ->label('Has product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->has('products')),
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(fn(Builder $query) => $query->has('products')),
+
+
+                Tables\Filters\Filter::make('no_products')
+                    ->default(false)
+                    ->label('No product(s)')
+                    ->toggle()
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(fn(Builder $query) => $query->doesntHave('products')),
             ], layout: Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),

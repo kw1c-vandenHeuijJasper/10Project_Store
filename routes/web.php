@@ -16,8 +16,6 @@ Route::get('/tinker', function () {
 // 
 // TODO LIST
 
-// when customer has no addresses, disable those fields in order edit/create
-
 // [ ]Order status - Only subtract stock if status is done (make enum and db column)
 
 // [ ]Customer panel
