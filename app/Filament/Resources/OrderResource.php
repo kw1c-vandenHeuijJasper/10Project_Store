@@ -59,11 +59,9 @@ class OrderResource extends Resource
 
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->options(function () {
-                        return Customer::with('user')->get()->mapWithKeys(
-                            fn (Customer $customer) => [$customer->id => $customer->user->name]
-                        );
-                    })
+                    ->options(fn () => Customer::with('user')->get()->mapWithKeys(
+                        fn (Customer $customer) => [$customer->id => $customer->user->name]
+                    ))
                     ->searchable()
                     ->required()
                     ->live()
@@ -126,9 +124,11 @@ class OrderResource extends Resource
                         foreach ($products as $product) {
                             $count[] = $product->pivot->amount;
                         }
+
                         if (! isset($count)) {
                             return 'NOT FOUND';
                         }
+
                         $count = collect($count);
 
                         return new HtmlString($count->sum());

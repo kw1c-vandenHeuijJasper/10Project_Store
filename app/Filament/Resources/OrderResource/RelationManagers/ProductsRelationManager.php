@@ -29,35 +29,24 @@ class ProductsRelationManager extends RelationManager
             ->recordAction(null)
             ->recordTitleAttribute('name')
             ->columns([
-                \Filament\Tables\Columns\TextColumn::make('id')
+                Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('name')
                     ->limit(25),
-                Tables\Columns\TextColumn::make('amount'),
-                // TODO MAYBE, breaks observer things, I dont want it being updated.
-                //I only want the created event to do something and also deleted event
-                // \Filament\Tables\Columns\TextInputColumn::make('amount')
-                //     ->rules(function ($record): array {
-                //         $max = 'max:' . (int) $record->stock;
-                //         return ['numeric', $max];
-                //     })
-                //     ->width('5%'),
+                Tables\Columns\TextColumn::make('amount')
+                    ->alignCenter(),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Agreed price')
-                    ->formatStateUsing(function ($state) {
-                        return Money::prefix(Money::format($state));
-                    }),
-                \Filament\Tables\Columns\TextColumn::make('total')
+                    ->formatStateUsing(fn ($state) => Money::prefix(Money::format($state))),
+                Tables\Columns\TextColumn::make('total')
                     ->label('Total Price')
-                    ->getStateUsing(function ($record) {
-                        return new HtmlString(Money::prefix(
-                            Money::format(($record->pivot->price) * ($record->amount))
-                        ));
-                    }),
+                    ->getStateUsing(fn ($record) => new HtmlString(Money::prefix(
+                        Money::format($record->pivot->price * $record->amount)
+                    ))),
 
-                \Filament\Tables\Columns\TextColumn::make('created_at')
+                Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
-                \Filament\Tables\Columns\TextColumn::make('updated_at')
+                Tables\Columns\TextColumn::make('updated_at')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -80,7 +69,6 @@ class ProductsRelationManager extends RelationManager
                     ->disabled(),
 
                 Tables\Actions\AttachAction::make()
-                    // ->preloadRecordSelect()
                     ->form(fn (\Filament\Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->live()
@@ -111,24 +99,22 @@ class ProductsRelationManager extends RelationManager
                                 return ['numeric'];
                             }),
 
-                        \Filament\Forms\Components\Placeholder::make('Price Guide')
+                        Forms\Components\Placeholder::make('Price Guide')
                             ->label('Price Guide')
                             ->content(new HtmlString('Prices are saved as an integer, so 72 is 0,72')),
 
                         Forms\Components\TextInput::make('price')
                             ->label('Price for one')
-                            ->afterStateHydrated(function (Get $get, Set $set) {
-                                self::updateTotals($get, $set);
-                            })
+                            ->afterStateHydrated(
+                                fn (Get $get, Set $set) => self::updateTotals($get, $set)
+                            )
                             ->live()
                             ->readOnly()
                             ->prefix('€'),
 
                         Forms\Components\Placeholder::make('total')
                             ->label('Total Price')
-                            ->content(function (Get $get) {
-                                return Money::prefix($get('total'));
-                            }),
+                            ->content(fn (Get $get) => Money::prefix($get('total'))),
                     ]),
             ])
             ->actions([

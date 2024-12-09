@@ -54,9 +54,7 @@ class ProductResource extends Resource
                 \Filament\Tables\Columns\TextColumn::make('description')
                     ->limit(25),
                 \Filament\Tables\Columns\TextColumn::make('price')
-                    ->formatStateUsing(
-                        fn ($state) => Money::prefix(Money::format($state))
-                    )
+                    ->formatStateUsing(fn ($state) => Money::prefix(Money::format($state)))
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('stock')
                     ->sortable(),

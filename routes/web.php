@@ -1,6 +1,5 @@
 <?php
 
-use App\Models\OrderProduct;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -12,28 +11,12 @@ Route::get('/', function () {
 });
 
 Route::get('/tinker', function () {
-    // dd("There's nothing here yet 😭");
-
-    $pivot = OrderProduct::where('order_id', 23);
-    // $pivot->get()->toArray();
-
-    //TODO name vars
-    $collection = $pivot->get()->map(function ($data) {
-        return ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount];
-    });
-
-    $collection->map(function ($order) {
-        $product = Product::find($order['product_id']);
-        $product->stock = $product->stock + $order['amount'];
-        $product->save();
-    });
-    // $pivot->delete();
+    dd("There's nothing here yet 😭");
 });
 
 // 
 // TODO LIST
-// FIXME when seeding, stock can get sub 0
-// when a products stock is 0 dont show in select
+// [ ]customer filter - when Has Orders filter is true show has products in order ???
 
 // [ ]Customer panel
 
