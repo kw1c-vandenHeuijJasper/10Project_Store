@@ -12,7 +12,7 @@ class ProductSeeder extends Seeder
      */
     public function run(): void
     {
-        Product::factory(25)
+        Product::factory(500)
             ->create();
 
         // dd('Factory passed');

@@ -3,6 +3,8 @@
 namespace App\Observers;
 
 use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Product;
 
 class OrderObserver
 {
@@ -30,26 +32,20 @@ class OrderObserver
     }
 
     /**
-     * Handle the Order "deleted" event.
+     * Handle the Order "deleting" event.
      */
-    public function deleted(Order $order): void
+    public function deleting(Order $order): void
     {
-        //
-    }
+        $pivot = OrderProduct::where('order_id', $order->id);
 
-    /**
-     * Handle the Order "restored" event.
-     */
-    public function restored(Order $order): void
-    {
-        //
-    }
+        $collection = $pivot->get()->map(function ($data) {
+            return ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount];
+        });
 
-    /**
-     * Handle the Order "force deleted" event.
-     */
-    public function forceDeleted(Order $order): void
-    {
-        //
+        $collection->map(function ($order) {
+            $product = Product::find($order['product_id']);
+            $product->stock = $product->stock + $order['amount'];
+            $product->save();
+        });
     }
 }

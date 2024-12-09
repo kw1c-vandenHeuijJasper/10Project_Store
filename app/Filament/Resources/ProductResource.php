@@ -58,7 +58,8 @@ class ProductResource extends Resource
                         fn ($state) => Money::prefix(Money::format($state))
                     )
                     ->sortable(),
-                \Filament\Tables\Columns\TextColumn::make('stock'),
+                \Filament\Tables\Columns\TextColumn::make('stock')
+                    ->sortable(),
 
                 //TODO enum and selectColumn
                 \Filament\Tables\Columns\TextColumn::make('type'),

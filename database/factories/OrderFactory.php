@@ -22,7 +22,12 @@ class OrderFactory extends Factory
         return $this->afterCreating(function (Order $order) use ($min, $max) {
             $limit = random_int($min, $max);
 
-            $products = Product::inRandomOrder()->limit($limit)->get()->mapWithKeys(function ($item) {
+            $randomProducts = Product::inRandomOrder()
+                ->limit($limit)
+                ->get()
+                ->map(fn ($item) => $item)
+                ->whereNotNull();
+            $products = $randomProducts->mapWithKeys(function ($item) {
                 return [
                     $item->id => [
                         'amount' => random_int(1, 10),
@@ -30,6 +35,13 @@ class OrderFactory extends Factory
                     ],
                 ];
             });
+
+            $products = $products->map(fn ($item) => $item ? $item : null);
+            // if ($item == null) {
+            //     return;
+            // } else {
+            //     return $item;
+            // }
 
             $order->products()->attach($products);
         });
@@ -45,7 +57,6 @@ class OrderFactory extends Factory
         $customer = Customer::inRandomOrder()->first();
 
         return [
-            // 'order_number' => rand(1, 5),
             'order_number' => function () {
                 $i = random_int(1, 999999999);
                 $preOrder = \Illuminate\Support\Str::padLeft($i, 9, 0);

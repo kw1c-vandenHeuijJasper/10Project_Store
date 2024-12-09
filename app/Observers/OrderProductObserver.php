@@ -35,4 +35,17 @@ class OrderProductObserver
         $new = $amount + $stock;
         $product->update(['stock' => $new]);
     }
+
+    public function forceDeleted(OrderProduct $orderProduct): void
+    {
+        $query = OrderProduct::query()
+            ->where('order_id', $orderProduct->order_id)
+            ->where('product_id', $orderProduct->product_id);
+        $OrderProduct = $query->first();
+        $product = Product::whereId($OrderProduct->product_id);
+        $amount = $OrderProduct->amount;
+        $stock = $product->first()->stock;
+        $new = $amount + $stock;
+        $product->update(['stock' => $new]);
+    }
 }

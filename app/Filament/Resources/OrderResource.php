@@ -140,6 +140,11 @@ class OrderResource extends Resource
                         foreach ($products as $product) {
                             $total[] = ($product->pivot->price) * ($product->pivot->amount);
                         }
+
+                        if (! isset($total)) {
+                            $total = 0;
+                        }
+
                         $total ?? 'NOT FOUND';
 
                         $sum = collect($total)->sum();

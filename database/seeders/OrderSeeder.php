@@ -14,8 +14,9 @@ class OrderSeeder extends Seeder
     public function run(): void
     {
 
-        Order::factory(20)->create();
+        Order::factory(100)->create();
 
+        //TODO delete
         // Order::get()->each(function ($order) {
         //     $products = Product::inRandomOrder()->limit(random_int(1, 3))->get()->map(function ($item) {
         //         return [

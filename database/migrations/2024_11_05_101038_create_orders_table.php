@@ -17,8 +17,8 @@ return new class extends Migration
             $table->id();
             $table->string('order_number')->unique()->nullable();
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete(); //verzend
-            $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete(); //factuur
+            $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete();
+            $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete();
             $table->timestamps();
         });
     }
