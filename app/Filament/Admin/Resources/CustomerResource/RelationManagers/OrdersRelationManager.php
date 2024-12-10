@@ -22,9 +22,9 @@ class OrdersRelationManager extends RelationManager
             ->actions(
                 \Filament\Tables\Actions\ActionGroup::make([
                     \Filament\Tables\Actions\Action::make('Order')
-                        ->url(fn(Order $record) => \App\Filament\Admin\Resources\OrderResource::getUrl() . '/' . $record->id . '/edit'),
+                        ->url(fn (Order $record) => \App\Filament\Admin\Resources\OrderResource::getUrl().'/'.$record->id.'/edit'),
                     \Filament\Tables\Actions\Action::make('Order in new tab')
-                        ->url(fn(Order $record) => \App\Filament\Admin\Resources\OrderResource::getUrl() . '/' . $record->id . '/edit')
+                        ->url(fn (Order $record) => \App\Filament\Admin\Resources\OrderResource::getUrl().'/'.$record->id.'/edit')
                         ->openUrlInNewTab(),
                 ])
                     ->label('Go to')

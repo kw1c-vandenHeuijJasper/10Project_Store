@@ -5,8 +5,8 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 
 Route::get('/', function () {
-    return new HtmlString("
-    " . Auth::user() . "
+    return new HtmlString('
+    '.Auth::user()."
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -23,17 +23,19 @@ Route::get('/', function () {
 Route::get('/loginAsAdmin', function () {
     Auth::logout();
     Auth::loginUsingId(1);
+
     return redirect('/panelPicker');
 });
 
 Route::get('/loginAsCustomer', function () {
     Auth::logout();
     Auth::loginUsingId(2);
+
     return redirect('/panelPicker');
 });
 Route::get('/panelPicker', function () {
-    return new HtmlString("
-    " . Auth::user() . "
+    return new HtmlString('
+    '.Auth::user()."
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin

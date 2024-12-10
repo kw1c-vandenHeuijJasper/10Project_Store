@@ -23,7 +23,7 @@ class StatsOverview extends BaseWidget
         return [
             Stat::make('Total price', function () {
                 $total_price = $this->record->orders->map(
-                    fn($order) => $order->products->sum('pivot.total')
+                    fn ($order) => $order->products->sum('pivot.total')
                 )->sum();
 
                 return Money::HtmlString(Money::format($total_price), true);
