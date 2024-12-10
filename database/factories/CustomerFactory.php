@@ -20,7 +20,7 @@ class CustomerFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => User::factory()->create(),
+            'user_id' => User::factory(),
             'phone_number' => fake()->phoneNumber(),
             'date_of_birth' => fake()->date('Y-m-d', '31-12-2010'),
 
