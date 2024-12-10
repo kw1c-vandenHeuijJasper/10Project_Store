@@ -2,6 +2,7 @@
 
 namespace App\Filament\Admin\Resources;
 
+use App\Enums\OrderStatus;
 use App\Filament\Admin\Resources\OrderResource\Pages;
 use App\Filament\Admin\Resources\OrderResource\RelationManagers\ProductsRelationManager;
 use App\Helpers\Money;
@@ -9,6 +10,7 @@ use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
+use Filament\Forms;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
 use Filament\Forms\Get;
@@ -57,11 +59,18 @@ class OrderResource extends Resource
         return $form
             ->schema([
 
-                \Filament\Forms\Components\TextInput::make('order_number')
+                Forms\Components\TextInput::make('order_number')
                     ->placeholder('Will be automatically generated')
-                    ->readOnly(),
+                    ->readOnly()
+                    ->columnSpan(1),
 
-                \Filament\Forms\Components\Select::make('customer_id')
+                Forms\Components\Select::make('status')
+                    ->native(false)
+                    ->required()
+                    ->options(OrderStatus::class)
+                    ->columnSpan(1),
+
+                Forms\Components\Select::make('customer_id')
                     ->label('Customer')
                     ->options(fn () => Customer::with('user')->get()->mapWithKeys(
                         fn (Customer $customer) => [$customer->id => $customer->user->name]
@@ -77,21 +86,22 @@ class OrderResource extends Resource
                     )
                     ->suffix('Go to customer')
                     ->suffixActions([
-                        \Filament\Forms\Components\Actions\Action::make('here')
+                        Forms\Components\Actions\Action::make('here')
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
                             ->url(fn (Get $get) => CustomerResource::getUrl().'/'.$get('customer_id').'/edit'),
 
-                        \Filament\Forms\Components\Actions\Action::make('new tab')
+                        Forms\Components\Actions\Action::make('new tab')
                             ->label('in new tab')
                             ->icon('heroicon-o-arrow-right-circle')
                             ->color('success')
                             ->url(fn (Get $get) => CustomerResource::getUrl().'/'.$get('customer_id').'/edit')
                             ->openUrlInNewTab(),
-                    ]),
+                    ])
+                    ->columnSpan(2),
 
-                \Filament\Forms\Components\Select::make('shipping_address_id')
+                Forms\Components\Select::make('shipping_address_id')
                     ->label('Shipping Address')
                     ->live()
                     ->options(function (Get $get, Set $set) {
@@ -100,9 +110,10 @@ class OrderResource extends Resource
                         return $get('addresses');
                     })
                     ->searchable()
-                    ->required(),
+                    ->required()
+                    ->columnSpan(2),
 
-                \Filament\Forms\Components\Select::make('invoice_address_id')
+                Forms\Components\Select::make('invoice_address_id')
                     ->label('Invoice Address')
                     ->live()
                     ->options(function (Get $get, Set $set) {
@@ -111,8 +122,9 @@ class OrderResource extends Resource
                         return $get('addresses');
                     })
                     ->searchable()
-                    ->required(),
-            ]);
+                    ->required()
+                    ->columnSpan(2),
+            ])->columns(4);
     }
 
     public static function table(Table $table): Table
@@ -129,6 +141,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('customer.user.name')
                     ->label('Customer')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->formatStateUsing(
@@ -168,6 +181,10 @@ class OrderResource extends Resource
                     ->toggle()
                     ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
                     ->query(fn (Builder $query) => $query->doesntHave('products')),
+
+                Tables\Filters\SelectFilter::make('status')
+                    ->options(OrderStatus::class)
+                    ->native(false),
             ], layout: Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),

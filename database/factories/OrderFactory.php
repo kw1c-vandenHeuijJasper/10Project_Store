@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Enums\OrderStatus;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
@@ -58,7 +59,7 @@ class OrderFactory extends Factory
 
                 return 'ORD#'.$preOrder;
             },
-
+            'status' => fake()->randomElement(OrderStatus::cases()),
             'customer_id' => $customer->id,
             'shipping_address_id' => $customer->addresses->random()->id,
             'invoice_address_id' => $customer->addresses->random()->id,

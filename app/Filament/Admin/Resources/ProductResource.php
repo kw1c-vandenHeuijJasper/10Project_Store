@@ -36,7 +36,6 @@ class ProductResource extends Resource
                     ->minValue(0)
                     ->integer()
                     ->required(),
-                //TODO select and enum
                 \Filament\Forms\Components\TextInput::make('type')
                     ->placeholder('Example: Laptop, Keyboard, Shipping Container...')
                     ->required(),
@@ -58,8 +57,6 @@ class ProductResource extends Resource
                     ->sortable(),
                 \Filament\Tables\Columns\TextColumn::make('stock')
                     ->sortable(),
-
-                //TODO enum and selectColumn
                 \Filament\Tables\Columns\TextColumn::make('type'),
                 \Filament\Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),

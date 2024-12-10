@@ -10,6 +10,13 @@ class EditOrder extends EditRecord
 {
     protected static string $resource = OrderResource::class;
 
+    protected function getHeaderWidgets(): array
+    {
+        return [
+            OrderResource\Widgets\OrderStatsOverview::class,
+        ];
+    }
+
     protected function getHeaderActions(): array
     {
         return [

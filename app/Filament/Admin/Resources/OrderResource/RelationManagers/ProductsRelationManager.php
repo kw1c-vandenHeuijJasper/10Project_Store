@@ -51,17 +51,6 @@ class ProductsRelationManager extends RelationManager
                 //
             ])
             ->headerActions([
-                //TODO widget-ify please this hurts my soul
-                Tables\Actions\Action::make('totalPriceLabel')
-                    ->label(function () {
-                        $products = $this->getRelationship()->get();
-                        $totals = $products->map(fn ($product) => $product->pivot->total);
-
-                        return new HtmlString('Total price: '.Money::prefixFormat($totals->sum()));
-                    })
-                    ->color('secondary')
-                    ->disabled(),
-
                 Tables\Actions\AttachAction::make()
                     ->form(fn (Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
@@ -80,7 +69,6 @@ class ProductsRelationManager extends RelationManager
                             })
                             ->minValue(1)
                             ->rules(function (Get $get): array {
-                                //TODO make better
                                 $recordId = $get('recordId');
                                 if ($recordId) {
                                     $record = Product::find($recordId);

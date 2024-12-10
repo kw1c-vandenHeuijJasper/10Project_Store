@@ -56,8 +56,23 @@ Route::get('/tinker', function () {
 // 
 // TODO LIST
 
-// [ ]Order status - Only subtract stock if status is done (make enum and db column)
+// [GROUP]General
+// [ ]only subtract stock when customer clicks order and the orderStatus is set to 'FINISHED' by an admin
+// [ ]add a 'CANCELLED' reason?
 
-// [ ]Customer panel
-// [ ]Enum for type  (product)
-// [ ]Maybe Invoices must be of a suitcase icon
+// [GROUP]Customer panel
+// [ ]make custom blade page where you see all products lined up
+//      and you can add them to the current/latest order.
+//      Filtering and search system for products.
+// [ ]order history (choose table/blade)
+
+// [GROUP]Admin panel
+// [ ]manual review place for all orders that are of status 'processing'
+//      with products and stock side-to-side to confirm
+//      when confirmed, status gets set to 'FINISHED' & stock will get depleted
+
+// [GROUP]Invoices
+// [ ]suitcase icon
+
+// [GROUP]Mailing
+// [ ]get mail when order is set to 'FINISHED' or 'CANCELLED'
