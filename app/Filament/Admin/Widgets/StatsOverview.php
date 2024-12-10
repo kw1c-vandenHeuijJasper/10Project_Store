@@ -40,9 +40,17 @@ class StatsOverview extends BaseWidget
             Stat::make(
                 'Average price',
                 function () use ($totalAsInt, $orderCount) {
-                    $divided = Money::toInteger($totalAsInt) / $orderCount;
+                    if ($totalAsInt == 0 && $orderCount == 0) {
+                        $formatted = Money::format(0);
+                        $divided = 0;
+                    } else {
+                        $divided = Money::toInteger($totalAsInt) / $orderCount;
+                    }
                     $formatted = (string) Money::format($divided);
 
+                    if ($divided == 0) {
+                        $formatted = Money::format(0);
+                    }
                     return Money::HtmlString($formatted, true);
                 }
             )->description('per order'),
