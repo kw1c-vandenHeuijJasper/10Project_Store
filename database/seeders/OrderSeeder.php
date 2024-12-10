@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Order;
-use App\Models\Product;
 use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
@@ -13,20 +12,6 @@ class OrderSeeder extends Seeder
      */
     public function run(): void
     {
-
-        Order::factory(100)->create();
-
-        //TODO delete
-        // Order::get()->each(function ($order) {
-        //     $products = Product::inRandomOrder()->limit(random_int(1, 3))->get()->map(function ($item) {
-        //         return [
-        //             'product_id' => $item->id,
-        //             'amount' => random_int(1, 10),
-        //             'price' => $item->price,
-        //         ];
-        //     });
-
-        //     $order->products()->attach($products);
-        // });
+        Order::factory(250)->create();
     }
 }

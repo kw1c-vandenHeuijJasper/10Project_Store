@@ -63,8 +63,8 @@ class OrderResource extends Resource
 
                 \Filament\Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->options(fn() => Customer::with('user')->get()->mapWithKeys(
-                        fn(Customer $customer) => [$customer->id => $customer->user->name]
+                    ->options(fn () => Customer::with('user')->get()->mapWithKeys(
+                        fn (Customer $customer) => [$customer->id => $customer->user->name]
                     ))
                     ->searchable()
                     ->required()
@@ -81,13 +81,13 @@ class OrderResource extends Resource
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
-                            ->url(fn(Get $get) => CustomerResource::getUrl() . '/' . $get('customer_id') . '/edit'),
+                            ->url(fn (Get $get) => CustomerResource::getUrl().'/'.$get('customer_id').'/edit'),
 
                         \Filament\Forms\Components\Actions\Action::make('new tab')
                             ->label('in new tab')
                             ->icon('heroicon-o-arrow-right-circle')
                             ->color('success')
-                            ->url(fn(Get $get) => CustomerResource::getUrl() . '/' . $get('customer_id') . '/edit')
+                            ->url(fn (Get $get) => CustomerResource::getUrl().'/'.$get('customer_id').'/edit')
                             ->openUrlInNewTab(),
                     ]),
 
@@ -132,20 +132,20 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->formatStateUsing(
-                        fn($state) => self::getAddressesTable($state, $savedAddresses)
+                        fn ($state) => self::getAddressesTable($state, $savedAddresses)
                     ),
                 Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
                     ->formatStateUsing(
-                        fn($state) => self::getAddressesTable($state, $savedAddresses)
+                        fn ($state) => self::getAddressesTable($state, $savedAddresses)
                     ),
                 Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn($record) => $orderProduct
+                    ->getStateUsing(fn ($record) => $orderProduct
                         ->where('order_id', $record->id)->pluck('amount')->sum())
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->getStateUsing(fn($record) => Money::prefixFormat(
+                    ->getStateUsing(fn ($record) => Money::prefixFormat(
                         $orderProduct->where('order_id', $record->id)->pluck('total')->sum()
                     ))
                     ->toggleable(),
@@ -159,16 +159,15 @@ class OrderResource extends Resource
                     ->default(false)
                     ->label('Has product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
-                    ->query(fn(Builder $query) => $query->has('products')),
-
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->query(fn (Builder $query) => $query->has('products')),
 
                 Tables\Filters\Filter::make('no_products')
                     ->default(false)
                     ->label('No product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
-                    ->query(fn(Builder $query) => $query->doesntHave('products')),
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->query(fn (Builder $query) => $query->doesntHave('products')),
             ], layout: Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
