@@ -37,8 +37,8 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class,
-                Widgets\FilamentInfoWidget::class,
+                Widgets\AccountWidget::class, // TODO make this wider or add another widget beside it?
+                // Widgets\FilamentInfoWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

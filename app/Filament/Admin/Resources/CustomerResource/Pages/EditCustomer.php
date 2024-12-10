@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Resources\CustomerResource\Pages;
+namespace App\Filament\Admin\Resources\CustomerResource\Pages;
 
-use App\Filament\Resources\CustomerResource;
-use App\Filament\Resources\CustomerResource\Widgets\StatsOverview;
+use App\Filament\Admin\Resources\CustomerResource;
+use App\Filament\Admin\Resources\CustomerResource\Widgets\StatsOverview;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 

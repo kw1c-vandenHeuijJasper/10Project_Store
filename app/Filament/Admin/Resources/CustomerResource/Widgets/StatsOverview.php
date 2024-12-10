@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Resources\CustomerResource\Widgets;
+namespace App\Filament\Admin\Resources\CustomerResource\Widgets;
 
 use App\Helpers\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
@@ -23,7 +23,7 @@ class StatsOverview extends BaseWidget
         return [
             Stat::make('Total price', function () {
                 $total_price = $this->record->orders->map(
-                    fn ($order) => $order->products->sum('pivot.total')
+                    fn($order) => $order->products->sum('pivot.total')
                 )->sum();
 
                 return Money::HtmlString(Money::format($total_price), true);
