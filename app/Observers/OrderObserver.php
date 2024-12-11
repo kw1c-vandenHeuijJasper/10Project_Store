@@ -15,11 +15,11 @@ class OrderObserver
     public function created(Order $order): void
     {
         $order->update([
-            'order_number' => function () {
+            'order_reference' => function () {
                 $i = random_int(1, 999999999);
                 (string) $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#'.$preOrder;
+                return 'ORD#' . $preOrder;
             },
         ]);
     }
@@ -40,7 +40,7 @@ class OrderObserver
         $pivot = OrderProduct::where('order_id', $order->id);
 
         $collection = $pivot->get()->map(
-            fn ($data) => ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount]
+            fn($data) => ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount]
         );
 
         $collection->map(function ($order) {

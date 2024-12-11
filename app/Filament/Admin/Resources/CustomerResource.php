@@ -24,7 +24,7 @@ class CustomerResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static ?string $recordTitleAttribute = 'order_number';
+    protected static ?string $recordTitleAttribute = 'reference';
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
@@ -76,7 +76,7 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                                ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
                                 ->required(),
                         ];
                     })
@@ -172,15 +172,15 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Is admin')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->whereRelation('user', 'is_admin', true)),
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(fn(Builder $query) => $query->whereRelation('user', 'is_admin', true)),
 
                 \Filament\Tables\Filters\Filter::make('has_orders')
                     ->default(false)
                     ->label('Has Orders')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->has('orders')),
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(fn(Builder $query) => $query->has('orders')),
 
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([

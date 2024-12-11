@@ -43,7 +43,7 @@ class OrderResource extends Resource
     {
         return $table
             ->columns([
-                TextColumn::make('order_number')
+                TextColumn::make('order_reference')
             ])
             ->filters([
                 //

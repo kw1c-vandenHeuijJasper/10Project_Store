@@ -16,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('order_number')->unique()->nullable();
+            $table->string('order_reference')->unique()->nullable();
             $table->string('status')->default(OrderStatus::FINISHED);
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete();

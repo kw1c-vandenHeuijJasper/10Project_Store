@@ -28,17 +28,17 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
-    protected static ?string $recordTitleAttribute = 'order_number';
+    protected static ?string $recordTitleAttribute = 'order_reference';
 
     public static function getGlobalSearchResultTitle(Model $record): string|Htmlable
     {
-        return $record->order_number;
+        return $record->order_reference;
     }
 
     public static function getGloballySearchableAttributes(): array
     {
         return [
-            'order_number',
+            'order_reference',
             'customer.user.name',
         ];
     }
@@ -59,7 +59,7 @@ class OrderResource extends Resource
         return $form
             ->schema([
 
-                Forms\Components\TextInput::make('order_number')
+                Forms\Components\TextInput::make('order_reference')
                     ->placeholder('Will be automatically generated')
                     ->readOnly()
                     ->columnSpan(1),
@@ -72,8 +72,8 @@ class OrderResource extends Resource
 
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->options(fn () => Customer::with('user')->get()->mapWithKeys(
-                        fn (Customer $customer) => [$customer->id => $customer->user->name]
+                    ->options(fn() => Customer::with('user')->get()->mapWithKeys(
+                        fn(Customer $customer) => [$customer->id => $customer->user->name]
                     ))
                     ->searchable()
                     ->required()
@@ -90,13 +90,13 @@ class OrderResource extends Resource
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
-                            ->url(fn (Get $get) => CustomerResource::getUrl().'/'.$get('customer_id').'/edit'),
+                            ->url(fn(Get $get) => CustomerResource::getUrl() . '/' . $get('customer_id') . '/edit'),
 
                         Forms\Components\Actions\Action::make('new tab')
                             ->label('in new tab')
                             ->icon('heroicon-o-arrow-right-circle')
                             ->color('success')
-                            ->url(fn (Get $get) => CustomerResource::getUrl().'/'.$get('customer_id').'/edit')
+                            ->url(fn(Get $get) => CustomerResource::getUrl() . '/' . $get('customer_id') . '/edit')
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(2),
@@ -136,7 +136,7 @@ class OrderResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('order_number')
+                Tables\Columns\TextColumn::make('order_reference')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('customer.user.name')
                     ->label('Customer')
@@ -145,20 +145,20 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->formatStateUsing(
-                        fn ($state) => self::getAddressesTable($state, $savedAddresses)
+                        fn($state) => self::getAddressesTable($state, $savedAddresses)
                     ),
                 Tables\Columns\TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
                     ->formatStateUsing(
-                        fn ($state) => self::getAddressesTable($state, $savedAddresses)
+                        fn($state) => self::getAddressesTable($state, $savedAddresses)
                     ),
                 Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn ($record) => $orderProduct
+                    ->getStateUsing(fn($record) => $orderProduct
                         ->where('order_id', $record->id)->pluck('amount')->sum())
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('total')
-                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                    ->getStateUsing(fn($record) => Money::prefixFormat(
                         $orderProduct->where('order_id', $record->id)->pluck('total')->sum()
                     ))
                     ->toggleable(),
@@ -172,15 +172,15 @@ class OrderResource extends Resource
                     ->default(false)
                     ->label('Has product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->has('products')),
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(fn(Builder $query) => $query->has('products')),
 
                 Tables\Filters\Filter::make('no_products')
                     ->default(false)
                     ->label('No product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->doesntHave('products')),
+                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
+                    ->query(fn(Builder $query) => $query->doesntHave('products')),
 
                 Tables\Filters\SelectFilter::make('status')
                     ->options(OrderStatus::class)
