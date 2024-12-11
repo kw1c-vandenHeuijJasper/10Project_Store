@@ -51,6 +51,7 @@ class StatsOverview extends BaseWidget
                     if ($divided == 0) {
                         $formatted = Money::format(0);
                     }
+
                     return Money::HtmlString($formatted, true);
                 }
             )->description('per order'),

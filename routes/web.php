@@ -1,12 +1,14 @@
 <?php
 
+use App\Enums\OrderStatus;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 
 Route::get('/', function () {
     return new HtmlString('
-    '.Auth::user()."
+    ' . Auth::user() . "
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -35,7 +37,7 @@ Route::get('/loginAsCustomer', function () {
 });
 Route::get('/panelPicker', function () {
     return new HtmlString('
-    '.Auth::user()."
+    ' . Auth::user() . "
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -51,6 +53,10 @@ Route::get('/panelPicker', function () {
 
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
+
+    // dd(
+    //     Customer::whereUserId(Auth::id())->first()->orders
+    // );
 });
 
 // 
