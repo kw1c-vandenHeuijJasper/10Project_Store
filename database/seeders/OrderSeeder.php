@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Order;
+use App\Enums\OrderStatus;
 use Illuminate\Database\Seeder;
 
 class OrderSeeder extends Seeder
@@ -13,5 +14,21 @@ class OrderSeeder extends Seeder
     public function run(): void
     {
         Order::factory(250)->create();
+
+        $this->changeStatusToActive();
+    }
+
+    /**
+     * Changes 20% of all orders created to OrderStatus::ACTIVE
+     */
+    public function changeStatusToActive()
+    {
+        Order::whereStatus(OrderStatus::FINISHED)
+            ->get()
+            ->map(function ($order) {
+                if (random_int(0, 4) == 4) {
+                    $order->update(['status' => OrderStatus::ACTIVE]);
+                }
+            });
     }
 }

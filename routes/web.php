@@ -11,7 +11,7 @@ Route::get('/', function () {
     Auth::logout();
 
     return new HtmlString('
-    '.Auth::user()."
+    ' . Auth::user() . "
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -40,7 +40,7 @@ Route::get('/loginAsCustomer', function () {
 });
 Route::get('/panelPicker', function () {
     return new HtmlString('
-    '.Auth::user()."
+    ' . Auth::user() . "
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -56,10 +56,6 @@ Route::get('/panelPicker', function () {
 
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
-    // $order = Order::whereCustomerId(1)->first();
-    // dd(
-    //     Order::shoppingCart()
-    // );
 });
 
 // 
