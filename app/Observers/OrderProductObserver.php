@@ -20,6 +20,7 @@ class OrderProductObserver
         $product->update(['stock' => $left]);
     }
 
+    //TODO 'duplicate' code with other observer
     /**
      * Handle the OrderProduct "deleting" event.
      */
@@ -27,11 +28,11 @@ class OrderProductObserver
     {
         $query = OrderProduct::query()
             ->where('order_id', $orderProduct->order_id)
-            ->where('product_id', $orderProduct->product_id);
-        $OrderProduct = $query->first();
-        $product = Product::whereId($OrderProduct->product_id);
-        $amount = $OrderProduct->amount;
-        $stock = $product->first()->stock;
+            ->where('product_id', $orderProduct->product_id)
+            ->first();
+        $product = Product::find($query->product_id);
+        $amount = $query->amount;
+        $stock = $product->stock;
         $new = $amount + $stock;
         $product->update(['stock' => $new]);
     }

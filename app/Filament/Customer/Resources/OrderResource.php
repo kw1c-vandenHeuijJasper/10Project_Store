@@ -2,19 +2,19 @@
 
 namespace App\Filament\Customer\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Order;
-use App\Models\Customer;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Customer\Resources\OrderResource\Pages;
-use App\Filament\Customer\Resources\OrderResource\RelationManagers;
+use App\Helpers\Money;
+use App\Models\Address;
+use App\Models\Customer;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class OrderResource extends Resource
 {
@@ -41,9 +41,41 @@ class OrderResource extends Resource
 
     public static function table(Table $table): Table
     {
+        $orderProducts = OrderProduct::get();
+        $addresses = Address::get();
+
         return $table
             ->columns([
-                TextColumn::make('order_reference')
+                TextColumn::make('order_reference'),
+                TextColumn::make('status'),
+                TextColumn::make('shipping_address_id')
+                    ->label('Shipping address')
+                    ->formatStateUsing(function ($record) use ($addresses) {
+                        $id = $record->shipping_address_id;
+                        $address = $addresses->where('id', $id)->first();
+
+                        return $address->street_name.' '
+                            .$address->house_number.', '
+                            .$address->city;
+                    }),
+                TextColumn::make('invoice_address_id')
+                    ->label('Invoice address')
+                    ->formatStateUsing(function ($record) use ($addresses) {
+                        $id = $record->invoice_address_id;
+                        $address = $addresses->where('id', $id)->first();
+
+                        return $address->street_name.' '
+                            .$address->house_number.', '
+                            .$address->city;
+                    }),
+                TextColumn::make('amount of products')
+                    ->alignCenter()
+                    ->getStateUsing(fn ($record) => $orderProducts->where('order_id', $record->id)
+                        ->pluck('amount')->sum()),
+                TextColumn::make('total')
+                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                        $orderProducts->where('order_id', $record->id)->pluck('total')->sum()
+                    )),
             ])
             ->filters([
                 //
@@ -51,11 +83,7 @@ class OrderResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
-            ])
+            ->bulkActions([])
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Create a new order!'),

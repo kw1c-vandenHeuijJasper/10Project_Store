@@ -2,13 +2,48 @@
 
 namespace App\Observers;
 
+use App\Enums\OrderStatus;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use Exception;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class OrderObserver
 {
+    public function creating(Order $order): void
+    {
+        if (Str::contains(URL::previous(), 'admin')) {
+            if (Order::hasNoActiveOrder($order) && $order->status === OrderStatus::ACTIVE) {
+            } else {
+                if ($order->status != OrderStatus::ACTIVE) {
+                    throw new Exception('Incorrect status; Not ACTIVE');
+                }
+
+                if (Order::hasFaultyOrderAmount($order) && $order->status === OrderStatus::ACTIVE) {
+                    throw new Exception('Faulty active order count!');
+                }
+
+                if (Order::hasActiveOrder($order) && $order->status === OrderStatus::ACTIVE) {
+                    throw new Exception('You already have an active order! Try again.');
+                } else {
+                    throw new Exception(
+                        'You have an active order, 
+                        but you are trying to create an order with another status'
+                    );
+                }
+                throw new Exception('Unknown error');
+            }
+        } else {
+            dd(
+                'The request did not come from the admin side, uncomment this to activate again.',
+                'Context: "OrderObserver.php" at line 42-45'
+            );
+            Order::hasNoActiveOrder() ?? throw new Exception('You already have an active order! Try again.');
+        }
+    }
+
     /**
      * Handle the Order "created" event.
      */
@@ -32,6 +67,7 @@ class OrderObserver
         //
     }
 
+    //TODO 'duplicate' code with other observer
     /**
      * Handle the Order "deleting" event.
      */
@@ -39,9 +75,7 @@ class OrderObserver
     {
         $pivot = OrderProduct::where('order_id', $order->id);
 
-        $collection = $pivot->get()->map(
-            fn($data) => ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount]
-        );
+        $collection = $pivot->get()->map(fn($data) => ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount]);
 
         $collection->map(function ($order) {
             $product = Product::find($order['product_id']);

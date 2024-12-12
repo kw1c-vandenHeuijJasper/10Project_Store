@@ -2,13 +2,16 @@
 
 use App\Enums\OrderStatus;
 use App\Models\Customer;
+use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 
 Route::get('/', function () {
+    Auth::logout();
+
     return new HtmlString('
-    ' . Auth::user() . "
+    '.Auth::user()."
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -37,7 +40,7 @@ Route::get('/loginAsCustomer', function () {
 });
 Route::get('/panelPicker', function () {
     return new HtmlString('
-    ' . Auth::user() . "
+    '.Auth::user()."
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -52,11 +55,13 @@ Route::get('/panelPicker', function () {
 });
 
 Route::get('/tinker', function () {
-    dd("There's nothing here yet 😭");
-
-    // dd(
-    //     Customer::whereUserId(Auth::id())->first()->orders
-    // );
+    // dd("There's nothing here yet 😭");
+    $order = Order::whereCustomerId(1)->first();
+    dd(
+        Order::customersActiveOrders($order)->count(),
+        Order::hasNoActiveOrder($order),
+        Order::hasActiveOrder($order)
+    );
 });
 
 // 
@@ -64,12 +69,14 @@ Route::get('/tinker', function () {
 
 // [GROUP]General
 // [ ]only subtract stock when customer clicks order and the orderStatus is set to 'FINISHED' by an admin
+// [ ]figure out what to do if person A has a product in their cart,
+//      but person B bought the rest of the stock,
+//      so stock is at less then what person A wanted to order
+//      fix is in Admin panel's TODO!
 // [ ]add a 'CANCELLED' reason?
 
 // [GROUP]Customer panel
-// [ ]make custom blade page where you see all products lined up
-//      and you can add them to the current/latest order.
-//      Filtering and search system for products.
+// [ ]products table with "add to cart" buttons
 // [ ]order history (choose table/blade)
 
 // [GROUP]Admin panel
