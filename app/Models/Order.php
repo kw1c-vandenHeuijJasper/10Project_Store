@@ -82,4 +82,9 @@ class Order extends Model
             return false;
         }
     }
+
+    public static function shoppingCart()
+    {
+        return self::customersActiveOrders()->first();
+    }
 }

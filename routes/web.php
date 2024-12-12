@@ -55,13 +55,11 @@ Route::get('/panelPicker', function () {
 });
 
 Route::get('/tinker', function () {
-    // dd("There's nothing here yet 😭");
-    $order = Order::whereCustomerId(1)->first();
-    dd(
-        Order::customersActiveOrders($order)->count(),
-        Order::hasNoActiveOrder($order),
-        Order::hasActiveOrder($order)
-    );
+    dd("There's nothing here yet 😭");
+    // $order = Order::whereCustomerId(1)->first();
+    // dd(
+    //     Order::shoppingCart()
+    // );
 });
 
 // 
@@ -76,8 +74,12 @@ Route::get('/tinker', function () {
 // [ ]add a 'CANCELLED' reason?
 
 // [GROUP]Customer panel
+// [ ]products relation manager
+// detaching products,
+// change amount to order,
+// products "show" link like in ordersrelationmanager,
+
 // [ ]products table with "add to cart" buttons
-// [ ]order history (choose table/blade)
 
 // [GROUP]Admin panel
 // [ ]manual review place for all orders that are of status 'processing'

@@ -36,11 +36,17 @@ class OrderObserver
                 throw new Exception('Unknown error');
             }
         } else {
-            dd(
-                'The request did not come from the admin side, uncomment this to activate again.',
-                'Context: "OrderObserver.php" at line 42-45'
-            );
-            Order::hasNoActiveOrder() ?? throw new Exception('You already have an active order! Try again.');
+            // dd(
+            //     $order
+            //     // 'The request did not come from the admin side, uncomment this to activate again.',
+            //     // 'Context: "OrderObserver.php" at line 42-45'
+            // );
+            // if (! isset($order->status)) {
+            // dd($order->status, $order);
+            // }
+            if (Order::hasActiveOrder($order)) {
+                throw new Exception('You already have an active order! Complete that one first!');
+            }
         }
     }
 
@@ -54,7 +60,7 @@ class OrderObserver
                 $i = random_int(1, 999999999);
                 (string) $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#' . $preOrder;
+                return 'ORD#'.$preOrder;
             },
         ]);
     }
@@ -75,7 +81,7 @@ class OrderObserver
     {
         $pivot = OrderProduct::where('order_id', $order->id);
 
-        $collection = $pivot->get()->map(fn($data) => ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount]);
+        $collection = $pivot->get()->map(fn ($data) => ['id' => $data->id, 'product_id' => $data->product_id, 'amount' => $data->amount]);
 
         $collection->map(function ($order) {
             $product = Product::find($order['product_id']);
