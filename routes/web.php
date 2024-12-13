@@ -101,6 +101,7 @@ Route::get('/tinker', function () {
 // TODO LIST
 
 // [GROUP]General
+// [ ]when bulk deleting customers, orders are cascade on delete, but the products are not "refunded (not for sure)"
 // [ ]only subtract stock when customer clicks order and the orderStatus is set to 'FINISHED' by an admin
 // [ ]figure out what to do if person A has a product in their cart,
 //      but person B bought the rest of the stock,

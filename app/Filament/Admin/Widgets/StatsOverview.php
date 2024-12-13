@@ -19,6 +19,11 @@ class StatsOverview extends BaseWidget
         return 3;
     }
 
+    private function statMoney($label, $input): Stat
+    {
+        return Stat::make('Total price', Money::HtmlString($input, true));
+    }
+
     protected function getStats(): array
     {
         $total = Money::format(
@@ -33,8 +38,18 @@ class StatsOverview extends BaseWidget
         $customerCount = Customer::count();
         $productCount = Product::count();
 
+        if ($totalAsInt == 0 ?? $customerCount == 0) {
+            $averageSpend = 0;
+        } elseif ($totalAsInt == 0) {
+            $totalAsInt = 0;
+        } elseif ($customerCount == 0) {
+            $customerCount = 0;
+        } else {
+            $averageSpend = $totalAsInt / $customerCount;
+        }
+
         return [
-            Stat::make('Total price', Money::HtmlString($total, true))
+            $this->statMoney('total price', $total)
                 ->description('of all orders combined'),
 
             Stat::make(
@@ -56,10 +71,8 @@ class StatsOverview extends BaseWidget
                 }
             )->description('per order'),
 
-            Stat::make(
-                'Average spend',
-                Money::HtmlString(Money::format($totalAsInt / $customerCount), true)
-            )->description('per customer'),
+            $this->statMoney('Average spend', Money::format($averageSpend))
+                ->description('per customer'),
 
             Stat::make('Amount of products', $productCount),
             Stat::make('Amount of orders', $orderCount),
