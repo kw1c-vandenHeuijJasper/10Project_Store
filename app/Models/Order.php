@@ -45,12 +45,16 @@ class Order extends Model
         return $this->belongsTo(Address::class);
     }
 
-    public static function customersActiveOrders(?Order $order = null): Builder
+    public static function customersActiveOrders(?Order $order = null, ?Customer $customer = null): Builder
     {
+
         if ($order == null) {
             $customer_id = Customer::whereUserId(Auth::id())->first()?->id;
         } else {
             $customer_id = $order->customer_id;
+        }
+        if ($customer) {
+            $customer_id = $customer->id;
         }
 
         return Order::whereCustomerId($customer_id)->where('status', OrderStatus::ACTIVE);

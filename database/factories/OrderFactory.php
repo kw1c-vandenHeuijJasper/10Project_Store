@@ -26,7 +26,7 @@ class OrderFactory extends Factory
             $randomProducts = Product::inRandomOrder()
                 ->limit($limit)
                 ->get()
-                ->map(fn($item) => $item)
+                ->map(fn ($item) => $item)
                 ->whereNotNull();
             $products = $randomProducts->mapWithKeys(function ($item) {
                 return [
@@ -37,7 +37,7 @@ class OrderFactory extends Factory
                 ];
             });
 
-            $products = $products->map(fn($item) => $item ? $item : null);
+            $products = $products->map(fn ($item) => $item ? $item : null);
 
             $order->products()->attach($products);
         });
@@ -57,7 +57,7 @@ class OrderFactory extends Factory
                 $i = random_int(1, 999999999);
                 $preOrder = \Illuminate\Support\Str::padLeft($i, 9, 0);
 
-                return 'ORD#' . $preOrder;
+                return 'ORD#'.$preOrder;
             },
             'status' => OrderStatus::FINISHED,
             'customer_id' => $customer->id,

@@ -11,7 +11,7 @@ Route::get('/', function () {
     Auth::logout();
 
     return new HtmlString('
-    ' . Auth::user() . "
+    '.Auth::user()."
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -40,7 +40,7 @@ Route::get('/loginAsCustomer', function () {
 });
 Route::get('/panelPicker', function () {
     return new HtmlString('
-    ' . Auth::user() . "
+    '.Auth::user()."
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -54,11 +54,50 @@ Route::get('/panelPicker', function () {
     ");
 });
 
+Route::get('/activeOrders', function () {
+    $customersWithActiveOrders = Customer::get()->mapWithKeys(function ($customer) {
+        return [$customer->id => Customer::withActiveOrdersCount($customer)];
+    });
+    $filtered = $customersWithActiveOrders->map(function ($filter) {
+        if ($filter < 2) {
+            return null;
+        } else {
+            return $filter;
+        }
+    })->whereNotNull();
+
+    $customersWithActiveOrders = Customer::get()->mapWithKeys(function ($customer) {
+        return [$customer->id => Customer::withActiveOrders($customer)];
+    })->whereNotNull();
+
+    $filter_out = $customersWithActiveOrders->map(function ($activeOrder) {
+        if ($activeOrder->count() < 2) {
+            return null;
+        } else {
+            return $activeOrder;
+        }
+    })->whereNotNull();
+
+    $cancelAllExceptLast = $filter_out->map(function ($item) {
+        $toKeep = $item->last();
+        $item->map(function ($order) {
+            $order->update(['status' => OrderStatus::CANCELLED]);
+        });
+        $toKeep->update(['status' => OrderStatus::ACTIVE]);
+    });
+
+    // now set all active order that are not the most recent to cancelled
+    $customerWithFaultyOrderAmount = $filtered->keys()->map(function ($i) {
+        return Customer::find($i)->user->name;
+    });
+});
+
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
 });
 
 // 
+//https://marketplace.visualstudio.com/items?itemName=figma.figma-vscode-extension
 // TODO LIST
 
 // [GROUP]General
