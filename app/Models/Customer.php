@@ -31,33 +31,8 @@ class Customer extends Model
         return $this->hasMany(Order::class);
     }
 
-    /**
-     * Functions
-     */
-    public static function withActiveOrders(Customer $customer)
+    public function activeOrders(): HasMany
     {
-        $orders = $customer->orders;
-        if ($orders->isEmpty()) {
-            return;
-        } else {
-            $activeOrders = $orders->where('status', OrderStatus::ACTIVE);
-            if ($activeOrders->isEmpty()) {
-                return;
-            } else {
-                return $activeOrders;
-            }
-        }
-        dd('you arent supposed to come here');
-    }
-
-    public static function withActiveOrdersCount(Customer $customer)
-    {
-        $activeOrders = self::withActiveOrders($customer);
-        if (! isset($activeOrders)) {
-            return 0;
-        } else {
-            return $activeOrders->count();
-        }
-        dd('you arent supposed to come here');
+        return $this->orders()->whereStatus(OrderStatus::ACTIVE);
     }
 }

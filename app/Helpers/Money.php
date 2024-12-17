@@ -7,11 +7,6 @@ use Illuminate\Support\Str;
 
 class Money
 {
-    public function __construct()
-    {
-        //
-    }
-
     /**
      * Formats int or string to a standard money format
      */

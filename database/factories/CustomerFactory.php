@@ -23,10 +23,6 @@ class CustomerFactory extends Factory
             'user_id' => User::factory(),
             'phone_number' => fake()->phoneNumber(),
             'date_of_birth' => fake()->date('Y-m-d', '31-12-2010'),
-
-            // 'name' => fake()->name(),
-            // 'email' => fake()->email(),
-            // 'password' => static::$password ??= \Illuminate\Support\Facades\Hash::make(fake()->password()),
         ];
     }
 }

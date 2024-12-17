@@ -55,41 +55,16 @@ Route::get('/panelPicker', function () {
 });
 
 Route::get('/activeOrders', function () {
-    $customersWithActiveOrders = Customer::get()->mapWithKeys(function ($customer) {
-        return [$customer->id => Customer::withActiveOrdersCount($customer)];
-    });
-    $filtered = $customersWithActiveOrders->map(function ($filter) {
-        if ($filter < 2) {
-            return null;
-        } else {
-            return $filter;
-        }
-    })->whereNotNull();
+    Customer::with('activeOrders')
+        ->get()
+        ->filter(fn (Customer $customer) => $customer->activeOrders->count() > 1)
+        ->each(function (Customer $customer) {
+            $orderIds = $customer->activeOrders
+                ->reject(fn (Order $order) => $order == $customer->activeOrders->last())
+                ->pluck('id');
 
-    $customersWithActiveOrders = Customer::get()->mapWithKeys(function ($customer) {
-        return [$customer->id => Customer::withActiveOrders($customer)];
-    })->whereNotNull();
-
-    $filter_out = $customersWithActiveOrders->map(function ($activeOrder) {
-        if ($activeOrder->count() < 2) {
-            return null;
-        } else {
-            return $activeOrder;
-        }
-    })->whereNotNull();
-
-    $cancelAllExceptLast = $filter_out->map(function ($item) {
-        $toKeep = $item->last();
-        $item->map(function ($order) {
-            $order->update(['status' => OrderStatus::CANCELLED]);
+            Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);
         });
-        $toKeep->update(['status' => OrderStatus::ACTIVE]);
-    });
-
-    // now set all active order that are not the most recent to cancelled
-    $customerWithFaultyOrderAmount = $filtered->keys()->map(function ($i) {
-        return Customer::find($i)->user->name;
-    });
 });
 
 Route::get('/tinker', function () {
@@ -97,7 +72,6 @@ Route::get('/tinker', function () {
 });
 
 // 
-//https://marketplace.visualstudio.com/items?itemName=figma.figma-vscode-extension
 // TODO LIST
 
 // [GROUP]General

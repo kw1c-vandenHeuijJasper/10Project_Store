@@ -3,10 +3,12 @@
 namespace Database\Factories;
 
 use App\Enums\OrderStatus;
+use App\Models\Address;
 use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
+use Illuminate\Support\Str;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Order>
@@ -50,19 +52,20 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        $customer = Customer::inRandomOrder()->where('id', '!=', 1)->first();
+        // $customer = Customer::inRandomOrder()->where('id', '!=', 1)->first();
 
         return [
             'reference' => function () {
                 $i = random_int(1, 999999999);
-                $preOrder = \Illuminate\Support\Str::padLeft($i, 9, 0);
+                $preOrder = Str::padLeft($i, 9, 0);
 
                 return 'ORD#'.$preOrder;
             },
             'status' => OrderStatus::FINISHED,
-            'customer_id' => $customer->id,
-            'shipping_address_id' => $customer->addresses->random()->id,
-            'invoice_address_id' => $customer->addresses->random()->id,
+            'customer_id' => Customer::factory()->has(Address::factory(3)),
+            'shipping_address_id' => fn ($attributes) => Address::whereCustomerId($attributes['customer_id'])->inRandomOrder()->first()->id,
+            'invoice_address_id' => fn ($attributes) => Address::whereCustomerId($attributes['customer_id'])->inRandomOrder()->first()->id,
+            // 'invoice_address_id' => $customer->addresses->random()->id,
         ];
     }
 }

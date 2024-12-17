@@ -33,8 +33,6 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        //TODO group by status, date updated
-
         return parent::getEloquentQuery()
             ->whereCustomerId(Customer::whereUserId(Auth::id())->first()?->id);
     }
@@ -55,6 +53,7 @@ class OrderResource extends Resource
                 Select::make('status')
                     ->native(false)
                     ->required()
+                    // ->hiddenOn('create')
                     ->label(function () use ($urlContainsCreate) {
                         if ($urlContainsCreate) {
                             return '';
