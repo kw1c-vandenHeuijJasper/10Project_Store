@@ -79,15 +79,15 @@ class OrderObserver
      */
     public function deleting(Order $order): void
     {
-        $pivot = OrderProduct::where('order_id', $order->id);
+        $collection = OrderProduct::whereOrderId($order->id)->get()->map(
+            fn ($data) => [
+                'id' => $data->id,
+                'product_id' => $data->product_id,
+                'amount' => $data->amount,
+            ]
+        );
 
-        $collection = $pivot->get()->map(fn ($data) => [
-            'id' => $data->id,
-            'product_id' => $data->product_id,
-            'amount' => $data->amount,
-        ]);
-
-        $collection->map(function ($order) {
+        $collection->each(function ($order) {
             $product = Product::find($order['product_id']);
             $product->stock = $product->stock + $order['amount'];
             $product->save();
