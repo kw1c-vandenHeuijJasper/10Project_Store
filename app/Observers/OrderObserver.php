@@ -4,14 +4,14 @@ namespace App\Observers;
 
 use App\Enums\OrderStatus;
 use App\Models\Order;
-use App\Models\OrderProduct;
-use App\Models\Product;
 use Exception;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class OrderObserver
 {
+
+    //TODO handle creating on admin side, so none of this is needed anymore!
     public function creating(Order $order)
     {
         if (Str::contains(URL::previous(), 'admin')) {
@@ -35,25 +35,7 @@ class OrderObserver
                 }
                 throw new Exception('Unknown error');
             }
-        } elseif (Order::hasActiveOrder($order)) {
-            \Filament\Notifications\Notification::make()
-                ->title('There is a problem with your order')
-                ->body('You already have an active order! Please complete that one first.')
-                ->danger()
-                ->send();
-
-            // return redirect(URL::previous());
-            // return false;
-            // let the order not complete and redirect to /customer/orders
         }
-        // } elseif (Order::hasActiveOrder($order)) {
-        //     throw new Exception('You already have an active order! Complete that one first!');
-        // }
-        // else {
-        //     if (Order::hasActiveOrder($order)) {
-        //         throw new Exception('You already have an active order! Complete that one first!');
-        //     }
-        // }
     }
 
     /**
@@ -66,36 +48,8 @@ class OrderObserver
                 $i = random_int(1, 999999999);
                 (string) $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#'.$preOrder;
+                return 'ORD#' . $preOrder;
             },
         ]);
-    }
-
-    /**
-     * Handle the Order "updated" event.
-     */
-    public function updated(Order $order): void
-    {
-        //
-    }
-
-    /**
-     * Handle the Order "deleting" event.
-     */
-    public function deleting(Order $order): void
-    {
-        $collection = OrderProduct::whereOrderId($order->id)->get()->map(
-            fn ($data) => [
-                'id' => $data->id,
-                'product_id' => $data->product_id,
-                'amount' => $data->amount,
-            ]
-        );
-
-        $collection->each(function ($order) {
-            $product = Product::find($order['product_id']);
-            $product->stock = $product->stock + $order['amount'];
-            $product->save();
-        });
     }
 }

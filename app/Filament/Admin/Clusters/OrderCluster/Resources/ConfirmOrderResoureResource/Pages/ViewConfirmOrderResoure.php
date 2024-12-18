@@ -5,6 +5,7 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoure
 use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource;
 use App\Helpers\Money;
+use App\Models\Product;
 use Filament\Actions;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
@@ -46,7 +47,7 @@ class ViewConfirmOrderResoure extends ViewRecord
                                 TextEntry::make('customer.user.name'),
                                 TextEntry::make('quick_confirm')
                                     ->label(
-                                        fn () => $this->quickConfirm() == true ? new HtmlString(
+                                        fn() => $this->quickConfirm() == true ? new HtmlString(
                                             '<span style="color:red">
                                             Order is probably bad!
                                         </span>'
@@ -128,21 +129,28 @@ class ViewConfirmOrderResoure extends ViewRecord
         }
     }
 
-    //TODO only subtract stock when approved, so at the press of this button, so no observer stuff :)
     protected function getHeaderActions(): array
     {
         return [
             Actions\Action::make('Back to processing')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::PROCESSING])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::PROCESSING])),
             Actions\Action::make('Approve')
                 ->color('success')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::FINISHED])),
+                ->action(function ($record) {
+                    $orderProducts = $this->getOrderProduct();
+                    $orderProducts->map(function ($orderProduct) {
+                        $product = Product::find($orderProduct['id']);
+                        $left = $product->stock - $orderProduct['amount'];
+                        $product->update(['stock' => $left]);
+                    });
+                    $record->update(['status' => OrderStatus::FINISHED]);
+                }),
             Actions\Action::make('Deny')
                 ->color('info')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE])),
             Actions\Action::make('Cancel')
                 ->color('danger')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];
     }
 }

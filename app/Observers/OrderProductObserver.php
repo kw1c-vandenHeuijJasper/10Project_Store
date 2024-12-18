@@ -2,44 +2,14 @@
 
 namespace App\Observers;
 
-use App\Enums\OrderStatus;
-use App\Models\Address;
-use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
-use Illuminate\Support\Facades\Auth;
 
 class OrderProductObserver
 {
-    //TODO
-    public function creating(OrderProduct $orderProduct): void
-    {
-        // dd(Auth::user());
-        // $order = Order::firstOrCreate(
-        //     [
-        //         'customer_id' => Auth::user()->customer->id,
-        //         'status' => OrderStatus::ACTIVE,
-        //     ],
-        //     [
-        //         'shipping_address_id' => Address::inRandomOrder()->first(), //TODO
-        //         'invoice_address_id' => Address::inRandomOrder()->first(),
-        //     ]
-        // );
-
-        // $orderProduct->order_id = $order->id;
-        // dd($order, $orderProduct);
-    }
-
-    /**
-     * Handle the OrderProduct "created" event.
-     */
-    public function created(OrderProduct $orderProduct): void
-    {
-        $product = Product::find($orderProduct->product_id);
-        $left = $product->stock - $orderProduct->amount;
-        $product->update(['stock' => $left]);
-    }
-
+    //TODO DELETE WHOLE OBSERVER
+    // I can already delete this safely, because this is not longer needed,
+    // but its nice to have when testing constantly
     /**
      * Handle the OrderProduct "deleting" event.
      */
