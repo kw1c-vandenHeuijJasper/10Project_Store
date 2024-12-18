@@ -36,7 +36,7 @@ class DatabaseSeeder extends Seeder
         ]);
         Product::factory(3)->create();
         Customer::factory()
-            ->has(Address::factory())
+            ->has(Address::factory(rand(1, 3)))
             ->has(Order::factory(3))
             ->create([
                 'user_id' => 2,

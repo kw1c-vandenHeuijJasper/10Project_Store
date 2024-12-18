@@ -4,9 +4,13 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoure
 
 use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
+use App\Filament\Admin\Resources\CustomerResource;
 use App\Helpers\Money;
 use App\Models\Product;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Infolists\Components\Actions;
+use Filament\Infolists\Components\Actions\Action as InfoAction;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\Split;
@@ -59,6 +63,26 @@ class ViewConfirmOrderResoure extends ViewRecord
                                     ),
                             ])->columnSpanFull(),
                     ]),
+                Actions::make([
+                    InfoAction::make('Go to customer')
+                        ->url(fn ($record) => CustomerResource::getUrl().'/'.$record->customer_id.'/edit')
+                        ->color('success'),
+                    InfoAction::make('Go to customer in new tab')
+                        ->url(fn ($record) => CustomerResource::getUrl().'/'.$record->customer_id.'/edit')
+                        ->openUrlInNewTab()
+                        ->color('success'),
+                ])->fullWidth(),
+                Actions::make([
+                    InfoAction::make('Go to order')
+                        ->url(fn ($record) => OrderResource::getUrl().'/'.$record->id.'/edit')
+                        ->color('danger'),
+                    InfoAction::make('Go to order in new tab')
+                        ->url(fn ($record) => OrderResource::getUrl().'/'.$record->id.'/edit')
+                        ->openUrlInNewTab()
+                        ->color('danger'),
+                ])->fullWidth(),
+                // InfolistAction::make('Go to order')
+                //     ->url(null),
 
                 Section::make('Compare Products')
                     ->schema([
@@ -122,7 +146,7 @@ class ViewConfirmOrderResoure extends ViewRecord
             }
         });
 
-        if ($checked->whereNotNull()->contains(true)) {
+        if ($checked->contains(true)) {
             return true;
         } else {
             return false;
@@ -132,11 +156,18 @@ class ViewConfirmOrderResoure extends ViewRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\Action::make('Back to processing')
+            Action::make('Back to processing')
                 ->requiresConfirmation()
+                ->modalHeading('Take the order back to processing?')
+                ->modalDescription('This means the stock will be re-added, this cannot be undone!')
+                ->modalSubmitActionLabel('Yes, change to processing!')
                 ->action(fn ($record) => $record->update(['status' => OrderStatus::PROCESSING])),
-            Actions\Action::make('Approve')
+
+            Action::make('Approve')
                 ->requiresConfirmation()
+                ->modalHeading('Approve order?')
+                ->modalDescription('This means the stock will be subtracted, this cannot be undone!')
+                ->modalSubmitActionLabel('Yes, I approve!')
                 ->color('success')
                 ->action(function ($record) {
                     $orderProducts = $this->getOrderProduct();
@@ -147,12 +178,20 @@ class ViewConfirmOrderResoure extends ViewRecord
                     });
                     $record->update(['status' => OrderStatus::FINISHED]);
                 }),
-            Actions\Action::make('Deny / reactivate shopping cart')
+
+            Action::make('Deny and reactivate')
                 ->requiresConfirmation()
+                ->modalHeading('Deny & reactivate?')
+                ->modalDescription('The order will be \'denied \', and turned back into the current shopping cart ')
+                ->modalSubmitActionLabel('Yes, turn it back!')
                 ->color('info')
                 ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
-            Actions\Action::make('Cancel')
+
+            Action::make('Cancel')
                 ->requiresConfirmation()
+                ->modalHeading('Cancel order?')
+                ->modalDescription('This means the order cannot be interacted with anymore!')
+                ->modalSubmitActionLabel('Yes, cancel!')
                 ->color('danger')
                 ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];
