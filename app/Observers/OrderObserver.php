@@ -42,7 +42,6 @@ class OrderObserver
                 ->danger()
                 ->send();
 
-
             // return redirect(URL::previous());
             // return false;
             // let the order not complete and redirect to /customer/orders
@@ -67,7 +66,7 @@ class OrderObserver
                 $i = random_int(1, 999999999);
                 (string) $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#' . $preOrder;
+                return 'ORD#'.$preOrder;
             },
         ]);
     }
@@ -86,7 +85,7 @@ class OrderObserver
     public function deleting(Order $order): void
     {
         $collection = OrderProduct::whereOrderId($order->id)->get()->map(
-            fn($data) => [
+            fn ($data) => [
                 'id' => $data->id,
                 'product_id' => $data->product_id,
                 'amount' => $data->amount,

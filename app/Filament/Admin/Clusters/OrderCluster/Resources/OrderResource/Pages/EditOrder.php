@@ -2,10 +2,10 @@
 
 namespace App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages;
 
-use Filament\Actions;
-use Filament\Resources\Pages\EditRecord;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widgets\OrderStatsOverview;
+use Filament\Actions;
+use Filament\Resources\Pages\EditRecord;
 
 class EditOrder extends EditRecord
 {

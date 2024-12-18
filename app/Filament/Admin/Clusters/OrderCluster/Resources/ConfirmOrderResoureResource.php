@@ -2,30 +2,34 @@
 
 namespace App\Filament\Admin\Clusters\OrderCluster\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
-use App\Models\Order;
-use Filament\Forms\Form;
-use Filament\Tables\Table;
-use Filament\Resources\Resource;
-use App\Models\ConfirmOrderResoure;
-use Illuminate\Database\Eloquent\Builder;
+use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource\Pages;
-use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource\RelationManagers;
+use App\Helpers\Money;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use Filament\Forms\Form;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class ConfirmOrderResoureResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $label = 'Confirm Order';
-
-    protected static ?int $navigationSort = 2;
+    protected static ?string $label = 'Order Review';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $cluster = OrderCluster::class;
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()
+            ->whereStatus(OrderStatus::PROCESSING);
+    }
 
     public static function form(Form $form): Form
     {
@@ -39,19 +43,22 @@ class ConfirmOrderResoureResource extends Resource
     {
         return $table
             ->columns([
-                //
-            ])
-            ->filters([
-                //
+                TextColumn::make('reference')
+                    ->searchable(),
+                TextColumn::make('customer.user.name')
+                    ->searchable(),
+                TextColumn::make('id')
+                    ->label('Total')
+                    ->formatStateUsing(fn ($state) => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DeleteBulkAction::make(),
-                ]),
+                Tables\Actions\ViewAction::make(),
             ]);
+    }
+
+    public static function canCreate(): bool
+    {
+        return false;
     }
 
     public static function getRelations(): array
@@ -65,8 +72,7 @@ class ConfirmOrderResoureResource extends Resource
     {
         return [
             'index' => Pages\ListConfirmOrderResoures::route('/'),
-            'create' => Pages\CreateConfirmOrderResoure::route('/create'),
-            'edit' => Pages\EditConfirmOrderResoure::route('/{record}/edit'),
+            'view' => Pages\ViewConfirmOrderResoure::route('/{record}'),
         ];
     }
 }

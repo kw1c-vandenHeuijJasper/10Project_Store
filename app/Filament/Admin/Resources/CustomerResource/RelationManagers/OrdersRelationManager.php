@@ -2,11 +2,11 @@
 
 namespace App\Filament\Admin\Resources\CustomerResource\RelationManagers;
 
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 use App\Models\Order;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\RelationManagers\RelationManager;
-use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
+use Filament\Tables\Table;
 
 class OrdersRelationManager extends RelationManager
 {
@@ -23,9 +23,9 @@ class OrdersRelationManager extends RelationManager
             ->actions(
                 \Filament\Tables\Actions\ActionGroup::make([
                     \Filament\Tables\Actions\Action::make('Order')
-                        ->url(fn(Order $record) => OrderResource::getUrl() . '/' . $record->id . '/edit'),
+                        ->url(fn (Order $record) => OrderResource::getUrl().'/'.$record->id.'/edit'),
                     \Filament\Tables\Actions\Action::make('Order in new tab')
-                        ->url(fn(Order $record) => OrderResource::getUrl() . '/' . $record->id . '/edit')
+                        ->url(fn (Order $record) => OrderResource::getUrl().'/'.$record->id.'/edit')
                         ->openUrlInNewTab(),
                 ])
                     ->label('Go to')

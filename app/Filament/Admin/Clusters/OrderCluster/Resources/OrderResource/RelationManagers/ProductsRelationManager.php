@@ -37,10 +37,10 @@ class ProductsRelationManager extends RelationManager
                     ->alignCenter(),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Agreed price')
-                    ->formatStateUsing(fn($state) => Money::prefixFormat(($state))),
+                    ->formatStateUsing(fn ($state) => Money::prefixFormat(($state))),
                 Tables\Columns\TextColumn::make('total')
                     ->label('Total Price')
-                    ->formatStateUsing(fn($record) => Money::prefixFormat($record->total)),
+                    ->formatStateUsing(fn ($record) => Money::prefixFormat($record->total)),
 
                 Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -52,7 +52,7 @@ class ProductsRelationManager extends RelationManager
             ])
             ->headerActions([
                 Tables\Actions\AttachAction::make()
-                    ->form(fn(Tables\Actions\AttachAction $action): array => [
+                    ->form(fn (Tables\Actions\AttachAction $action): array => [
                         $action->getRecordSelect()
                             ->live()
                             ->afterStateUpdated(function (Get $get, Set $set) {
@@ -75,7 +75,7 @@ class ProductsRelationManager extends RelationManager
 
                                     $maxStock = $record->stock;
 
-                                    return ['numeric', 'max:' . $maxStock];
+                                    return ['numeric', 'max:'.$maxStock];
                                 }
 
                                 return ['numeric'];
@@ -88,7 +88,7 @@ class ProductsRelationManager extends RelationManager
                         Forms\Components\TextInput::make('price')
                             ->label('Price for one')
                             ->afterStateHydrated(
-                                fn(Get $get, Set $set) => self::updateTotals($get, $set)
+                                fn (Get $get, Set $set) => self::updateTotals($get, $set)
                             )
                             ->live()
                             ->readOnly()
@@ -96,7 +96,7 @@ class ProductsRelationManager extends RelationManager
 
                         Forms\Components\Placeholder::make('total')
                             ->label('Total Price')
-                            ->content(fn(Get $get) => Money::prefix($get('total'))),
+                            ->content(fn (Get $get) => Money::prefix($get('total'))),
                     ]),
             ])
             ->actions([
