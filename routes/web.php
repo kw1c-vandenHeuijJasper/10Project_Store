@@ -71,19 +71,9 @@ Route::get('/activeOrders', function () {
 Route::get('/tinker', function () {
     // dd("There's nothing here yet 😭");
 
-    $foo = Order::find(283)->products->map(function ($item) {
-        return [
-            'stock' => $item->stock,
-            'amount' => $item->pivot->amount,
-            'price' => $item->price,
-            'agreed price' => $item->pivot->price,
-        ];
-    });
-    foreach ($foo as $bar) {
-        return $bar;
-    }
     dd(
-        // $foo[0]
+        Customer::get()->count(),
+        Customer::withNoWrongOrders()->get()->count(),
     );
 });
 

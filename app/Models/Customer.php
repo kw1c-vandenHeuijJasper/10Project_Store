@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\OrderStatus;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -34,5 +35,21 @@ class Customer extends Model
     public function activeOrders(): HasMany
     {
         return $this->orders()->whereStatus(OrderStatus::ACTIVE);
+    }
+
+    public function scopeWithNoWrongOrders(Builder $query)
+    {
+        return $query->whereDoesntHave('orders', function (Builder $query) {
+            $query->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
+        });
+    }
+
+    public function hasActiveOrders()
+    {
+        if ($this->activeOrders()->get()->toArray() == []) {
+            return false;
+        } else {
+            return true;
+        }
     }
 }

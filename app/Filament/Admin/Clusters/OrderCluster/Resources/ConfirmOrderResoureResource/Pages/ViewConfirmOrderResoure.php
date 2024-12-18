@@ -47,7 +47,7 @@ class ViewConfirmOrderResoure extends ViewRecord
                                 TextEntry::make('customer.user.name'),
                                 TextEntry::make('quick_confirm')
                                     ->label(
-                                        fn() => $this->quickConfirm() == true ? new HtmlString(
+                                        fn () => $this->quickConfirm() == true ? new HtmlString(
                                             '<span style="color:red">
                                             Order is probably bad!
                                         </span>'
@@ -133,7 +133,7 @@ class ViewConfirmOrderResoure extends ViewRecord
     {
         return [
             Actions\Action::make('Back to processing')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::PROCESSING])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::PROCESSING])),
             Actions\Action::make('Approve')
                 ->color('success')
                 ->action(function ($record) {
@@ -147,10 +147,10 @@ class ViewConfirmOrderResoure extends ViewRecord
                 }),
             Actions\Action::make('Deny')
                 ->color('info')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
             Actions\Action::make('Cancel')
                 ->color('danger')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];
     }
 }

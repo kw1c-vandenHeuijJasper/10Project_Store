@@ -80,7 +80,8 @@ class OrderResource extends Resource
 
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->options(fn () => Customer::with('user')->get()->mapWithKeys(
+                    ->hint('with no active/processing orders')
+                    ->options(fn () => Customer::with('user')->withNoWrongOrders()->get()->mapWithKeys(
                         fn (Customer $customer) => [$customer->id => $customer->user->name]
                     ))
                     ->searchable()
@@ -210,6 +211,11 @@ class OrderResource extends Resource
             ProductsRelationManager::class,
         ];
     }
+
+    // public static function canCreate(): bool
+    // {
+
+    // }
 
     public static function getPages(): array
     {
