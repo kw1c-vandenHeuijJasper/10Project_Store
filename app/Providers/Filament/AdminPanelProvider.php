@@ -36,6 +36,7 @@ class AdminPanelProvider extends PanelProvider
                     ->url('http://10project_store.test/customer') // TODO when customer panel done switch this to the good link
                     ->icon('heroicon-o-presentation-chart-line'),
             ])
+            ->discoverClusters(in: app_path('Filament/Admin/Clusters'), for: 'App\\Filament\\Admin\\Clusters')
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\\Filament\\Admin\\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\\Filament\\Admin\\Pages')
             ->pages([

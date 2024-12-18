@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Filament\Admin\Resources\OrderResource\Pages;
+namespace App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages;
 
-use App\Filament\Admin\Resources\OrderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 
 class ListOrders extends ListRecords
 {

@@ -4,8 +4,9 @@ namespace App\Filament\Admin\Resources\CustomerResource\RelationManagers;
 
 use App\Models\Order;
 use Filament\Forms\Form;
-use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables\Table;
+use Filament\Resources\RelationManagers\RelationManager;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 
 class OrdersRelationManager extends RelationManager
 {
@@ -13,18 +14,18 @@ class OrdersRelationManager extends RelationManager
 
     public function form(Form $form): Form
     {
-        return \App\Filament\Admin\Resources\OrderResource::form($form);
+        return OrderResource::form($form);
     }
 
     public function table(Table $table): Table
     {
-        return \App\Filament\Admin\Resources\OrderResource::table($table)
+        return OrderResource::table($table)
             ->actions(
                 \Filament\Tables\Actions\ActionGroup::make([
                     \Filament\Tables\Actions\Action::make('Order')
-                        ->url(fn (Order $record) => \App\Filament\Admin\Resources\OrderResource::getUrl().'/'.$record->id.'/edit'),
+                        ->url(fn(Order $record) => OrderResource::getUrl() . '/' . $record->id . '/edit'),
                     \Filament\Tables\Actions\Action::make('Order in new tab')
-                        ->url(fn (Order $record) => \App\Filament\Admin\Resources\OrderResource::getUrl().'/'.$record->id.'/edit')
+                        ->url(fn(Order $record) => OrderResource::getUrl() . '/' . $record->id . '/edit')
                         ->openUrlInNewTab(),
                 ])
                     ->label('Go to')

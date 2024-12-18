@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\OrderResource\Widgets;
+namespace App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widgets;
 
 use App\Helpers\Money;
 use App\Models\OrderProduct;

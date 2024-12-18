@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Filament\Admin\Resources\OrderResource\Pages;
+namespace App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages;
 
-use App\Filament\Admin\Resources\OrderResource;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widgets\OrderStatsOverview;
 
 class EditOrder extends EditRecord
 {
@@ -13,7 +14,7 @@ class EditOrder extends EditRecord
     protected function getHeaderWidgets(): array
     {
         return [
-            OrderResource\Widgets\OrderStatsOverview::class,
+            OrderStatsOverview::class,
         ];
     }
 
