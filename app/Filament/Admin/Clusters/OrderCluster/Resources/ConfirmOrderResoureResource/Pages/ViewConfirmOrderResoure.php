@@ -4,6 +4,7 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoure
 
 use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource;
+use App\Helpers\Money;
 use Filament\Actions;
 use Filament\Infolists\Components\Grid;
 use Filament\Infolists\Components\Section;
@@ -18,10 +19,10 @@ class ViewConfirmOrderResoure extends ViewRecord
 
     public function infolist(Infolist $infolist): Infolist
     {
-        // Mapping the collection of products
         $orderProduct = $this->record->products->map(function ($item) {
             return [
                 'id' => $item->id,
+                'total' => $item->pivot->total,
                 'name' => $item->name,
                 'stock' => $item->stock,
                 'amount' => $item->pivot->amount,
@@ -60,13 +61,12 @@ class ViewConfirmOrderResoure extends ViewRecord
 
                                                 TextEntry::make('price')
                                                     ->label('Price')
-                                                    ->default($product['price']),
+                                                    ->default(Money::prefixFormat($product['price'])),
                                             ])->columnSpan(1),
 
                                             Section::make()->schema([
-                                                TextEntry::make('Order'),
-
-                                                TextEntry::make(''), //intentionally empty
+                                                TextEntry::make('total')
+                                                    ->default(Money::prefixFormat($product['total'])),
 
                                                 TextEntry::make('amount')
                                                     ->label('Amount')
@@ -74,7 +74,7 @@ class ViewConfirmOrderResoure extends ViewRecord
 
                                                 TextEntry::make('agreed_price')
                                                     ->label('Agreed Price')
-                                                    ->default($product['agreed_price']),
+                                                    ->default(Money::prefixFormat($product['agreed_price'])),
 
                                             ])->columnSpan(1),
                                         ])->columnSpan(2),
@@ -85,6 +85,7 @@ class ViewConfirmOrderResoure extends ViewRecord
             ]);
     }
 
+    //TODO only subtract stock when approved, so at the press of this button, so no observer shit :)))
     protected function getHeaderActions(): array
     {
         return [
