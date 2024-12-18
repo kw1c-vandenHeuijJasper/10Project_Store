@@ -12,6 +12,7 @@ use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
+use Illuminate\Support\HtmlString;
 
 class ViewConfirmOrderResoure extends ViewRecord
 {
@@ -34,8 +35,6 @@ class ViewConfirmOrderResoure extends ViewRecord
 
     public function infolist(Infolist $infolist): Infolist
     {
-        $orderProduct = $this->getOrderProduct();
-
         return $infolist
             ->schema([
                 Section::make('Order information')
@@ -46,14 +45,17 @@ class ViewConfirmOrderResoure extends ViewRecord
                                 TextEntry::make('status'),
                                 TextEntry::make('customer.user.name'),
                                 TextEntry::make('quick_confirm')
-                                    ->label(function () {
-                                        if ($this->quickConfirm()) {
-                                            return 'Order is probably bad!';
-                                        }
-
-                                        return 'Order is probably good!';
-                                    }),
-
+                                    ->label(
+                                        fn () => $this->quickConfirm() == true ? new HtmlString(
+                                            '<span style="color:red">
+                                            Order is probably bad!
+                                        </span>'
+                                        ) : new HtmlString(
+                                            '<span style="color:lime">
+                                                Order is probably good!
+                                            </span>'
+                                        )
+                                    ),
                             ])->columnSpanFull(),
                     ]),
 
@@ -61,7 +63,7 @@ class ViewConfirmOrderResoure extends ViewRecord
                     ->schema([
                         Grid::make()
                             ->schema(
-                                $orderProduct->map(function ($product) {
+                                $this->getOrderProduct()->map(function ($product) {
                                     return [
                                         Split::make([
                                             Section::make()->schema([
@@ -99,6 +101,10 @@ class ViewConfirmOrderResoure extends ViewRecord
             ]);
     }
 
+    /**
+     * When something with the order is probably wrong, returns true
+     * Will return false otherwise
+     */
     public function quickConfirm(): bool
     {
         $orderProduct = $this->getOrderProduct();
@@ -122,21 +128,21 @@ class ViewConfirmOrderResoure extends ViewRecord
         }
     }
 
-    //TODO only subtract stock when approved, so at the press of this button, so no observer shit :)))
+    //TODO only subtract stock when approved, so at the press of this button, so no observer stuff :)
     protected function getHeaderActions(): array
     {
         return [
             Actions\Action::make('Back to processing')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::PROCESSING])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::PROCESSING])),
             Actions\Action::make('Approve')
                 ->color('success')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::FINISHED])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::FINISHED])),
             Actions\Action::make('Deny')
                 ->color('info')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
             Actions\Action::make('Cancel')
                 ->color('danger')
-                ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED])),
+                ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];
     }
 }
