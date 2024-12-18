@@ -12,7 +12,7 @@ use Illuminate\Support\Str;
 
 class OrderObserver
 {
-    public function creating(Order $order): void
+    public function creating(Order $order)
     {
         if (Str::contains(URL::previous(), 'admin')) {
             if (Order::hasNoActiveOrder($order) && $order->status === OrderStatus::ACTIVE) {
@@ -35,19 +35,26 @@ class OrderObserver
                 }
                 throw new Exception('Unknown error');
             }
-        } else {
-            // dd(
-            //     $order
-            //     // 'The request did not come from the admin side, uncomment this to activate again.',
-            //     // 'Context: "OrderObserver.php" at line 42-45'
-            // );
-            // if (! isset($order->status)) {
-            // dd($order->status, $order);
-            // }
-            if (Order::hasActiveOrder($order)) {
-                throw new Exception('You already have an active order! Complete that one first!');
-            }
+        } elseif (Order::hasActiveOrder($order)) {
+            \Filament\Notifications\Notification::make()
+                ->title('There is a problem with your order')
+                ->body('You already have an active order! Please complete that one first.')
+                ->danger()
+                ->send();
+
+
+            // return redirect(URL::previous());
+            // return false;
+            // let the order not complete and redirect to /customer/orders
         }
+        // } elseif (Order::hasActiveOrder($order)) {
+        //     throw new Exception('You already have an active order! Complete that one first!');
+        // }
+        // else {
+        //     if (Order::hasActiveOrder($order)) {
+        //         throw new Exception('You already have an active order! Complete that one first!');
+        //     }
+        // }
     }
 
     /**
@@ -60,7 +67,7 @@ class OrderObserver
                 $i = random_int(1, 999999999);
                 (string) $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#'.$preOrder;
+                return 'ORD#' . $preOrder;
             },
         ]);
     }
@@ -73,14 +80,13 @@ class OrderObserver
         //
     }
 
-    //TODO 'duplicate' code with other observer
     /**
      * Handle the Order "deleting" event.
      */
     public function deleting(Order $order): void
     {
         $collection = OrderProduct::whereOrderId($order->id)->get()->map(
-            fn ($data) => [
+            fn($data) => [
                 'id' => $data->id,
                 'product_id' => $data->product_id,
                 'amount' => $data->amount,

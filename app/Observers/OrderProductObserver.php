@@ -2,43 +2,53 @@
 
 namespace App\Observers;
 
-use App\Models\OrderProduct;
+use App\Models\Order;
+use App\Models\Address;
 use App\Models\Product;
+use App\Enums\OrderStatus;
+use App\Models\OrderProduct;
+use Illuminate\Support\Facades\Auth;
 
 class OrderProductObserver
 {
+    public function creating(OrderProduct $orderProduct): void
+    {
+        dd(Auth::user());
+        $order = Order::firstOrCreate(
+            [
+                'customer_id' => Auth::user()->customer->id,
+                'status' => OrderStatus::ACTIVE,
+            ],
+            [
+                'shipping_address_id' => Address::inRandomOrder()->first(), //TODO
+                'invoice_address_id' => Address::inRandomOrder()->first(),
+            ]
+        );
+
+        $orderProduct->order_id = $order->id;
+        // dd($order, $orderProduct);
+    }
     /**
      * Handle the OrderProduct "created" event.
      */
     public function created(OrderProduct $orderProduct): void
     {
-        $product_id = $orderProduct->product_id;
-        $product = Product::find($product_id);
-        $stock = $product->stock;
-        $amount = $orderProduct->amount;
-        $left = $stock - $amount;
+        $product = Product::find($orderProduct->product_id);
+        $left = $product->stock - $orderProduct->amount;
         $product->update(['stock' => $left]);
     }
 
-    //TODO 'duplicate' code with other observer
     /**
      * Handle the OrderProduct "deleting" event.
      */
     public function deleting(OrderProduct $orderProduct): void
     {
         $query = OrderProduct::query()
-            ->where('order_id', $orderProduct->order_id)
-            ->where('product_id', $orderProduct->product_id)
+            ->whereOrderId($orderProduct->order_id)
+            ->whereProductId($orderProduct->product_id)
             ->first();
         $product = Product::find($query->product_id);
-        $amount = $query->amount;
-        $stock = $product->stock;
-        $new = $amount + $stock;
-        $product->update(['stock' => $new]);
-    }
-
-    public function forceDeleted(OrderProduct $orderProduct): void
-    {
-        $this->deleting($orderProduct);
+        $stock = $query->amount + $product->stock;
+        $product->update(['stock' => $stock]);
     }
 }

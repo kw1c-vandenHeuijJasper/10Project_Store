@@ -16,11 +16,11 @@ return new class extends Migration
     {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
-            $table->string('reference')->unique()->nullable();
+            $table->string('reference')->unique()->nullable(); //TODO
             $table->string('status')->default(OrderStatus::FINISHED);
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete();
-            $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete();
+            $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete()->nullable();
+            $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete()->nullable();
             $table->timestamps();
         });
     }

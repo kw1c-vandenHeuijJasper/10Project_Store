@@ -53,6 +53,7 @@ class OrderResource extends Resource
                 Select::make('status')
                     ->native(false)
                     ->required()
+                    // I dont do this, because it does not save the default value given in filament
                     // ->hiddenOn('create')
                     ->label(function () use ($urlContainsCreate) {
                         if ($urlContainsCreate) {
@@ -113,9 +114,9 @@ class OrderResource extends Resource
                         $id = $record->shipping_address_id;
                         $address = $addresses->where('id', $id)->first();
 
-                        return $address->street_name.' '
-                            .$address->house_number.', '
-                            .$address->city;
+                        return $address->street_name . ' '
+                            . $address->house_number . ', '
+                            . $address->city;
                     }),
                 TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
@@ -123,21 +124,21 @@ class OrderResource extends Resource
                         $id = $record->invoice_address_id;
                         $address = $addresses->where('id', $id)->first();
 
-                        return $address->street_name.' '
-                            .$address->house_number.', '
-                            .$address->city;
+                        return $address->street_name . ' '
+                            . $address->house_number . ', '
+                            . $address->city;
                     }),
                 TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn ($record) => $orderProducts->where('order_id', $record->id)
+                    ->getStateUsing(fn($record) => $orderProducts->where('order_id', $record->id)
                         ->pluck('amount')->sum()),
                 TextColumn::make('total')
-                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                    ->getStateUsing(fn($record) => Money::prefixFormat(
                         $orderProducts->where('order_id', $record->id)->pluck('total')->sum()
                     )),
             ])
             ->defaultGroup('status')
-            ->defaultSort(fn ($query) => $query->orderBy('updated_at', 'desc'))
+            ->defaultSort(fn($query) => $query->orderBy('updated_at', 'desc'))
             ->filters([
                 SelectFilter::make('Status')
                     ->options(OrderStatus::class),
@@ -154,7 +155,7 @@ class OrderResource extends Resource
             ])
             ->recordUrl(function ($record) {
                 if ($record?->toArray() == Order::shoppingCart()?->toArray()) {
-                    return 'orders/'.$record->id.'/edit';
+                    return 'orders/' . $record->id . '/edit';
                 } else {
                     return null;
                 }
@@ -163,6 +164,14 @@ class OrderResource extends Resource
                 Tables\Actions\CreateAction::make()
                     ->label('Create a new order!'),
             ]);
+    }
+
+    /*
+    * Disables create when you have an active order
+    */
+    public static function canCreate(): bool
+    {
+        return Order::shoppingCart() == null ? true : false;
     }
 
     public static function getRelations(): array

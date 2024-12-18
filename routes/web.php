@@ -1,17 +1,19 @@
 <?php
 
-use App\Enums\OrderStatus;
-use App\Models\Customer;
 use App\Models\Order;
+use App\Models\Product;
+use App\Models\Customer;
+use App\Enums\OrderStatus;
+use App\Models\OrderProduct;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\HtmlString;
 
 Route::get('/', function () {
     Auth::logout();
 
     return new HtmlString('
-    '.Auth::user()."
+    ' . Auth::user() . "
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -40,7 +42,7 @@ Route::get('/loginAsCustomer', function () {
 });
 Route::get('/panelPicker', function () {
     return new HtmlString('
-    '.Auth::user()."
+    ' . Auth::user() . "
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -57,10 +59,10 @@ Route::get('/panelPicker', function () {
 Route::get('/activeOrders', function () {
     Customer::with('activeOrders')
         ->get()
-        ->filter(fn (Customer $customer) => $customer->activeOrders->count() > 1)
+        ->filter(fn(Customer $customer) => $customer->activeOrders->count() > 1)
         ->each(function (Customer $customer) {
             $orderIds = $customer->activeOrders
-                ->reject(fn (Order $order) => $order == $customer->activeOrders->last())
+                ->reject(fn(Order $order) => $order == $customer->activeOrders->last())
                 ->pluck('id');
 
             Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);
@@ -68,7 +70,13 @@ Route::get('/activeOrders', function () {
 });
 
 Route::get('/tinker', function () {
-    dd("There's nothing here yet 😭");
+    // dd("There's nothing here yet 😭");
+    OrderProduct::create([
+        // 'order_id',
+        'product_id' => 1,
+        'amount' => 2,
+        'price' => 100000,
+    ]);
 });
 
 // 
