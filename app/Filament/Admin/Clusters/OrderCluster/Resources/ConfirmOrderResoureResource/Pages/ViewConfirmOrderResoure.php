@@ -103,6 +103,10 @@ class ViewConfirmOrderResoure extends ViewRecord
     {
         $orderProduct = $this->getOrderProduct();
 
+        if ($orderProduct->toArray() == []) {
+            return true;
+        }
+
         $checked = $orderProduct->map(function ($order) {
             if ($order['stock'] < $order['amount']) {
                 return true;
@@ -123,16 +127,16 @@ class ViewConfirmOrderResoure extends ViewRecord
     {
         return [
             Actions\Action::make('Back to processing')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::PROCESSING])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::PROCESSING])),
             Actions\Action::make('Approve')
                 ->color('success')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::FINISHED])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::FINISHED])),
             Actions\Action::make('Deny')
                 ->color('info')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE])),
             Actions\Action::make('Cancel')
                 ->color('danger')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];
     }
 }
