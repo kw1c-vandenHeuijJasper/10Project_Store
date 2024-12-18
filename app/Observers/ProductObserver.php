@@ -6,6 +6,7 @@ use App\Models\Product;
 
 class ProductObserver
 {
+    // TODO remove
     /**
      * Makes sure that when generating stock does not end up below 0...
      */
