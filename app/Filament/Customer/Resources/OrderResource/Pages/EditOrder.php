@@ -2,6 +2,7 @@
 
 namespace App\Filament\Customer\Resources\OrderResource\Pages;
 
+use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widgets\OrderStatsOverview;
 use App\Filament\Customer\Resources\OrderResource;
 use Filament\Actions;
@@ -27,7 +28,13 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\Action::make('Cancel Order')
+                ->requiresConfirmation()
+                ->action(function ($record) {
+                    $record->update(['status' => OrderStatus::CANCELLED]);
+
+                    return redirect(OrderResource::getUrl());
+                }),
         ];
     }
 }

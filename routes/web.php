@@ -55,7 +55,7 @@ Route::get('/panelPicker', function () {
     ");
 });
 
-Route::get('/activeOrders', function () {
+Route::get('/cancelRedundantActiveOrders', function () {
     Customer::with('activeOrders')
         ->get()
         ->filter(fn (Customer $customer) => $customer->activeOrders->count() > 1)
@@ -73,6 +73,7 @@ Route::get('/tinker', function () {
 });
 
 // 
+// let rick know about :cry: in commit message
 // TODO LIST
 
 // [GROUP]General

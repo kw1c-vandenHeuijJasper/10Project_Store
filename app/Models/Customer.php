@@ -65,4 +65,22 @@ class Customer extends Model
             return true;
         }
     }
+
+    public function hasProcessingOrders(): bool
+    {
+        if ($this->orders()->whereStatus(OrderStatus::PROCESSING)->get()->toArray() == []) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function canCreateOrder(): bool
+    {
+        if ($this->hasActiveOrders() || $this->hasProcessingOrders()) {
+            return false;
+        }
+
+        return true;
+    }
 }

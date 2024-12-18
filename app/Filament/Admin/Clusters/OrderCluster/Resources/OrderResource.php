@@ -80,7 +80,7 @@ class OrderResource extends Resource
 
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->hint('with no active/processing orders')
+                    ->hint('with no active/processing orders. If number customer has active order')
                     ->options(fn () => Customer::with('user')->withNoWrongOrders()->get()->mapWithKeys(
                         fn (Customer $customer) => [$customer->id => $customer->user->name]
                     ))
@@ -176,6 +176,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('updated_at')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->defaultSort('updated_at', 'desc')
             ->filters([
                 Tables\Filters\Filter::make('has_products')
                     ->default(false)

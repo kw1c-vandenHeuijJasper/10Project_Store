@@ -133,8 +133,10 @@ class ViewConfirmOrderResoure extends ViewRecord
     {
         return [
             Actions\Action::make('Back to processing')
+                ->requiresConfirmation()
                 ->action(fn ($record) => $record->update(['status' => OrderStatus::PROCESSING])),
             Actions\Action::make('Approve')
+                ->requiresConfirmation()
                 ->color('success')
                 ->action(function ($record) {
                     $orderProducts = $this->getOrderProduct();
@@ -145,10 +147,12 @@ class ViewConfirmOrderResoure extends ViewRecord
                     });
                     $record->update(['status' => OrderStatus::FINISHED]);
                 }),
-            Actions\Action::make('Deny')
+            Actions\Action::make('Deny / reactivate shopping cart')
+                ->requiresConfirmation()
                 ->color('info')
                 ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
             Actions\Action::make('Cancel')
+                ->requiresConfirmation()
                 ->color('danger')
                 ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];

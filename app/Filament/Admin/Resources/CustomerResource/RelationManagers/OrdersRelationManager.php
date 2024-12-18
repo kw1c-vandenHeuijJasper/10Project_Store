@@ -34,6 +34,7 @@ class OrdersRelationManager extends RelationManager
                     ->color('info')
                     ->button()
             )
-            ->recordAction(null);
+            ->recordAction(null)
+            ->defaultSort('updated_at', 'desc');
     }
 }

@@ -138,10 +138,12 @@ class OrderResource extends Resource
                     )),
             ])
             ->defaultGroup('status')
-            ->defaultSort(fn ($query) => $query->orderBy('updated_at', 'desc'))
+            ->defaultSort(fn ($query) => $query->orderBy('updated_at', 'desc')->orderBy('status', 'desc'))
             ->filters([
                 SelectFilter::make('Status')
-                    ->options(OrderStatus::class),
+                    ->options(OrderStatus::class)
+                    ->multiple()
+                    ->default([OrderStatus::ACTIVE->value, OrderStatus::PROCESSING->value]),
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make()
@@ -167,11 +169,11 @@ class OrderResource extends Resource
     }
 
     /*
-    * Disables create when you have an active order
+    * Disables create when you have an active/processing order, or if you are not a customer
     */
     public static function canCreate(): bool
     {
-        return Order::shoppingCart() == null ? true : false;
+        return Customer::whereUserId(Auth::id())->first()?->canCreateOrder() ?? false;
     }
 
     public static function getRelations(): array
