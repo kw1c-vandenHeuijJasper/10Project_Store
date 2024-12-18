@@ -17,9 +17,9 @@ class ViewConfirmOrderResoure extends ViewRecord
 {
     protected static string $resource = ConfirmOrderResoureResource::class;
 
-    public function infolist(Infolist $infolist): Infolist
+    public function getOrderProduct()
     {
-        $orderProduct = $this->record->products->map(function ($item) {
+        return $this->record->products->map(function ($item) {
             return [
                 'id' => $item->id,
                 'total' => $item->pivot->total,
@@ -30,16 +30,30 @@ class ViewConfirmOrderResoure extends ViewRecord
                 'agreed_price' => $item->pivot->price,
             ];
         });
+    }
+
+    public function infolist(Infolist $infolist): Infolist
+    {
+        $orderProduct = $this->getOrderProduct();
 
         return $infolist
             ->schema([
                 Section::make('Order information')
                     ->schema([
-                        Grid::make(3)
+                        Grid::make(4)
                             ->schema([
                                 TextEntry::make('reference'),
                                 TextEntry::make('status'),
                                 TextEntry::make('customer.user.name'),
+                                TextEntry::make('quick_confirm')
+                                    ->label(function () {
+                                        if ($this->quickConfirm()) {
+                                            return 'Order is probably bad!';
+                                        }
+
+                                        return 'Order is probably good!';
+                                    }),
+
                             ])->columnSpanFull(),
                     ]),
 
@@ -83,6 +97,25 @@ class ViewConfirmOrderResoure extends ViewRecord
                             ),
                     ]),
             ]);
+    }
+
+    public function quickConfirm(): bool
+    {
+        $orderProduct = $this->getOrderProduct();
+
+        $checked = $orderProduct->map(function ($order) {
+            if ($order['stock'] < $order['amount']) {
+                return true;
+            } else {
+                return null;
+            }
+        });
+
+        if ($checked->whereNotNull()->contains(true)) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //TODO only subtract stock when approved, so at the press of this button, so no observer shit :)))

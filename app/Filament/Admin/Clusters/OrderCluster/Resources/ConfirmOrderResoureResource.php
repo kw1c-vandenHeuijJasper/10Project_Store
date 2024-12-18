@@ -8,7 +8,6 @@ use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResour
 use App\Helpers\Money;
 use App\Models\Order;
 use App\Models\OrderProduct;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
@@ -19,9 +18,13 @@ class ConfirmOrderResoureResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $label = 'Order Review';
+    protected static ?string $label = 'order';
+
+    protected static ?string $navigationLabel = 'Order Review';
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+
+    protected static ?int $navigationSort = 2;
 
     protected static ?string $cluster = OrderCluster::class;
 
@@ -31,14 +34,6 @@ class ConfirmOrderResoureResource extends Resource
             ->whereStatus(OrderStatus::PROCESSING);
     }
 
-    public static function form(Form $form): Form
-    {
-        return $form
-            ->schema([
-                //
-            ]);
-    }
-
     public static function table(Table $table): Table
     {
         return $table
@@ -46,6 +41,7 @@ class ConfirmOrderResoureResource extends Resource
                 TextColumn::make('reference')
                     ->searchable(),
                 TextColumn::make('customer.user.name')
+                    ->label('Customer')
                     ->searchable(),
                 TextColumn::make('id')
                     ->label('Total')
