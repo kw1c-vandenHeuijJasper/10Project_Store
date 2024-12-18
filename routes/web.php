@@ -3,7 +3,6 @@
 use App\Enums\OrderStatus;
 use App\Models\Customer;
 use App\Models\Order;
-use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
@@ -74,15 +73,8 @@ Route::get('/tinker', function () {
 
 // 
 // let rick know about :cry: in commit message
-// TODO LIST
 
 // [GROUP]General
-// [ ]when bulk deleting customers, orders are cascade on delete, but the products are not "refunded (not for sure)"
-// [ ]only subtract stock when customer clicks order and the orderStatus is set to 'FINISHED' by an admin
-// [ ]figure out what to do if person A has a product in their cart,
-//      but person B bought the rest of the stock,
-//      so stock is at less then what person A wanted to order
-//      fix is in Admin panel's TODO!
 // [ ]add a 'CANCELLED' reason?
 
 // [GROUP]Customer panel
@@ -90,13 +82,9 @@ Route::get('/tinker', function () {
 // detaching products,
 // change amount to order,
 // products "show" link like in ordersrelationmanager,
-
 // [ ]products table with "add to cart" buttons
 
-// [GROUP]Admin panel
-// [ ]manual review place for all orders that are of status 'processing'
-//      with products and stock side-to-side to confirm
-//      when confirmed, status gets set to 'FINISHED' & stock will get depleted
+// Admin panel
 
 // [GROUP]Invoices
 // [ ]suitcase icon
