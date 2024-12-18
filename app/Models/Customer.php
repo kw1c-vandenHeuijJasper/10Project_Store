@@ -37,14 +37,27 @@ class Customer extends Model
         return $this->orders()->whereStatus(OrderStatus::ACTIVE);
     }
 
-    public function scopeWithNoWrongOrders(Builder $query)
+    /**
+     * Scopes
+     */
+    public function scopeNonActiveOrders(Builder $query): Builder
+    {
+        return $query->whereHas('orders', function (Builder $query) {
+            $query->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
+        });
+    }
+
+    public function scopeWithNoWrongOrders(Builder $query): Builder
     {
         return $query->whereDoesntHave('orders', function (Builder $query) {
             $query->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
         });
     }
 
-    public function hasActiveOrders()
+    /**
+     * Functions
+     */
+    public function hasActiveOrders(): bool
     {
         if ($this->activeOrders()->get()->toArray() == []) {
             return false;

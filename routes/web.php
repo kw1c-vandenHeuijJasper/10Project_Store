@@ -69,12 +69,7 @@ Route::get('/activeOrders', function () {
 });
 
 Route::get('/tinker', function () {
-    // dd("There's nothing here yet 😭");
-
-    dd(
-        Customer::get()->count(),
-        Customer::withNoWrongOrders()->get()->count(),
-    );
+    dd("There's nothing here yet 😭");
 });
 
 // 
