@@ -6,14 +6,16 @@ use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 use App\Filament\Admin\Resources\CustomerResource;
+use App\Filament\Admin\Resources\ProductResource;
 use App\Helpers\Money;
 use App\Models\Product;
 use Filament\Actions\Action;
 use Filament\Infolists\Components\Actions;
 use Filament\Infolists\Components\Actions\Action as InfoAction;
+use Filament\Infolists\Components\Fieldset;
 use Filament\Infolists\Components\Grid;
+use Filament\Infolists\Components\RepeatableEntry;
 use Filament\Infolists\Components\Section;
-use Filament\Infolists\Components\Split;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
@@ -81,47 +83,46 @@ class ViewConfirmOrderResoure extends ViewRecord
                         ->openUrlInNewTab()
                         ->color('danger'),
                 ])->fullWidth(),
-                // InfolistAction::make('Go to order')
-                //     ->url(null),
 
                 Section::make('Compare Products')
                     ->schema([
-                        Grid::make()
-                            ->schema(
-                                $this->getOrderProduct()->map(function ($product) {
-                                    return [
-                                        Split::make([
-                                            Section::make()->schema([
-                                                TextEntry::make('name')
-                                                    ->label('Product Name')
-                                                    ->default($product['name']),
-
-                                                TextEntry::make('stock')
-                                                    ->label('Stock')
-                                                    ->default($product['stock']),
-
-                                                TextEntry::make('price')
-                                                    ->label('Price')
-                                                    ->default(Money::prefixFormat($product['price'])),
-                                            ])->columnSpan(1),
-
-                                            Section::make()->schema([
-                                                TextEntry::make('total')
-                                                    ->default(Money::prefixFormat($product['total'])),
-
-                                                TextEntry::make('amount')
-                                                    ->label('Amount')
-                                                    ->default($product['amount']),
-
-                                                TextEntry::make('agreed_price')
-                                                    ->label('Agreed Price')
-                                                    ->default(Money::prefixFormat($product['agreed_price'])),
-
-                                            ])->columnSpan(1),
-                                        ])->columnSpan(2),
-                                    ];
-                                })->flatten()->toArray()
-                            ),
+                        RepeatableEntry::make('products')
+                            ->label('')
+                            ->grid(2)
+                            ->alignCenter()
+                            ->schema([
+                                Fieldset::make('Product')
+                                    ->columns(3)
+                                    ->schema([
+                                        TextEntry::make('name')
+                                            ->label(
+                                                function ($record) {
+                                                    return new HtmlString(
+                                                        '<a href='.ProductResource::getUrl().
+                                                            '/'.$record->id.'/edit'.' target="blank">
+                                                            Product Name
+                                                        </a>'
+                                                    );
+                                                }
+                                            ),
+                                        TextEntry::make('stock'),
+                                        TextEntry::make('price')
+                                            ->formatStateUsing(fn ($state) => Money::prefixFormat($state)),
+                                    ])
+                                    ->columnSpan(3),
+                                Fieldset::make('Order')
+                                    ->columns(3)
+                                    ->schema([
+                                        TextEntry::make('pivot.total')
+                                            ->label('Total Price')
+                                            ->formatStateUsing(fn ($state) => Money::prefixFormat($state)),
+                                        TextEntry::make('pivot.amount')
+                                            ->label('Amount'),
+                                        TextEntry::make('pivot.price')
+                                            ->label('Agreed Price')
+                                            ->formatStateUsing(fn ($state) => Money::prefixFormat($state)),
+                                    ])->columnSpan(3),
+                            ])->columns(2),
                     ]),
             ]);
     }

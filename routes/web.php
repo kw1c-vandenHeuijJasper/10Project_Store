@@ -72,7 +72,6 @@ Route::get('/tinker', function () {
 });
 
 // 
-// let rick know about :cry: in commit message
 
 // [GROUP]General
 // [ ]add a 'CANCELLED' reason?
