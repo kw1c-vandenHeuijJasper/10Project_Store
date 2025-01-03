@@ -4,7 +4,7 @@
         For some reason I need this instead of just doing
         x-filament::section collapsible collapsed
     -->
-    @if (true == 1)
+    @if (true)
         <x-filament::section collapsible collapsed>
     @endif
 
@@ -21,6 +21,5 @@
         </x-filament::button>
 
     </form>
-
     </x-filament::section>
 </x-filament-widgets::widget>

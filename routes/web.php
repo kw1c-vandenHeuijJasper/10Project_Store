@@ -77,7 +77,6 @@ Route::get('/tinker', function () {
 // [ ]add a 'CANCELLED' reason?
 
 // [GROUP]Customer panel
-// [ ]custom* profile page with addresses
 // [ ]products relation manager
 //      detaching products,
 //      change amount to order,

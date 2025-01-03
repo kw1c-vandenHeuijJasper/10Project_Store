@@ -13,6 +13,13 @@ class EditOrder extends EditRecord
 {
     protected static string $resource = OrderResource::class;
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['status'] = OrderStatus::ACTIVE;
+
+        return $data;
+    }
+
     public function getTitle(): string|HtmlString
     {
         return new HtmlString('Viewing your order: '.'<br />'.$this->record->reference);

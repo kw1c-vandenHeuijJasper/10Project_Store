@@ -53,27 +53,8 @@ class OrderResource extends Resource
                 Select::make('status')
                     ->native(false)
                     ->required()
-                    // FIXME change with MutateDataBeforeCreate
-                    // I dont do this, because it does not save the default value given in filament
-                    // ->hiddenOn('create')
-                    ->label(function () use ($urlContainsCreate) {
-                        if ($urlContainsCreate) {
-                            return '';
-                        } else {
-                            return 'Status';
-                        }
-                    })
-                    ->extraAttributes(
-                        function () use ($urlContainsCreate) {
-                            if ($urlContainsCreate) {
-                                return ['style' => 'display:none'];
-                            } else {
-                                return ['class' => 'foo'];
-                            }
-                        }
-                    )
-                    ->options([OrderStatus::ACTIVE->value => OrderStatus::ACTIVE->getLabel()])
-                    ->default(OrderStatus::ACTIVE->value),
+                    ->hiddenOn('create')
+                    ->options([OrderStatus::ACTIVE->value => OrderStatus::ACTIVE->getLabel()]),
 
                 TextInput::make('customer_id')
                     ->label('')

@@ -15,6 +15,7 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -26,17 +27,30 @@ class EditProfile extends Page implements HasForms
 
     protected static ?string $navigationIcon = 'heroicon-o-user';
 
-    protected static bool $shouldRegisterNavigation = true;
-
     public ?array $profileData = [];
 
     public ?array $passwordData = [];
 
     public ?array $customerData = [];
 
+    public static function canGoToPage(): bool
+    {
+        return Auth::user()->customer == null ? false : true;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return self::canGoToPage();
+    }
+
+    public static function canAccess(): bool
+    {
+        return self::canGoToPage();
+    }
+
     public function mount(): void
     {
-        $this->fillForms();
+        $this->canGoToPage() == true ? $this->fillForms() : null;
     }
 
     protected function getForms(): array
@@ -117,15 +131,12 @@ class EditProfile extends Page implements HasForms
             ->statePath('passwordData');
     }
 
-    //TODO inline if?
     protected function getUser(): Authenticatable&Model
     {
         $user = Filament::auth()->user();
-        if (! $user instanceof Model) {
-            throw new Exception('The authenticated user object must be an Eloquent model to allow the profile page to update it.');
-        }
 
-        return $user;
+        return $user instanceof Model ? $user
+            : throw new Exception('The authenticated user object must be an Eloquent model to allow the profile page to update it.');
     }
 
     protected function fillForms(): void
