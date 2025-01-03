@@ -5,7 +5,6 @@ namespace App\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -15,30 +14,19 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    //TODO improve... a lot
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
-            if ($this->is_admin === 1) {
-                return true;
-            } else {
-                return false;
-            }
+            return $this->is_admin === 1 ? true : false;
         }
-        if ($panel->getId() === 'customer') {
-            return true;
-        }
+
+        return $panel->getId() === 'customer' ? true : true;
     }
 
     public function customer(): HasOne
     {
         return $this->hasOne(Customer::class, 'user_id', 'id');
     }
-
-    // public function addresses(): HasManyThrough
-    // {
-    //     return $this->hasManyThrough(Address::class, Customer::class);
-    // }
 
     /**
      * The attributes that are mass assignable.
