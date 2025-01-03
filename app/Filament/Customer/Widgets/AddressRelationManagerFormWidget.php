@@ -15,6 +15,8 @@ class AddressRelationManagerFormWidget extends Widget implements HasForms
 {
     use InteractsWithForms;
 
+    protected static bool $isDiscovered = false;
+
     protected int|string|array $columnSpan = 'full';
 
     protected static string $view = 'filament.customer.widgets.address-relation-manager-form-widget';

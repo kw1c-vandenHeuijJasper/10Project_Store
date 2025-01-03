@@ -11,6 +11,8 @@ use Livewire\Attributes\On;
 
 class YourAddressesWidget extends BaseWidget
 {
+    protected static bool $isDiscovered = false;
+
     protected int|string|array $columnSpan = 'full';
 
     #[On('address-created')]
