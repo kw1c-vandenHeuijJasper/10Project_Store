@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Pages\Auth\EditProfile;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -35,7 +34,7 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Admin Panel')
-                    ->hidden(fn() => Auth::user()->is_admin ? false : true)
+                    ->hidden(fn () => Auth::user()->is_admin ? false : true)
                     ->url('http://10project_store.test/admin') //TODO change
                     ->icon('heroicon-o-presentation-chart-line'),
             ])

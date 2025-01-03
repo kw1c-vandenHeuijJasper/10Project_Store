@@ -2,18 +2,16 @@
 
 namespace App\Filament\Customer\Resources;
 
-use Filament\Forms;
-use Filament\Tables;
+use App\Filament\Customer\Resources\AddressResource\Pages;
 use App\Models\Address;
 use App\Models\Customer;
+use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Tables\Table;
 use Filament\Resources\Resource;
-use Illuminate\Support\Facades\Auth;
+use Filament\Tables;
+use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use App\Filament\Customer\Resources\AddressResource\Pages;
-use App\Filament\Customer\Resources\AddressResource\RelationManagers;
+use Illuminate\Support\Facades\Auth;
 
 class AddressResource extends Resource
 {

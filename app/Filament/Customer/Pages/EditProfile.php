@@ -2,21 +2,21 @@
 
 namespace App\Filament\Customer\Pages;
 
+use App\Filament\Customer\Widgets\AddressRelationManagerFormWidget;
+use App\Filament\Customer\Widgets\YourAddressesWidget;
 use Exception;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Pages\Page;
 use Filament\Actions\Action;
-use Filament\Pages\Concerns;
 use Filament\Facades\Filament;
-use Illuminate\Support\Facades\Hash;
-use Filament\Support\Exceptions\Halt;
-use Filament\Forms\Contracts\HasForms;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\Rules\Password;
-use Illuminate\Contracts\Auth\Authenticatable;
+use Filament\Forms;
 use Filament\Forms\Concerns\InteractsWithForms;
+use Filament\Forms\Contracts\HasForms;
+use Filament\Forms\Form;
 use Filament\Notifications\Notification;
+use Filament\Pages\Page;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rules\Password;
 
 class EditProfile extends Page implements HasForms
 {
@@ -27,7 +27,9 @@ class EditProfile extends Page implements HasForms
     protected static bool $shouldRegisterNavigation = true;
 
     public ?array $profileData = [];
+
     public ?array $passwordData = [];
+
     public ?array $customerData = [];
 
     public function mount(): void
@@ -67,11 +69,14 @@ class EditProfile extends Page implements HasForms
     {
         return $form
             ->schema([
-                Forms\Components\Section::make('Customer')
-                    ->description('customerDescription')
+                Forms\Components\Section::make('Extra information')
                     ->schema([
                         Forms\Components\TextInput::make('phone_number')
+                            ->tel()
                             ->required(),
+                        Forms\Components\DatePicker::make('date_of_birth')
+                            ->required()
+                            ->native(false),
                     ]),
             ])
             ->model($this->getUser()->customer)
@@ -83,50 +88,53 @@ class EditProfile extends Page implements HasForms
         return $form
             ->schema([
                 Forms\Components\Section::make('Update Password')
-                    ->description('Ensure your account is using long, random password to stay secure.')
+                    ->description('Ensure your account is using a long, random password to stay secure.')
                     ->schema([
                         Forms\Components\TextInput::make('Current password')
                             ->password()
                             ->required()
-                            ->currentPassword(),
+                            ->currentPassword()
+                            ->revealable(),
                         Forms\Components\TextInput::make('password')
                             ->password()
                             ->required()
                             ->rule(Password::default())
                             ->autocomplete('new-password')
-                            ->dehydrateStateUsing(fn($state): string =>
-                            Hash::make($state))
+                            ->dehydrateStateUsing(fn ($state): string => Hash::make($state))
                             ->live(debounce: 500)
-                            ->same('passwordConfirmation'),
+                            ->same('passwordConfirmation')
+                            ->revealable(),
                         Forms\Components\TextInput::make('passwordConfirmation')
                             ->password()
                             ->required()
-                            ->dehydrated(false),
+                            ->dehydrated(false)
+                            ->revealable(),
                     ]),
             ])
             ->model($this->getUser())
             ->statePath('passwordData');
     }
 
-    protected function getUser(): Authenticatable & Model
+    //TODO inline if?
+    protected function getUser(): Authenticatable&Model
     {
         $user = Filament::auth()->user();
         if (! $user instanceof Model) {
             throw new Exception('The authenticated user object must be an Eloquent model to allow the profile page to update it.');
         }
+
         return $user;
     }
 
     protected function fillForms(): void
     {
-        $profile = $this->getUser()->attributesToArray();
-        $customer = $this->getUser()->customer->attributesToArray();
+        $userData = $this->getUser()->attributesToArray();
+        $customerData = $this->getUser()->customer->attributesToArray();
 
-        $this->editProfileForm->fill($profile);
+        $this->editProfileForm->fill($userData);
         $this->editPasswordForm->fill();
-        $this->editCustomerForm->fill($customer);
+        $this->editCustomerForm->fill($customerData);
     }
-
 
     protected function getUpdateProfileFormActions(): array
     {
@@ -134,6 +142,15 @@ class EditProfile extends Page implements HasForms
             Action::make('updateProfileAction')
                 ->label('Save Profile')
                 ->submit('editProfileForm'),
+        ];
+    }
+
+    protected function getUpdateCustomerFormActions(): array
+    {
+        return [
+            Action::make('updateCustomerAction')
+                ->label('Save Extra Information')
+                ->submit('editCustomerForm'),
         ];
     }
 
@@ -145,48 +162,36 @@ class EditProfile extends Page implements HasForms
                 ->submit('editPasswordForm'),
         ];
     }
-    protected function getUpdateCustomerFormActions(): array
-    {
-        return [
-            Action::make('CustomerAction')
-                ->label('Save Password')
-                ->submit('editCustomerForm'),
-        ];
-    }
 
     public function updateProfile(): void
     {
-        try {
-            $data = $this->editProfileForm->getState();
-            $this->handleRecordUpdate($this->getUser(), $data);
-        } catch (Halt $exception) {
-            return;
-        }
+        $data = $this->editProfileForm->getState();
+        $this->handleRecordUpdate($this->getUser(), $data);
 
-        //TODO message to let the user know their data has changed!
+        Notification::make('profileUpdatedNotification')
+            ->title('Saved!')
+            ->body('Profile saved succesfully!')
+            ->success()
+            ->send();
     }
 
     public function updateCustomer(): void
     {
-        try {
-            $data = $this->editCustomerForm->getState();
-            $this->handleRecordUpdate($this->getUser()->customer, $data);
-        } catch (Halt $exception) {
-            return;
-        }
+        $data = $this->editCustomerForm->getState();
+        $this->handleRecordUpdate($this->getUser()->customer, $data);
 
-        //TODO message to let the user know their data has changed!
+        Notification::make('customerUpdatedNotification')
+            ->title('Saved!')
+            ->body('Extra information saved succesfully!')
+            ->success()
+            ->send();
     }
 
     public function updatePassword(): void
     {
-        try {
-            $data = $this->editPasswordForm->getState();
+        $data = $this->editPasswordForm->getState();
 
-            $this->handleRecordUpdate($this->getUser(), ['password' => $data['password']]);
-        } catch (Halt $exception) {
-            return;
-        }
+        $this->handleRecordUpdate($this->getUser(), ['password' => $data['password']]);
 
         if (request()->hasSession() && array_key_exists('password', $data)) {
             request()->session()->put([
@@ -197,12 +202,25 @@ class EditProfile extends Page implements HasForms
 
         $this->editPasswordForm->fill();
 
-        //TODO message to let the user know their data has changed!
+        Notification::make('passwordUpdatedNotification')
+            ->title('Saved!')
+            ->body('Password saved succesfully!')
+            ->success()
+            ->send();
     }
 
     protected function handleRecordUpdate(Model $record, array $data): Model
     {
         $record->update($data);
+
         return $record;
+    }
+
+    protected function getFooterWidgets(): array
+    {
+        return [
+            YourAddressesWidget::class,
+            AddressRelationManagerFormWidget::class,
+        ];
     }
 }

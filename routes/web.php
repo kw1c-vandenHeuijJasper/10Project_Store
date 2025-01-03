@@ -11,7 +11,7 @@ Route::get('/', function () {
     Auth::logout();
 
     return new HtmlString('
-    ' . Auth::user() . "
+    '.Auth::user()."
         <h1>
             Do you want to go log in as <a href='/loginAsAdmin'>
                 admin
@@ -40,7 +40,7 @@ Route::get('/loginAsCustomer', function () {
 });
 Route::get('/panelPicker', function () {
     return new HtmlString('
-    ' . Auth::user() . "
+    '.Auth::user()."
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -57,10 +57,10 @@ Route::get('/panelPicker', function () {
 Route::get('/cancelRedundantActiveOrders', function () {
     Customer::with('activeOrders')
         ->get()
-        ->filter(fn(Customer $customer) => $customer->activeOrders->count() > 1)
+        ->filter(fn (Customer $customer) => $customer->activeOrders->count() > 1)
         ->each(function (Customer $customer) {
             $orderIds = $customer->activeOrders
-                ->reject(fn(Order $order) => $order == $customer->activeOrders->last())
+                ->reject(fn (Order $order) => $order == $customer->activeOrders->last())
                 ->pluck('id');
 
             Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);
