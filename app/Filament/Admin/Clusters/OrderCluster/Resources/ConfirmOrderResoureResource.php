@@ -13,7 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-
+// FIXME refactor (resource resource)
 class ConfirmOrderResoureResource extends Resource
 {
     protected static ?string $model = Order::class;
@@ -45,7 +45,7 @@ class ConfirmOrderResoureResource extends Resource
                     ->searchable(),
                 TextColumn::make('id')
                     ->label('Total')
-                    ->formatStateUsing(fn ($state) => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
+                    ->formatStateUsing(fn($state) => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\EditProfile;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -27,28 +28,21 @@ class CustomerPanelProvider extends PanelProvider
         return $panel
             ->id('customer')
             ->path('customer') // TODO set to '' for no suffix of the URL
-            // ->login()
-            ->login(\Filament\Pages\Auth\Login::class)
+            ->login()
             ->registration()
             ->colors([
                 'primary' => Color::Amber,
             ])
             ->navigationItems([
                 NavigationItem::make('Admin Panel')
-                    ->hidden(function () {
-                        if (Auth::user()->is_admin) {
-                            return false;
-                        } else {
-                            return true;
-                        }
-                    })
-                    ->url('http://10project_store.test/admin') // TODO remove unless you are signed in as admin?
+                    ->hidden(fn() => Auth::user()->is_admin ? false : true)
+                    ->url('http://10project_store.test/admin') //TODO change
                     ->icon('heroicon-o-presentation-chart-line'),
             ])
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
-                Pages\Dashboard::class,
+                Pages\Dashboard::class, //TODO remove
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([
