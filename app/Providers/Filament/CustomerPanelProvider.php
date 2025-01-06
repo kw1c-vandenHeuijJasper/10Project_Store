@@ -27,6 +27,7 @@ class CustomerPanelProvider extends PanelProvider
         return $panel
             ->id('customer')
             ->path('customer') // TODO set to '' for no suffix of the URL
+            ->brandName('Store')
             ->login()
             ->registration()
             ->colors([
@@ -34,7 +35,7 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Admin Panel')
-                    ->hidden(fn () => Auth::user()->is_admin ? false : true)
+                    ->hidden(fn() => Auth::user()->is_admin ? false : true)
                     ->url('http://10project_store.test/admin') //TODO change
                     ->icon('heroicon-o-presentation-chart-line'),
             ])
