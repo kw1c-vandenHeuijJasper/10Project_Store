@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource\Pages;
+namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResource\Pages;
 
 use App\Enums\OrderStatus;
-use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResource;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 use App\Filament\Admin\Resources\CustomerResource;
 use App\Filament\Admin\Resources\ProductResource;
@@ -21,9 +21,9 @@ use Filament\Infolists\Infolist;
 use Filament\Resources\Pages\ViewRecord;
 use Illuminate\Support\HtmlString;
 
-class ViewConfirmOrderResoure extends ViewRecord
+class ViewConfirmOrderResource extends ViewRecord
 {
-    protected static string $resource = ConfirmOrderResoureResource::class;
+    protected static string $resource = ConfirmOrderResource::class;
 
     public function getOrderProduct()
     {

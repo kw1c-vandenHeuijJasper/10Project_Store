@@ -4,7 +4,7 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources;
 
 use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster;
-use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResoureResource\Pages;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResource\Pages;
 use App\Helpers\Money;
 use App\Models\Order;
 use App\Models\OrderProduct;
@@ -14,8 +14,7 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 
-// FIXME refactor (resource resource)
-class ConfirmOrderResoureResource extends Resource
+class ConfirmOrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
@@ -68,8 +67,8 @@ class ConfirmOrderResoureResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListConfirmOrderResoures::route('/'),
-            'view' => Pages\ViewConfirmOrderResoure::route('/{record}'),
+            'index' => Pages\ListConfirmOrderResources::route('/'),
+            'view' => Pages\ViewConfirmOrderResource::route('/{record}'),
         ];
     }
 }
