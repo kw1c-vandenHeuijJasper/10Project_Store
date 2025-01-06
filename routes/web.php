@@ -77,11 +77,11 @@ Route::get('/tinker', function () {
 // [ ]add a 'CANCELLED' reason?
 
 // [GROUP]Customer panel
+// [ ]products table / page with "add to cart" buttons
 // [ ]products relation manager
 //      detaching products,
 //      change amount to order,
 //      products "show" link like in ordersrelationmanager,
-// [ ]products table / page with "add to cart" buttons
 
 // Admin panel
 

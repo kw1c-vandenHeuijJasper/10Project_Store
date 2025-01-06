@@ -53,7 +53,6 @@ class EditProfile extends Page implements HasForms
         $this->canGoToPage() == true ? $this->fillForms() : null;
     }
 
-    //TODO profile & customer data in same array?
     protected function getForms(): array
     {
         return [
