@@ -27,7 +27,6 @@ class OrderResource extends Resource
     public static ?string $label = 'Order';
 
     protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
-    // protected static ?string $navigationIcon = 'icon-log-viewer';
 
     public static function getEloquentQuery(): Builder
     {
@@ -105,12 +104,12 @@ class OrderResource extends Resource
                 TextColumn::make('amount of products')
                     ->alignCenter()
                     ->getStateUsing(
-                        fn ($record) => OrderProduct::where('order_id', $record->id)
+                        fn($record) => OrderProduct::where('order_id', $record->id)
                             ->pluck('amount')
                             ->sum()
                     ),
                 TextColumn::make('total')
-                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                    ->getStateUsing(fn($record) => Money::prefixFormat(
                         OrderProduct::where('order_id', $record->id)
                             ->pluck('total')
                             ->sum()
@@ -146,8 +145,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED]))
-                    ->after(fn () => redirect(self::getUrl()))
+                    ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED]))
+                    ->after(fn() => redirect(self::getUrl()))
                     ->requiresConfirmation(),
                 Tables\Actions\Action::make('reactivate')
                     ->label('Reactivate')
@@ -159,8 +158,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE]))
-                    ->after(fn () => redirect(self::getUrl()))
+                    ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE]))
+                    ->after(fn() => redirect(self::getUrl()))
                     ->requiresConfirmation(),
             ])
             ->recordUrl(null)
