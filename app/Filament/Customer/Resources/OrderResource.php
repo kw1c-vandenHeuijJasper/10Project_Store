@@ -4,6 +4,7 @@ namespace App\Filament\Customer\Resources;
 
 use App\Enums\OrderStatus;
 use App\Filament\Customer\Resources\OrderResource\Pages;
+use App\Filament\Customer\Resources\OrderResource\RelationManagers\ProductsRelationManager;
 use App\Helpers\Money;
 use App\Models\Address;
 use App\Models\Customer;
@@ -61,13 +62,13 @@ class OrderResource extends Resource
 
                 Select::make('shipping_address_id')
                     ->label('Shipping Address')
-                    ->options(fn() => $addresses->pluck('street_name', 'id'))
+                    ->options(fn () => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Select::make('invoice_address_id')
                     ->label('Invoice Address')
-                    ->options(fn() => $addresses->pluck('street_name', 'id'))
+                    ->options(fn () => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
             ]);
@@ -100,12 +101,12 @@ class OrderResource extends Resource
                 TextColumn::make('amount of products')
                     ->alignCenter()
                     ->getStateUsing(
-                        fn($record) => OrderProduct::where('order_id', $record->id)
+                        fn ($record) => OrderProduct::where('order_id', $record->id)
                             ->pluck('amount')
                             ->sum()
                     ),
                 TextColumn::make('total')
-                    ->getStateUsing(fn($record) => Money::prefixFormat(
+                    ->getStateUsing(fn ($record) => Money::prefixFormat(
                         OrderProduct::where('order_id', $record->id)
                             ->pluck('total')
                             ->sum()
@@ -141,8 +142,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED]))
-                    ->after(fn() => redirect(self::getUrl()))
+                    ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED]))
+                    ->after(fn () => redirect(self::getUrl()))
                     ->requiresConfirmation(),
                 Tables\Actions\Action::make('reactivate')
                     ->label('Reactivate')
@@ -154,8 +155,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE]))
-                    ->after(fn() => redirect(self::getUrl()))
+                    ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE]))
+                    ->after(fn () => redirect(self::getUrl()))
                     ->requiresConfirmation(),
             ])
             ->recordUrl(null)
@@ -177,7 +178,7 @@ class OrderResource extends Resource
     public static function getRelations(): array
     {
         return [
-            // TODO products
+            ProductsRelationManager::class,
         ];
     }
 
