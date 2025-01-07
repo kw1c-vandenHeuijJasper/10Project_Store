@@ -28,14 +28,14 @@ class EditOrder extends EditRecord
     protected function getHeaderActions(): array
     {
         if (collect($this->record)->contains(null)) {
-            $is_enabled = true;
+            $is_disabled = true;
         } else {
-            $is_enabled = false;
+            $is_disabled = false;
         }
 
         return [
-            $this->actionMaker('Cancel Order', OrderStatus::CANCELLED, $is_enabled),
-            $this->actionMaker('Submit for Review', OrderStatus::PROCESSING, $is_enabled),
+            $this->actionMaker('Cancel Order', OrderStatus::CANCELLED, false),
+            $this->actionMaker('Submit for Review', OrderStatus::PROCESSING, $is_disabled),
         ];
     }
 
@@ -47,11 +47,11 @@ class EditOrder extends EditRecord
             });
     }
 
-    private function actionMaker(string $label, OrderStatus $newStatus, bool $is_enabled): Action
+    private function actionMaker(string $label, OrderStatus $newStatus, bool $is_disabled): Action
     {
         return Action::make($label)
             ->requiresConfirmation()
-            ->disabled($is_enabled)
+            ->disabled($is_disabled)
             ->action(function ($record) use ($newStatus) {
                 $record->update(['status' => $newStatus]);
 

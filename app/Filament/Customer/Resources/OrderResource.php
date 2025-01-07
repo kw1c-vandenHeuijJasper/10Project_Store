@@ -29,6 +29,8 @@ class OrderResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
+    public static ?string $navigationGroup = 'Orders';
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()

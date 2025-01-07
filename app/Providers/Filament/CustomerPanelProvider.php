@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Customer\Resources\OrderResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
@@ -18,6 +19,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\URL;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class CustomerPanelProvider extends PanelProvider
@@ -38,6 +40,33 @@ class CustomerPanelProvider extends PanelProvider
                     ->hidden(fn () => Auth::user()->is_admin ? false : true)
                     ->url('http://10project_store.test/admin') // TODO change
                     ->icon('heroicon-o-presentation-chart-line'),
+                NavigationItem::make('Shopping Cart')
+                    ->icon('heroicon-s-shopping-cart')
+                    ->group('Orders')
+                    ->hidden(function () {
+                        if (
+                            \Illuminate\Support\Str::containsAll(URL::current(), [
+                                'orders',
+                                'edit',
+                            ])
+                            &&
+                            Auth::user()?->customer?->hasShoppingCart()
+                        ) {
+                            return true;
+                        }
+                        if (! Auth::user()?->customer) {
+                            return true;
+                        }
+
+                        return false;
+                    })
+                    ->url(function () {
+                        if (Auth::user()?->customer?->hasShoppingCart()) {
+                            return OrderResource::getUrl('edit', [
+                                'record' => Auth::user()->customer->shoppingCart->id,
+                            ]);
+                        }
+                    }),
             ])
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')

@@ -63,6 +63,7 @@ class ProductResource extends Resource
                 TextInput::make('amount')
                     ->integer()
                     ->required()
+                    ->default(1)
                     ->minValue(1)
                     ->maxValue(fn (Product $record): int => $record->stock),
             ])
