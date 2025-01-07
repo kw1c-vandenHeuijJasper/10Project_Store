@@ -3,7 +3,6 @@
 use App\Enums\OrderStatus;
 use App\Models\Customer;
 use App\Models\Order;
-use App\Models\OrderProduct;
 use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -71,36 +70,6 @@ Route::get('/cancelRedundantActiveOrders', function () {
 
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
-    $customer = Auth::user()->customer;
-    $shoppingCart = $customer->shoppingCart;
-    $product = Product::inRandomOrder()->first();
-
-    if ($shoppingCart) {
-        $order_id = $shoppingCart->id;
-    } else {
-        $newOrder = Order::create([
-            'status' => OrderStatus::ACTIVE,
-            'customer_id' => $customer->id,
-        ]);
-
-        $order_id = $newOrder->id;
-    }
-
-    dd([
-        Order::with('products')->latest()->first(),
-
-        OrderProduct::create(
-            [
-                'order_id' => $order_id,
-                'product_id' => $product->id,
-                'price' => $product->price,
-            ]
-        ),
-
-        $foo = OrderProduct::latest()->first(),
-
-        $foo->delete(),
-    ]);
 });
 
 // 

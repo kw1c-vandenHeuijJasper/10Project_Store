@@ -84,6 +84,7 @@ class OrderResource extends Resource
                 TextColumn::make('status'),
                 TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
+                    ->limit(25)
                     ->formatStateUsing(function ($record) use ($addresses) {
                         $address = $addresses->find($record->shipping_address_id);
 
@@ -92,6 +93,7 @@ class OrderResource extends Resource
                     }),
                 TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
+                    ->limit(25)
                     ->formatStateUsing(function ($record) use ($addresses) {
                         $address = $addresses->find($record->invoice_address_id);
 

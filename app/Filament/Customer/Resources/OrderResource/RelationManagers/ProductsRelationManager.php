@@ -22,12 +22,10 @@ class ProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('stock'),
                 Tables\Columns\TextColumn::make('pivot.price'),
                 Tables\Columns\TextInputColumn::make('amount')
-                    ->rules(function ($record) {
-                        return [
-                            "between:1,{$record->stock}",
-                            'integer',
-                        ];
-                    })
+                    ->rules(fn ($record) => [
+                        "between:1,{$record->stock}",
+                        'integer',
+                    ])
                     ->type('number')
                     ->width('10%'),
                 Tables\Columns\TextColumn::make('total')
@@ -36,12 +34,6 @@ class ProductsRelationManager extends RelationManager
             ->actions([
                 Tables\Actions\DetachAction::make()
                     ->label('Remove from cart'),
-            ])
-            ->bulkActions([
-                Tables\Actions\BulkActionGroup::make([
-                    Tables\Actions\DetachBulkAction::make()
-                        ->label('Remove from cart'),
-                ]),
             ]);
     }
 }

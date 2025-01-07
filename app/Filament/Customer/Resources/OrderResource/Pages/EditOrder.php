@@ -27,9 +27,15 @@ class EditOrder extends EditRecord
 
     protected function getHeaderActions(): array
     {
+        if (collect($this->record)->contains(null)) {
+            $is_enabled = true;
+        } else {
+            $is_enabled = false;
+        }
+
         return [
-            $this->actionMaker('Cancel Order', OrderStatus::CANCELLED),
-            $this->actionMaker('Submit for Review', OrderStatus::PROCESSING),
+            $this->actionMaker('Cancel Order', OrderStatus::CANCELLED, $is_enabled),
+            $this->actionMaker('Submit for Review', OrderStatus::PROCESSING, $is_enabled),
         ];
     }
 
@@ -41,10 +47,11 @@ class EditOrder extends EditRecord
             });
     }
 
-    private function actionMaker(string $label, OrderStatus $newStatus): Action
+    private function actionMaker(string $label, OrderStatus $newStatus, bool $is_enabled): Action
     {
         return Action::make($label)
             ->requiresConfirmation()
+            ->disabled($is_enabled)
             ->action(function ($record) use ($newStatus) {
                 $record->update(['status' => $newStatus]);
 
