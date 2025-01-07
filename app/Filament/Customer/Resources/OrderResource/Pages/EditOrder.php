@@ -33,6 +33,14 @@ class EditOrder extends EditRecord
         ];
     }
 
+    protected function getCancelFormAction(): Action
+    {
+        return Action::make('back')
+            ->action(function () {
+                return redirect(OrderResource::getUrl());
+            });
+    }
+
     private function actionMaker(string $label, OrderStatus $newStatus): Action
     {
         return Action::make($label)

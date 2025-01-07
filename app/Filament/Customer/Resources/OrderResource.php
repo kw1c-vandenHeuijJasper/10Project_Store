@@ -32,7 +32,7 @@ class OrderResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()
-            ->whereCustomerId(Customer::whereUserId(Auth::id())->first()?->id);
+            ->whereCustomerId(Auth::user()?->customer?->id);
     }
 
     public static function form(Form $form): Form
@@ -80,8 +80,7 @@ class OrderResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $orderProducts = OrderProduct::get();
-        $addresses = Address::get();
+        $addresses = Address::where('customer_id', Auth::user()?->customer?->id)->get();
 
         return $table
             ->columns([
@@ -90,33 +89,31 @@ class OrderResource extends Resource
                 TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->formatStateUsing(function ($record) use ($addresses) {
-                        $id = $record->shipping_address_id;
-                        $address = $addresses->where('id', $id)->first();
+                        $address = $addresses->find($record->shipping_address_id);
 
-                        // TODO shorter
-                        return $address->street_name.' '
-                            .$address->house_number.', '
-                            .$address->city;
+                        return "{$address->street_name} {$address->house_number}, 
+                        {$address->city}, {$address->zip_code}";
                     }),
                 TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
                     ->formatStateUsing(function ($record) use ($addresses) {
-                        $id = $record->invoice_address_id;
-                        $address = $addresses->where('id', $id)->first();
+                        $address = $addresses->find($record->invoice_address_id);
 
-                        // TODO shorter
-                        return $address->street_name.' '
-                            .$address->house_number.', '
-                            .$address->city;
+                        return "{$address->street_name} {$address->house_number}, 
+                        {$address->city}, {$address->zip_code}";
                     }),
                 TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn ($record) => $orderProducts->where('order_id', $record->id)
-                        ->pluck('amount')
-                        ->sum()),
+                    ->getStateUsing(
+                        fn ($record) => OrderProduct::where('order_id', $record->id)
+                            ->pluck('amount')
+                            ->sum()
+                    ),
                 TextColumn::make('total')
                     ->getStateUsing(fn ($record) => Money::prefixFormat(
-                        $orderProducts->where('order_id', $record->id)->pluck('total')->sum()
+                        OrderProduct::where('order_id', $record->id)
+                            ->pluck('total')
+                            ->sum()
                     )),
             ])
             ->defaultGroup('status')
@@ -139,6 +136,32 @@ class OrderResource extends Resource
                             return true;
                         }
                     }),
+                Tables\Actions\Action::make('cancel')
+                    ->label('Cancel')
+                    ->icon('heroicon-o-x-mark')
+                    ->hidden(function ($record) {
+                        if ($record?->toArray()['status'] == OrderStatus::PROCESSING->value) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED]))
+                    ->after(fn () => redirect(self::getUrl()))
+                    ->requiresConfirmation(),
+                Tables\Actions\Action::make('reactivate')
+                    ->label('Reactivate')
+                    ->icon('heroicon-o-check')
+                    ->hidden(function ($record) {
+                        if ($record?->toArray()['status'] == OrderStatus::PROCESSING->value) {
+                            return false;
+                        }
+
+                        return true;
+                    })
+                    ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE]))
+                    ->after(fn () => redirect(self::getUrl()))
+                    ->requiresConfirmation(),
             ])
             ->recordUrl(null)
             ->emptyStateActions([
