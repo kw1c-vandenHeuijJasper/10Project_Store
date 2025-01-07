@@ -1,6 +1,7 @@
 <?php
 
 use App\Enums\OrderStatus;
+use App\Filament\Customer\Resources\OrderResource;
 use App\Models\Customer;
 use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
@@ -69,6 +70,12 @@ Route::get('/cancelRedundantActiveOrders', function () {
 
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
+
+    // $url = OrderResource::getUrl(
+    //     'edit',
+    //     [Auth::user()->customer->id],
+    //     panel: 'customer'
+    // );
 });
 
 // 

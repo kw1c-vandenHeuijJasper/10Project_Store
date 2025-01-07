@@ -35,14 +35,14 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Admin Panel')
-                    ->hidden(fn() => Auth::user()->is_admin ? false : true)
-                    ->url('http://10project_store.test/admin') //TODO change
+                    ->hidden(fn () => Auth::user()->is_admin ? false : true)
+                    ->url('http://10project_store.test/admin') // TODO change
                     ->icon('heroicon-o-presentation-chart-line'),
             ])
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
-                Pages\Dashboard::class, //TODO remove
+                Pages\Dashboard::class, // TODO remove
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([

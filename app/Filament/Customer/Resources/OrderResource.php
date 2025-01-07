@@ -19,8 +19,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
-use Illuminate\Support\Str;
 
 class OrderResource extends Resource
 {
@@ -41,7 +39,6 @@ class OrderResource extends Resource
     {
         $customer = Customer::where('user_id', Auth::id())->first()?->id;
         $addresses = Address::whereCustomerId($customer)->get();
-        $urlContainsCreate = Str::contains(URL::current(), 'create');
 
         return $form
             ->schema([
@@ -96,6 +93,7 @@ class OrderResource extends Resource
                         $id = $record->shipping_address_id;
                         $address = $addresses->where('id', $id)->first();
 
+                        // TODO shorter
                         return $address->street_name.' '
                             .$address->house_number.', '
                             .$address->city;
@@ -106,6 +104,7 @@ class OrderResource extends Resource
                         $id = $record->invoice_address_id;
                         $address = $addresses->where('id', $id)->first();
 
+                        // TODO shorter
                         return $address->street_name.' '
                             .$address->house_number.', '
                             .$address->city;
@@ -113,14 +112,15 @@ class OrderResource extends Resource
                 TextColumn::make('amount of products')
                     ->alignCenter()
                     ->getStateUsing(fn ($record) => $orderProducts->where('order_id', $record->id)
-                        ->pluck('amount')->sum()),
+                        ->pluck('amount')
+                        ->sum()),
                 TextColumn::make('total')
                     ->getStateUsing(fn ($record) => Money::prefixFormat(
                         $orderProducts->where('order_id', $record->id)->pluck('total')->sum()
                     )),
             ])
             ->defaultGroup('status')
-            ->defaultSort(fn ($query) => $query->orderBy('updated_at', 'desc')->orderBy('status', 'desc'))
+            ->defaultSort('updated_at', 'desc')
             ->filters([
                 SelectFilter::make('Status')
                     ->options(OrderStatus::class)
@@ -130,38 +130,36 @@ class OrderResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->hidden(function ($record) {
-                        if ($record?->toArray() == Order::shoppingCart()?->toArray()) {
+                        if ($record?->toArray()['status'] == OrderStatus::PROCESSING->value) {
+                            return true;
+                        }
+                        if ($record?->toArray() == Auth::user()?->customer?->shoppingCart?->toArray()) {
                             return false;
                         } else {
                             return true;
                         }
                     }),
             ])
-            ->recordUrl(function ($record) {
-                if ($record?->toArray() == Order::shoppingCart()?->toArray()) {
-                    return 'orders/'.$record->id.'/edit';
-                } else {
-                    return null;
-                }
-            })
+            ->recordUrl(null)
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make()
                     ->label('Create a new order!'),
             ]);
     }
 
-    /*
-    * Disables create when you have an active/processing order, or if you are not a customer
-    */
     public static function canCreate(): bool
     {
-        return Customer::whereUserId(Auth::id())->first()?->canCreateOrder() ?? false;
+        if (Auth::user()?->customer?->canCreateOrder()) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            // TODO products
         ];
     }
 

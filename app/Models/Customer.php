@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Customer extends Model
 {
@@ -37,6 +38,13 @@ class Customer extends Model
         return $this->orders()->whereStatus(OrderStatus::ACTIVE);
     }
 
+    public function shoppingCart(): HasOne
+    {
+        return $this->hasOne(Order::class)
+            ->where('status', OrderStatus::ACTIVE)
+            ->orWhere('status', OrderStatus::PROCESSING);
+    }
+
     /**
      * Scopes
      */
@@ -57,30 +65,17 @@ class Customer extends Model
     /**
      * Functions
      */
-    public function hasActiveOrders(): bool
+    public function hasShoppingCart(): bool
     {
-        if ($this->activeOrders()->get()->toArray() == []) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function hasProcessingOrders(): bool
-    {
-        if ($this->orders()->whereStatus(OrderStatus::PROCESSING)->get()->toArray() == []) {
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    public function canCreateOrder(): bool
-    {
-        if ($this->hasActiveOrders() || $this->hasProcessingOrders()) {
+        if ($this->shoppingCart == null) {
             return false;
         }
 
         return true;
+    }
+
+    public function canCreateOrder(): bool
+    {
+        return ! $this->hasShoppingCart();
     }
 }
