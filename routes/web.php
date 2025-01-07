@@ -1,9 +1,10 @@
 <?php
 
 use App\Enums\OrderStatus;
-use App\Filament\Customer\Resources\OrderResource;
 use App\Models\Customer;
 use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
@@ -70,18 +71,43 @@ Route::get('/cancelRedundantActiveOrders', function () {
 
 Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
+    $customer = Auth::user()->customer;
+    $shoppingCart = $customer->shoppingCart;
+    $product = Product::inRandomOrder()->first();
 
-    // $url = OrderResource::getUrl(
-    //     'edit',
-    //     [Auth::user()->customer->id],
-    //     panel: 'customer'
-    // );
+    if ($shoppingCart) {
+        $order_id = $shoppingCart->id;
+    } else {
+        $newOrder = Order::create([
+            'status' => OrderStatus::ACTIVE,
+            'customer_id' => $customer->id,
+        ]);
+
+        $order_id = $newOrder->id;
+    }
+
+    dd([
+        Order::with('products')->latest()->first(),
+
+        OrderProduct::create(
+            [
+                'order_id' => $order_id,
+                'product_id' => $product->id,
+                'price' => $product->price,
+            ]
+        ),
+
+        $foo = OrderProduct::latest()->first(),
+
+        $foo->delete(),
+    ]);
 });
 
 // 
 
 // [GROUP]General
 // [ ]add a 'CANCELLED' reason?
+// [ ]add product pictures & automatic removal
 
 // [GROUP]Customer panel
 // [ ]products table / page with "add to cart" buttons

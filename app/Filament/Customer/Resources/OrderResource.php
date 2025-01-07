@@ -26,7 +26,7 @@ class OrderResource extends Resource
 
     public static ?string $label = 'Order';
 
-    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
+    protected static ?string $navigationIcon = 'heroicon-o-clipboard-document-list';
 
     public static function getEloquentQuery(): Builder
     {
@@ -61,17 +61,13 @@ class OrderResource extends Resource
 
                 Select::make('shipping_address_id')
                     ->label('Shipping Address')
-                    ->options(function () use ($addresses) {
-                        return $addresses->pluck('street_name', 'id');
-                    })
+                    ->options(fn() => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Select::make('invoice_address_id')
                     ->label('Invoice Address')
-                    ->options(function () use ($addresses) {
-                        return $addresses->pluck('street_name', 'id');
-                    })
+                    ->options(fn() => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
             ]);

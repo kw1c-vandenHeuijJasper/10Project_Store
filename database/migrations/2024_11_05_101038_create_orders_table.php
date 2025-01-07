@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('reference')->unique()->nullable();
             $table->string('status')->default(OrderStatus::FINISHED);
             $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
-            $table->foreignIdFor(Address::class, 'shipping_address_id')->constrained('addresses')->cascadeOnDelete()->nullable();
-            $table->foreignIdFor(Address::class, 'invoice_address_id')->constrained('addresses')->cascadeOnDelete()->nullable();
+            $table->foreignIdFor(Address::class, 'shipping_address_id')->nullable()->constrained('addresses')->cascadeOnDelete();
+            $table->foreignIdFor(Address::class, 'invoice_address_id')->nullable()->constrained('addresses')->cascadeOnDelete();
             $table->timestamps();
         });
     }
