@@ -44,7 +44,7 @@ class ProductResource extends Resource
                 'md' => 2,
             ])
             ->filters([
-                // TODO
+                // TODO filters
             ]);
     }
 
@@ -138,7 +138,7 @@ class ProductResource extends Resource
     {
         return [
             'index' => Pages\ListProducts::route('/'),
-            // TODO view page????????
+            // TODO product view page?
         ];
     }
 }
