@@ -12,13 +12,14 @@ class OrderObserver
      */
     public function created(Order $order): void
     {
-        $order->update([
-            'reference' => function () {
-                $i = random_int(1, 999999999);
-                (string) $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#'.$preOrder;
-            },
+        $i = random_int(1, 999999999);
+        (string) $preOrder = Str::padLeft($i, 9, 0);
+        $foo = (string)'ORD#' . $preOrder;
+
+
+        $order->update([
+            'reference' => $foo
         ]);
     }
 }
