@@ -75,6 +75,9 @@ Route::get('/tinker', function () {
 // 
 
 // [GROUP]General
+// [ ]when making user, also make customer OR
+// MAKE CUSTOM REGISTER PAGE!! OR
+// MERGE USER AND CUSTOMER INTO 1!!
 // [ ]add a 'CANCELLED' reason for orders?
 // [ ]add product pictures & automatic removal of pictures
 

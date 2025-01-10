@@ -54,7 +54,7 @@ class CustomerPanelProvider extends PanelProvider
                         ) {
                             return true;
                         }
-                        if (! Auth::user()?->customer) {
+                        if (! Auth::user()?->customer | ! Auth::user()?->customer?->hasShoppingCart()) {
                             return true;
                         }
 

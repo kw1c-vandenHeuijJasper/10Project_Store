@@ -106,14 +106,14 @@ class OrderResource extends Resource
                     ->alignCenter()
                     ->getStateUsing(
                         fn ($record) => OrderProduct::where('order_id', $record->id)
-                            ->pluck('amount')
-                            ->sum()
+                            // ->pluck('amount')
+                            ->sum('amount')
                     ),
                 TextColumn::make('total')
                     ->getStateUsing(fn ($record) => Money::prefixFormat(
                         OrderProduct::where('order_id', $record->id)
-                            ->pluck('total')
-                            ->sum()
+                            // ->pluck('total')
+                            ->sum('total')
                     )),
             ])
             ->defaultGroup('status')
