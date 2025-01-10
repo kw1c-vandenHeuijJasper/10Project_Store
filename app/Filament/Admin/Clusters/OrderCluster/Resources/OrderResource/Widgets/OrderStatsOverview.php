@@ -25,12 +25,10 @@ class OrderStatsOverview extends BaseWidget
         $thisOrder = $orderProduct->where('order_id', $this->record->id);
 
         return [
-            Stat::make('Total Price', function () use ($thisOrder) {
-                return Money::HtmlString(
-                    Money::format($thisOrder->sum('total')),
-                    true
-                );
-            }),
+            Stat::make('Total Price', fn() => Money::HtmlString(
+                Money::format($thisOrder->sum('total')),
+                true
+            )),
             Stat::make('Product Count', $thisOrder->sum('amount')),
         ];
     }

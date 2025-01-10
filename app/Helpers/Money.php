@@ -16,7 +16,7 @@ class Money
         $inputWithoutSpaces = (string) str($input)->remove(' ');
 
         $cents = substr($inputWithoutSpaces, -2);
-        $cents = strlen($cents) == 1 ? 0 .$cents : $cents;
+        $cents = strlen($cents) == 1 ? 0 . $cents : $cents;
 
         $trimmedInput = $inputWithoutSpaces[0] === '0' ? ltrim($inputWithoutSpaces, '0') : $inputWithoutSpaces;
 
@@ -25,7 +25,7 @@ class Money
 
         $eurosWithCommas = number_format($euros);
 
-        $output = $eurosWithCommas.'.'.$cents;
+        $output = $eurosWithCommas . '.' . $cents;
 
         return $output;
     }
@@ -35,7 +35,7 @@ class Money
      */
     public static function prefix(string|int|null $input = null): string
     {
-        return '€'.$input;
+        return '€' . $input;
     }
 
     /**
@@ -69,8 +69,8 @@ class Money
         $prefixed = $prefixed == true ? Money::prefix() : false;
 
         return new HtmlString(
-            '<span style=color:lime;>'.$prefixed.'</span>'.
-                '<span style=color:lime;text-decoration:underline;>'.$input.'</span>'
+            '<span style=color:lime;>' . $prefixed . '</span>' .
+                '<span style=color:lime;text-decoration:underline;>' . $input . '</span>'
         );
     }
 }

@@ -27,17 +27,15 @@ class ViewConfirmOrderResource extends ViewRecord
 
     public function getOrderProduct()
     {
-        return $this->record->products->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'total' => $item->pivot->total,
-                'name' => $item->name,
-                'stock' => $item->stock,
-                'amount' => $item->pivot->amount,
-                'price' => $item->price,
-                'agreed_price' => $item->pivot->price,
-            ];
-        });
+        return $this->record->products->map(fn($item) => [
+            'id' => $item->id,
+            'total' => $item->pivot->total,
+            'name' => $item->name,
+            'stock' => $item->stock,
+            'amount' => $item->pivot->amount,
+            'price' => $item->price,
+            'agreed_price' => $item->pivot->price,
+        ]);
     }
 
     public function infolist(Infolist $infolist): Infolist
@@ -96,14 +94,12 @@ class ViewConfirmOrderResource extends ViewRecord
                                     ->schema([
                                         TextEntry::make('name')
                                             ->label(
-                                                function ($record) {
-                                                    return new HtmlString(
-                                                        '<a href='.ProductResource::getUrl().
-                                                            '/'.$record->id.'/edit'.' target="blank">
+                                                fn($record) => new HtmlString(
+                                                    '<a href='.ProductResource::getUrl().
+                                                        '/'.$record->id.'/edit'.' target="blank">
                                                             Product Name
                                                         </a>'
-                                                    );
-                                                }
+                                                )
                                             ),
                                         TextEntry::make('stock'),
                                         TextEntry::make('price')
