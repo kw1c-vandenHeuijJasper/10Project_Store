@@ -118,7 +118,7 @@ class CustomerResource extends Resource
                 \Filament\Forms\Components\Toggle::make('isAdmin')
                     ->inline(false)
                     ->formatStateUsing(function (Get $get): bool {
-                        return (bool) User::find($get('user_id'))?->is_admin == true ? true : false;
+                        return (bool) User::find($get('user_id'))->is_admin;
                     })
                     ->onColor('success')
                     ->offColor('danger')

@@ -9,39 +9,33 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 
 Route::get('/', function () {
-    Auth::logout();
-
-    return new HtmlString('
-    '.Auth::user()."
-        <h1>
-            Do you want to go log in as <a href='/loginAsAdmin'>
-                admin
-            </a>
-            or  
-            <a href='/loginAsCustomer'>
-                customer
-            </a>
-            ?
-        </h1>
-    ");
+    return new HtmlString("
+            <h1>
+                Do you want to go log in as <a href='/loginAsAdmin'>
+                    admin
+                </a>
+                or  
+                <a href='/loginAsCustomer'>
+                    customer
+                </a>
+                ?
+            </h1>
+        ");
 });
 
 Route::get('/loginAsAdmin', function () {
-    Auth::logout();
     Auth::loginUsingId(1);
 
     return redirect('/panelPicker');
 });
 
 Route::get('/loginAsCustomer', function () {
-    Auth::logout();
     Auth::loginUsingId(2);
 
     return redirect('/panelPicker');
 });
 Route::get('/panelPicker', function () {
-    return new HtmlString('
-    '.Auth::user()."
+    return new HtmlString("
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -74,10 +68,16 @@ Route::get('/tinker', function () {
 
 // 
 
+// When using auth()->anything, intelephense says this is an error
+// https://github.com/barryvdh/laravel-ide-helper might be able to resolve these fake errors!
+
+// other cool package(s)
+// https://spatie.be/docs/laravel-html/v3/introduction
+
 // [GROUP]General
-// [ ]when making user, also make customer OR
-// MAKE CUSTOM REGISTER PAGE!! OR
-// MERGE USER AND CUSTOMER INTO 1!!
+// [ ]when making user, also make customer ||
+//      make custom register page ||
+//      merge user and customer into 1 table!
 // [ ]add a 'CANCELLED' reason for orders?
 // [ ]add product pictures & automatic removal of pictures
 

@@ -38,6 +38,11 @@ class Customer extends Model
         return $this->orders()->whereStatus(OrderStatus::ACTIVE);
     }
 
+    public function processingOrders(): HasMany
+    {
+        return $this->orders()->whereStatus(OrderStatus::PROCESSING);
+    }
+
     public function shoppingCart(): HasOne
     {
         return $this->hasOne(Order::class)
@@ -77,5 +82,14 @@ class Customer extends Model
     public function canCreateOrder(): bool
     {
         return ! $this->hasShoppingCart();
+    }
+
+    public function hasProcessingOrder(): bool
+    {
+        if ($this->processingOrders()->get()->isNotEmpty()) {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -14,20 +14,6 @@ class User extends Authenticatable implements FilamentUser
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable;
 
-    public function canAccessPanel(Panel $panel): bool
-    {
-        if ($panel->getId() === 'admin') {
-            return $this->is_admin === 1 ? true : false;
-        }
-
-        return $panel->getId() === 'customer' ? true : true;
-    }
-
-    public function customer(): HasOne
-    {
-        return $this->hasOne(Customer::class, 'user_id', 'id');
-    }
-
     /**
      * The attributes that are mass assignable.
      *
@@ -59,6 +45,33 @@ class User extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'bool',
         ];
+    }
+
+    /**
+     *  Relations
+     */
+    public function customer(): HasOne
+    {
+        // TODO figure out why this was here
+        // return $this->hasOne(Customer::class, 'user_id', 'id');
+
+        // new
+        return $this->hasOne(Customer::class);
+    }
+
+    /**
+     *  Functions
+     */
+    public function canAccessPanel(Panel $panel): bool
+    {
+        if ($panel->getId() === 'admin') {
+            return $this->is_admin;
+        }
+
+        if ($panel->getId() === 'customer') {
+            return true;
+        }
     }
 }

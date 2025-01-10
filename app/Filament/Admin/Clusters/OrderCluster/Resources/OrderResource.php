@@ -80,7 +80,7 @@ class OrderResource extends Resource
 
                 Forms\Components\Select::make('customer_id')
                     ->label('Customer')
-                    ->hint('with no active/processing orders. If number customer has active order')
+                    ->hint('If customer has an active order, this is a number. Nothing\'s wrong!')
                     ->options(fn () => Customer::with('user')->withNoWrongOrders()->get()->mapWithKeys(
                         fn (Customer $customer) => [$customer->id => $customer->user->name]
                     ))

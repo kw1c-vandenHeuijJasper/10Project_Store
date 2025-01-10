@@ -20,7 +20,9 @@ class ProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('description')
                     ->limit(15),
                 Tables\Columns\TextColumn::make('stock'),
-                Tables\Columns\TextColumn::make('pivot.price'),
+                Tables\Columns\TextColumn::make('pivot.price')
+                    ->label('Price')
+                    ->formatStateUsing(fn ($state): string => Money::prefixFormat($state)),
                 Tables\Columns\TextInputColumn::make('amount')
                     ->rules(fn ($record) => [
                         "between:1,{$record->stock}",
