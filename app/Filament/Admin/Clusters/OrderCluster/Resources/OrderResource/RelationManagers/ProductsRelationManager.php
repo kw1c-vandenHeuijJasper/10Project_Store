@@ -114,12 +114,12 @@ class ProductsRelationManager extends RelationManager
         $price = Product::where('id', $get('recordId'))->pluck('price')->first();
         $set('price', $price);
 
-        (int) $total = (int) $get('amount') * (int) $get('price');
+        $total = (int) $get('amount') * (int) $get('price');
 
         $set('total', $total);
 
         if ($get('total')) {
-            (string) $input = $get('total');
+            $input = $get('total');
             $total = Money::format($input);
         }
 

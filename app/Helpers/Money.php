@@ -25,9 +25,7 @@ class Money
 
         $eurosWithCommas = number_format($euros);
 
-        $output = $eurosWithCommas . '.' . $cents;
-
-        return $output;
+        return $eurosWithCommas . '.' . $cents;
     }
 
     /**

@@ -8,7 +8,6 @@ return RectorConfig::configure()
     ->withPaths([
         __DIR__ . '/app',
         __DIR__ . '/bootstrap',
-        __DIR__ . '/config',
         __DIR__ . '/public',
         __DIR__ . '/resources',
         __DIR__ . '/routes',
@@ -16,7 +15,7 @@ return RectorConfig::configure()
     ])
     ->withPhpSets()
     ->withPreparedSets(
-        deadCode: false,
+        deadCode: true,
         codeQuality: false,
         codingStyle: false,
         typeDeclarations: false,
