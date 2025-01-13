@@ -6,12 +6,12 @@ use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__.'/app',
-        __DIR__.'/bootstrap',
-        __DIR__.'/public',
-        __DIR__.'/resources',
-        __DIR__.'/routes',
-        __DIR__.'/tests',
+        __DIR__ . '/app/Filament/Customer/Resources/OrderResource/Pages/*',
+        // __DIR__.'/bootstrap',
+        // __DIR__.'/public',
+        // __DIR__.'/resources',
+        // __DIR__.'/routes',
+        // __DIR__.'/tests',
     ])
     ->withPhpSets()
     ->withPreparedSets(

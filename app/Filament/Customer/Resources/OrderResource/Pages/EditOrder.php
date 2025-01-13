@@ -3,11 +3,12 @@
 namespace App\Filament\Customer\Resources\OrderResource\Pages;
 
 use App\Enums\OrderStatus;
-use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widgets\OrderStatsOverview;
-use App\Filament\Customer\Resources\OrderResource;
+use App\Models\OrderProduct;
 use Filament\Actions\Action;
-use Filament\Resources\Pages\EditRecord;
 use Illuminate\Support\HtmlString;
+use Filament\Resources\Pages\EditRecord;
+use App\Filament\Customer\Resources\OrderResource;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widgets\OrderStatsOverview;
 
 class EditOrder extends EditRecord
 {
@@ -15,7 +16,7 @@ class EditOrder extends EditRecord
 
     public function getTitle(): string|HtmlString
     {
-        return new HtmlString('Viewing your order: <br />'.$this->record->reference);
+        return new HtmlString('Viewing your order: <br />' . $this->record->reference);
     }
 
     protected function getHeaderWidgets(): array
@@ -27,11 +28,22 @@ class EditOrder extends EditRecord
 
     protected function getHeaderActions(): array
     {
-        if (collect($this->record)->contains(null)) {
-            $is_disabled = true;
-        } else {
-            $is_disabled = false;
-        }
+
+        $record = $this->record;
+        $recordContainsNull = collect($record)->contains(null);
+
+        $orderHasProducts = collect(
+            OrderProduct::where('order_id', $record->id)
+                ->get()
+        ) == collect();
+
+
+        $is_disabled = $recordContainsNull || $orderHasProducts;
+        // if ($recordContainsNull || $orderHasProducts) {
+        //     $is_disabled = true;
+        // } else {
+        //     $is_disabled = false;
+        // }
 
         return [
             $this->actionMaker('Cancel Order', OrderStatus::CANCELLED, false),
@@ -42,7 +54,7 @@ class EditOrder extends EditRecord
     protected function getCancelFormAction(): Action
     {
         return Action::make('back')
-            ->action(fn () => redirect(OrderResource::getUrl()));
+            ->action(fn() => redirect(OrderResource::getUrl()));
     }
 
     private function actionMaker(string $label, OrderStatus $newStatus, bool $is_disabled): Action
