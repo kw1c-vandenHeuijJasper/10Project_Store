@@ -22,16 +22,16 @@ class ProductsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('stock'),
                 Tables\Columns\TextColumn::make('pivot.price')
                     ->label('Price')
-                    ->formatStateUsing(fn($state): string => Money::prefixFormat($state)),
+                    ->formatStateUsing(fn ($state): string => Money::prefixFormat($state)),
                 Tables\Columns\TextInputColumn::make('amount')
-                    ->rules(fn($record): array => [
-                        'between:1,' . $record->stock,
+                    ->rules(fn ($record): array => [
+                        'between:1,'.$record->stock,
                         'integer',
                     ])
                     ->type('number')
                     ->width('10%'),
                 Tables\Columns\TextColumn::make('total')
-                    ->formatStateUsing(fn($state): string => Money::prefixFormat($state)),
+                    ->formatStateUsing(fn ($state): string => Money::prefixFormat($state)),
             ])
             ->actions([
                 Tables\Actions\DetachAction::make()

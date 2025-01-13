@@ -4,10 +4,10 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Widge
 
 use App\Helpers\Money;
 use App\Models\OrderProduct;
-use Illuminate\Support\HtmlString;
-use Illuminate\Database\Eloquent\Model;
-use Filament\Widgets\StatsOverviewWidget\Stat;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\HtmlString;
 
 class OrderStatsOverview extends BaseWidget
 {
@@ -26,7 +26,7 @@ class OrderStatsOverview extends BaseWidget
         $thisOrder = $orderProduct->where('order_id', $this->record->id);
 
         return [
-            Stat::make('Total Price', fn(): HtmlString => Money::HtmlString(
+            Stat::make('Total Price', fn (): HtmlString => Money::HtmlString(
                 Money::format($thisOrder->sum('total')),
                 true
             )),

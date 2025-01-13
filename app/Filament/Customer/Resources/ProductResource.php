@@ -30,7 +30,7 @@ class ProductResource extends Resource
                 Stack::make([
                     TextColumn::make('name')
                         ->searchable()
-                        ->formatStateUsing(fn($state): string => Str::ucfirst($state)),
+                        ->formatStateUsing(fn ($state): string => Str::ucfirst($state)),
                     TextColumn::make('description')
                         ->limit(255),
                     TextColumn::make('stock'),
@@ -56,8 +56,8 @@ class ProductResource extends Resource
             ->requiresConfirmation()
             ->modalIcon('heroicon-s-shopping-cart')
             ->modalDescription(
-                fn($record): string => 'How many ' .
-                    Str::ucfirst($record->name) .
+                fn ($record): string => 'How many '.
+                    Str::ucfirst($record->name).
                     ' would you like to add to your shopping cart?'
             )->form([
                 TextInput::make('amount')
@@ -65,7 +65,7 @@ class ProductResource extends Resource
                     ->required()
                     ->default(1)
                     ->minValue(1)
-                    ->maxValue(fn(Product $record): int => $record->stock),
+                    ->maxValue(fn (Product $record): int => $record->stock),
             ])
             ->label(function (): string {
                 if (Auth::user()?->customer?->shoppingCart?->status == OrderStatus::PROCESSING) {
@@ -123,8 +123,8 @@ class ProductResource extends Resource
                 ]);
             })
             ->after(
-                fn(Product $record): Notification => Notification::make('added_to_cart')
-                    ->title('Added ' . Str::ucfirst($record->name) . ' to cart')
+                fn (Product $record): Notification => Notification::make('added_to_cart')
+                    ->title('Added '.Str::ucfirst($record->name).' to cart')
                     ->body("{$record->description}<br><br>{$record->price} <br>{$record->stock}")
                     ->success()
                     ->send()

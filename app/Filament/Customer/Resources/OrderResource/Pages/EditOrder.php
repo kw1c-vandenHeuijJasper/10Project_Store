@@ -15,7 +15,7 @@ class EditOrder extends EditRecord
 
     public function getTitle(): string|HtmlString
     {
-        return new HtmlString('Viewing your order: <br />' . $this->record->reference);
+        return new HtmlString('Viewing your order: <br />'.$this->record->reference);
     }
 
     protected function getHeaderWidgets(): array
@@ -42,7 +42,7 @@ class EditOrder extends EditRecord
     protected function getCancelFormAction(): Action
     {
         return Action::make('back')
-            ->action(fn() => redirect(OrderResource::getUrl()));
+            ->action(fn () => redirect(OrderResource::getUrl()));
     }
 
     private function actionMaker(string $label, OrderStatus $newStatus, bool $is_disabled): Action

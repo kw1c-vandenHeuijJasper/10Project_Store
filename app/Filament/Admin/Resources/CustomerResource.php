@@ -76,11 +76,11 @@ class CustomerResource extends Resource
                             \Filament\Forms\Components\TextInput::make('password')
                                 ->label('Password')
                                 ->password()
-                                ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                                ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                                 ->required(),
                         ];
                     })
-                    ->createOptionUsing(fn($data) => User::create($data))
+                    ->createOptionUsing(fn ($data) => User::create($data))
                     ->editOptionForm(function () {
                         return [
                             \Filament\Forms\Components\TextInput::make('name')
@@ -115,7 +115,7 @@ class CustomerResource extends Resource
 
                 \Filament\Forms\Components\Toggle::make('isAdmin')
                     ->inline(false)
-                    ->formatStateUsing(fn(Get $get): bool => (bool) User::find($get('user_id'))->is_admin)
+                    ->formatStateUsing(fn (Get $get): bool => (bool) User::find($get('user_id'))->is_admin)
                     ->onColor('success')
                     ->offColor('danger')
                     ->disabled(),
@@ -169,15 +169,15 @@ class CustomerResource extends Resource
                     ->default(false)
                     ->label('Is admin')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
-                    ->query(fn(Builder $query) => $query->whereRelation('user', 'is_admin', true)),
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->query(fn (Builder $query) => $query->whereRelation('user', 'is_admin', true)),
 
                 \Filament\Tables\Filters\Filter::make('has_orders')
                     ->default(false)
                     ->label('Has Orders')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
-                    ->query(fn(Builder $query) => $query->has('orders')),
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->query(fn (Builder $query) => $query->has('orders')),
 
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
