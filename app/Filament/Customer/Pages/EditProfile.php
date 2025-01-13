@@ -67,7 +67,7 @@ class EditProfile extends Page implements HasForms
         return $form
             ->schema([
                 Forms\Components\Section::make('Profile Information')
-                    ->description('Update your account\'s profile information and email address.')
+                    ->description("Update your account's profile information and email address.")
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->required(),

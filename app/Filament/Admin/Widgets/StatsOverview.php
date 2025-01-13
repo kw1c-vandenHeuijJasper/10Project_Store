@@ -12,7 +12,7 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class StatsOverview extends BaseWidget
 {
-    protected int|string|array $columnSpan = 3;
+    protected static ?string $pollingInterval = null;
 
     protected function getColumns(): int
     {
@@ -37,7 +37,7 @@ class StatsOverview extends BaseWidget
         $orderCount = Order::count();
         $customerCount = Customer::count();
         $productCount = Product::count();
-
+        //FIXME
         if ($totalAsInt == 0 ?? $customerCount == 0) {
             $averageSpend = 0;
         } elseif ($totalAsInt == 0) {

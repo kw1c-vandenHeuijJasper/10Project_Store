@@ -6,24 +6,24 @@ use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/app',
-        __DIR__ . '/bootstrap',
-        __DIR__ . '/public',
-        __DIR__ . '/resources',
-        __DIR__ . '/routes',
-        __DIR__ . '/tests',
+        __DIR__.'/app',
+        __DIR__.'/bootstrap',
+        __DIR__.'/public',
+        __DIR__.'/resources',
+        __DIR__.'/routes',
+        __DIR__.'/tests',
     ])
     ->withPhpSets()
     ->withPreparedSets(
         deadCode: true,
-        codeQuality: false,
-        codingStyle: false,
-        typeDeclarations: false,
-        privatization: false,
-        naming: false,
-        instanceOf: false,
-        earlyReturn: false,
-        strictBooleans: false,
+        codeQuality: true,
+        codingStyle: true,
+        typeDeclarations: true,
+        privatization: true,
+        naming: true,
+        instanceOf: true,
+        earlyReturn: true,
+        strictBooleans: true,
         carbon: false,
         rectorPreset: false,
         phpunitCodeQuality: false,
@@ -31,7 +31,7 @@ return RectorConfig::configure()
         symfonyCodeQuality: false,
         symfonyConfigs: false,
     );
-    // uncomment to reach your current PHP version
-    // ->withTypeCoverageLevel(0)
-    // ->withDeadCodeLevel(0)
-    // ->withCodeQualityLevel(0);
+// uncomment to reach your current PHP version
+// ->withTypeCoverageLevel(0)
+// ->withDeadCodeLevel(0)
+// ->withCodeQualityLevel(0);

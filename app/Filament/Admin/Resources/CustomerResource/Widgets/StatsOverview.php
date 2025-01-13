@@ -3,9 +3,10 @@
 namespace App\Filament\Admin\Resources\CustomerResource\Widgets;
 
 use App\Helpers\Money;
-use Filament\Widgets\StatsOverviewWidget as BaseWidget;
-use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Support\HtmlString;
 use Illuminate\Database\Eloquent\Model;
+use Filament\Widgets\StatsOverviewWidget\Stat;
+use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 
 class StatsOverview extends BaseWidget
 {
@@ -18,12 +19,12 @@ class StatsOverview extends BaseWidget
         return 1;
     }
 
-    public function getStats(): array
+    protected function getStats(): array
     {
         return [
-            Stat::make('Total price', function () {
+            Stat::make('Total price', function (): HtmlString {
                 $total_price = $this->record->orders->map(
-                    fn ($order) => $order->products->sum('pivot.total')
+                    fn($order) => $order->products->sum('pivot.total')
                 )->sum();
 
                 return Money::HtmlString(Money::format($total_price), true);

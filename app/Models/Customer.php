@@ -53,17 +53,17 @@ class Customer extends Model
     /**
      * Scopes
      */
-    public function scopeNonActiveOrders(Builder $query): Builder
+    public function scopeNonActiveOrders(Builder $builder): Builder
     {
-        return $query->whereHas('orders', function (Builder $query) {
-            $query->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
+        return $builder->whereHas('orders', function (Builder $builder): void {
+            $builder->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
         });
     }
 
-    public function scopeWithNoWrongOrders(Builder $query): Builder
+    public function scopeWithNoWrongOrders(Builder $builder): Builder
     {
-        return $query->whereDoesntHave('orders', function (Builder $query) {
-            $query->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
+        return $builder->whereDoesntHave('orders', function (Builder $builder): void {
+            $builder->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
         });
     }
 
@@ -72,11 +72,7 @@ class Customer extends Model
      */
     public function hasShoppingCart(): bool
     {
-        if ($this->shoppingCart == null) {
-            return false;
-        }
-
-        return true;
+        return $this->shoppingCart != null;
     }
 
     public function canCreateOrder(): bool
@@ -86,10 +82,6 @@ class Customer extends Model
 
     public function hasProcessingOrder(): bool
     {
-        if ($this->processingOrders()->get()->isNotEmpty()) {
-            return true;
-        }
-
-        return false;
+        return $this->processingOrders()->get()->isNotEmpty();
     }
 }

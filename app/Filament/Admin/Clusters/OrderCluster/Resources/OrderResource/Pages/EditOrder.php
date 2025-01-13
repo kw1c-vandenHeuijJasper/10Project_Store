@@ -24,8 +24,8 @@ class EditOrder extends EditRecord
     {
         return [
             Actions\Action::make('Go to processing order')
-                ->visible(fn (Order $record): bool => $record->customer->hasProcessingOrder())
-                ->url(fn (Order $record): string => ViewConfirmOrderResource::getUrl([$record])),
+                ->visible(fn(Order $record): bool => $record->customer->hasProcessingOrder())
+                ->url(fn(Order $record): string => ViewConfirmOrderResource::getUrl([$record])),
             Actions\DeleteAction::make(),
         ];
     }

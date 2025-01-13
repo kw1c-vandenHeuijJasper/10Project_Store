@@ -64,13 +64,13 @@ class OrderResource extends Resource
 
                 Select::make('shipping_address_id')
                     ->label('Shipping Address')
-                    ->options(fn () => $addresses->pluck('street_name', 'id'))
+                    ->options(fn() => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Select::make('invoice_address_id')
                     ->label('Invoice Address')
-                    ->options(fn () => $addresses->pluck('street_name', 'id'))
+                    ->options(fn() => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
             ]);
@@ -87,7 +87,7 @@ class OrderResource extends Resource
                 TextColumn::make('shipping_address_id')
                     ->label('Shipping address')
                     ->limit(25)
-                    ->formatStateUsing(function ($record) use ($addresses) {
+                    ->formatStateUsing(function ($record) use ($addresses): string {
                         $address = $addresses->find($record->shipping_address_id);
 
                         return "{$address->street_name} {$address->house_number}, 
@@ -96,7 +96,7 @@ class OrderResource extends Resource
                 TextColumn::make('invoice_address_id')
                     ->label('Invoice address')
                     ->limit(25)
-                    ->formatStateUsing(function ($record) use ($addresses) {
+                    ->formatStateUsing(function ($record) use ($addresses): string {
                         $address = $addresses->find($record->invoice_address_id);
 
                         return "{$address->street_name} {$address->house_number}, 
@@ -105,12 +105,12 @@ class OrderResource extends Resource
                 TextColumn::make('amount of products')
                     ->alignCenter()
                     ->getStateUsing(
-                        fn ($record) => OrderProduct::where('order_id', $record->id)
+                        fn($record) => OrderProduct::where('order_id', $record->id)
                             // ->pluck('amount')
                             ->sum('amount')
                     ),
                 TextColumn::make('total')
-                    ->getStateUsing(fn ($record) => Money::prefixFormat(
+                    ->getStateUsing(fn($record): string => Money::prefixFormat(
                         OrderProduct::where('order_id', $record->id)
                             // ->pluck('total')
                             ->sum('total')
@@ -126,7 +126,7 @@ class OrderResource extends Resource
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make()
-                    ->hidden(function ($record) {
+                    ->hidden(function ($record): bool {
                         if ($record?->toArray()['status'] == OrderStatus::PROCESSING->value) {
                             return true;
                         }
@@ -146,8 +146,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED]))
-                    ->after(fn () => redirect(self::getUrl()))
+                    ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED]))
+                    ->after(fn() => redirect(self::getUrl()))
                     ->requiresConfirmation(),
                 Tables\Actions\Action::make('reactivate')
                     ->label('Reactivate')
@@ -159,8 +159,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE]))
-                    ->after(fn () => redirect(self::getUrl()))
+                    ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE]))
+                    ->after(fn() => redirect(self::getUrl()))
                     ->requiresConfirmation(),
             ])
             ->recordUrl(null)

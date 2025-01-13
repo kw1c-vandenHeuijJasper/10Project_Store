@@ -8,8 +8,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 
-Route::get('/', function () {
-    return new HtmlString("
+Route::get('/', fn(): \Illuminate\Support\HtmlString => new HtmlString("
             <h1>
                 Do you want to go log in as <a href='/loginAsAdmin'>
                     admin
@@ -20,8 +19,7 @@ Route::get('/', function () {
                 </a>
                 ?
             </h1>
-        ");
-});
+        "));
 
 Route::get('/loginAsAdmin', function () {
     Auth::loginUsingId(1);
@@ -34,8 +32,7 @@ Route::get('/loginAsCustomer', function () {
 
     return redirect('/panelPicker');
 });
-Route::get('/panelPicker', function () {
-    return new HtmlString("
+Route::get('/panelPicker', fn(): \Illuminate\Support\HtmlString => new HtmlString("
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -46,23 +43,22 @@ Route::get('/panelPicker', function () {
             </a>
             ?
         </h1>
-    ");
-});
+    "));
 
-Route::get('/cancelRedundantActiveOrders', function () {
+Route::get('/cancelRedundantActiveOrders', function (): void {
     Customer::with('activeOrders')
         ->get()
-        ->filter(fn (Customer $customer) => $customer->activeOrders->count() > 1)
-        ->each(function (Customer $customer) {
+        ->filter(fn(Customer $customer): bool => $customer->activeOrders->count() > 1)
+        ->each(function (Customer $customer): void {
             $orderIds = $customer->activeOrders
-                ->reject(fn (Order $order) => $order == $customer->activeOrders->last())
+                ->reject(fn(Order $order): bool => $order == $customer->activeOrders->last())
                 ->pluck('id');
 
             Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);
         });
 });
 
-Route::get('/tinker', function () {
+Route::get('/tinker', function (): void {
     dd("There's nothing here yet 😭");
 });
 

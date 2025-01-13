@@ -62,29 +62,17 @@ class Order extends Model
 
     public static function hasActiveOrder(?Order $order = null): bool
     {
-        if (self::customersActiveOrders($order)->count() > 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return self::customersActiveOrders($order)->count() > 0;
     }
 
     public static function hasNoActiveOrder(?Order $order = null): bool
     {
-        if (self::customersActiveOrders($order)->count() == 0) {
-            return true;
-        } else {
-            return false;
-        }
+        return self::customersActiveOrders($order)->count() == 0;
     }
 
     public static function hasFaultyOrderAmount(?Order $order = null): bool
     {
-        if (self::customersActiveOrders($order)->count() > 1) {
-            return true;
-        } else {
-            return false;
-        }
+        return self::customersActiveOrders($order)->count() > 1;
     }
 
     public static function shoppingCart()

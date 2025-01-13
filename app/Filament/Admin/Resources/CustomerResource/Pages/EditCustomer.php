@@ -23,7 +23,7 @@ class EditCustomer extends EditRecord
         return 1;
     }
 
-    public function getHeaderWidgets(): array
+    protected function getHeaderWidgets(): array
     {
         return [
             StatsOverview::class,
