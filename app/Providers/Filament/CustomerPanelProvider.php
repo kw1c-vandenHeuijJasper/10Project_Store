@@ -37,8 +37,8 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Admin Panel')
-                    ->hidden(fn () => Auth::user()->is_admin)
-                    ->url('http://10project_store.test/admin') // TODO change
+                    ->visible(fn () => Auth::user()->is_admin)
+                    ->url(fn () => route('filament.admin.auth.login'))
                     ->icon('heroicon-o-presentation-chart-line'),
                 NavigationItem::make('Shopping Cart')
                     ->icon('heroicon-s-shopping-cart')

@@ -88,25 +88,23 @@ class OrderResource extends Resource
                     ->searchable()
                     ->required()
                     ->live()
-                    ->afterStateUpdated(
-                        function (Set $set): void {
-                            $set('shipping_address_id', null);
-                            $set('invoice_address_id', null);
-                        }
-                    )
+                    ->afterStateUpdated(function (Set $set): void {
+                        $set('shipping_address_id', null);
+                        $set('invoice_address_id', null);
+                    })
                     ->suffix('Go to customer')
                     ->suffixActions([
                         Forms\Components\Actions\Action::make('here')
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
-                            ->url(fn (Get $get): string => CustomerResource::getUrl().'/'.$get('customer_id').'/edit'),
+                            ->url(fn (Get $get): string => CustomerResource::getUrl('edit', [$get('customer_id')])),
 
                         Forms\Components\Actions\Action::make('new tab')
                             ->label('in new tab')
                             ->icon('heroicon-o-arrow-right-circle')
                             ->color('success')
-                            ->url(fn (Get $get): string => CustomerResource::getUrl().'/'.$get('customer_id').'/edit')
+                            ->url(fn (Get $get): string => CustomerResource::getUrl('edit', [$get('customer_id')]))
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(2),
@@ -114,7 +112,7 @@ class OrderResource extends Resource
                 Forms\Components\Select::make('shipping_address_id')
                     ->label('Shipping Address')
                     ->live()
-                    ->options(function (Get $get, Set $set) {
+                    ->options(function (Get $get, Set $set): \Illuminate\Support\Collection {
                         self::getAddresses($get('customer_id'), $set);
 
                         return $get('addresses');
@@ -164,12 +162,11 @@ class OrderResource extends Resource
                     ),
                 Tables\Columns\TextColumn::make('amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn ($record) => $orderProduct
-                        ->where('order_id', $record->id)->pluck('amount')->sum())
+                    ->getStateUsing(fn ($record) => $orderProduct->where('order_id', $record->id)->sum('amount'))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('total')
                     ->getStateUsing(fn ($record): string => Money::prefixFormat(
-                        $orderProduct->where('order_id', $record->id)->pluck('total')->sum()
+                        $orderProduct->where('order_id', $record->id)->sum('total')
                     ))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -183,15 +180,15 @@ class OrderResource extends Resource
                     ->default(false)
                     ->label('Has product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->has('products')),
+                    ->modifyFormFieldUsing(fn (Toggle $field): Toggle => $field->inline(false))
+                    ->query(fn (Builder $query): Builder => $query->has('products')),
 
                 Tables\Filters\Filter::make('no_products')
                     ->default(false)
                     ->label('No product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
-                    ->query(fn (Builder $query) => $query->doesntHave('products')),
+                    ->modifyFormFieldUsing(fn (Toggle $field): Toggle => $field->inline(false))
+                    ->query(fn (Builder $query): Builder => $query->doesntHave('products')),
 
                 Tables\Filters\SelectFilter::make('status')
                     ->options(OrderStatus::class)
@@ -223,13 +220,13 @@ class OrderResource extends Resource
         ];
     }
 
-    public static function getAddresses($state, Set $set): void
+    public static function getAddresses(int $state, Set $set): void
     {
         $addresses = Address::where('customer_id', $state)->pluck('street_name', 'id');
         $set('addresses', $addresses);
     }
 
-    public static function getAddressesTable($state, $savedAddresses)
+    public static function getAddressesTable($state, $savedAddresses): string|array|null
     {
         return $savedAddresses[$state] ?? null;
     }

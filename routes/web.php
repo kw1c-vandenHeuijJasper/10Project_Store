@@ -3,12 +3,12 @@
 use App\Enums\OrderStatus;
 use App\Models\Customer;
 use App\Models\Order;
-use App\Models\Product;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\HtmlString;
 
-Route::get('/', fn (): \Illuminate\Support\HtmlString => new HtmlString("
+Route::get('/', function (): HtmlString {
+    return new HtmlString("
             <h1>
                 Do you want to go log in as <a href='/loginAsAdmin'>
                     admin
@@ -19,7 +19,8 @@ Route::get('/', fn (): \Illuminate\Support\HtmlString => new HtmlString("
                 </a>
                 ?
             </h1>
-        "));
+        ");
+});
 
 Route::get('/loginAsAdmin', function () {
     Auth::loginUsingId(1);

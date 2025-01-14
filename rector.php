@@ -6,7 +6,7 @@ use Rector\Config\RectorConfig;
 
 return RectorConfig::configure()
     ->withPaths([
-        __DIR__ . '/app/Filament/Customer/Resources/OrderResource/Pages/*',
+        __DIR__.'/app/Filament/Customer/Resources/OrderResource/Pages/*',
         // __DIR__.'/bootstrap',
         // __DIR__.'/public',
         // __DIR__.'/resources',

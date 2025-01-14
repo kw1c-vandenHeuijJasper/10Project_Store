@@ -13,6 +13,8 @@ class OrderStatsOverview extends BaseWidget
 {
     public ?Model $record = null;
 
+    protected static ?string $pollingInterval = '15s';
+
     protected int|string|array $columnSpan = 2;
 
     protected function getColumns(): int

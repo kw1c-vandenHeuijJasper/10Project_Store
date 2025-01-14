@@ -30,7 +30,8 @@ class AdminPanelProvider extends PanelProvider
             ->brandName('Admin panel - Store')
             ->login()
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => Color::Blue,
+                // 'primary' => Color::Amber,
             ])
             ->navigationItems([
                 NavigationItem::make('Customer Panel')

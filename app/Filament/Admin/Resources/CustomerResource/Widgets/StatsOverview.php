@@ -12,6 +12,8 @@ class StatsOverview extends BaseWidget
 {
     public ?Model $record = null;
 
+    protected static ?string $pollingInterval = null;
+
     protected int|string|array $columnSpan = 1;
 
     protected function getColumns(): int
