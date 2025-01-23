@@ -5,8 +5,8 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResourc
 use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResource;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
-use App\Filament\Admin\Resources\CustomerResource;
 use App\Filament\Admin\Resources\ProductResource;
+use App\Filament\Admin\Resources\UserResource;
 use App\Helpers\Money;
 use App\Models\Product;
 use Filament\Actions\Action;
@@ -48,7 +48,7 @@ class ViewConfirmOrderResource extends ViewRecord
                             ->schema([
                                 TextEntry::make('reference'),
                                 TextEntry::make('status'),
-                                TextEntry::make('customer.user.name'),
+                                TextEntry::make('user.name'),
                                 TextEntry::make('quick_confirm')
                                     ->label(
                                         fn (): HtmlString => $this->quickConfirm() == true ? new HtmlString(
@@ -64,11 +64,11 @@ class ViewConfirmOrderResource extends ViewRecord
                             ])->columnSpanFull(),
                     ]),
                 Actions::make([
-                    InfoAction::make('Go to customer')
-                        ->url(fn ($record): string => CustomerResource::getUrl().'/'.$record->customer_id.'/edit')
+                    InfoAction::make('Go to user')
+                        ->url(fn ($record): string => UserResource::getUrl().'/'.$record->user_id.'/edit')
                         ->color('success'),
-                    InfoAction::make('Go to customer in new tab')
-                        ->url(fn ($record): string => CustomerResource::getUrl().'/'.$record->customer_id.'/edit')
+                    InfoAction::make('Go to user in new tab')
+                        ->url(fn ($record): string => UserResource::getUrl().'/'.$record->user_id.'/edit')
                         ->openUrlInNewTab()
                         ->color('success'),
                 ])->fullWidth(),

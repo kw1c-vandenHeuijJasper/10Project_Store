@@ -20,6 +20,7 @@ use Illuminate\Session\Middleware\AuthenticateSession;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 class CustomerPanelProvider extends PanelProvider
@@ -45,25 +46,25 @@ class CustomerPanelProvider extends PanelProvider
                     ->group('Orders')
                     ->hidden(function () {
                         if (
-                            \Illuminate\Support\Str::containsAll(URL::current(), [
+                            Str::containsAll(URL::current(), [
                                 'orders',
                                 'edit',
                             ])
                             &&
-                            Auth::user()?->customer?->hasShoppingCart()
+                            Auth::user()?->hasShoppingCart()
                         ) {
                             return true;
                         }
-                        if (! Auth::user()?->customer | ! Auth::user()?->customer?->hasShoppingCart()) {
+                        if (! Auth::user() | ! Auth::user()?->hasShoppingCart()) {
                             return true;
                         }
 
                         return false;
                     })
                     ->url(function () {
-                        if (Auth::user()?->customer?->hasShoppingCart()) {
+                        if (Auth::user()?->hasShoppingCart()) {
                             return OrderResource::getUrl('edit', [
-                                'record' => Auth::user()->customer->shoppingCart->id,
+                                'record' => Auth::user()->shoppingCart->id,
                             ]);
                         }
                     }),
@@ -71,7 +72,7 @@ class CustomerPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
-                Pages\Dashboard::class, // TODO remove
+                Pages\Dashboard::class, // TODO remove or replace with custom welcome page
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([

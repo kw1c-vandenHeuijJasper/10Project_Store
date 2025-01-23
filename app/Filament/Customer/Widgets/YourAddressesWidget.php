@@ -21,7 +21,7 @@ class YourAddressesWidget extends BaseWidget
     public function table(Table $table): Table
     {
         return $table
-            ->query(Address::where('customer_id', Auth::user()->customer->id))
+            ->query(Address::where('user_id', Auth::id()))
             ->columns([
                 \Filament\Tables\Columns\TextColumn::make('house_number'),
                 \Filament\Tables\Columns\TextColumn::make('street_name'),

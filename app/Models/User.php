@@ -2,9 +2,12 @@
 
 namespace App\Models;
 
+use App\Enums\OrderStatus;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -14,32 +17,17 @@ class User extends Authenticatable implements FilamentUser
     use HasFactory;
     use Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
     protected $fillable = [
         'name',
         'email',
         'password',
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
     protected function casts(): array
     {
         return [
@@ -50,20 +38,23 @@ class User extends Authenticatable implements FilamentUser
     }
 
     /**
-     *  Relations
-     */
-    public function customer(): HasOne
-    {
-        // TODO figure out why this was here
-        // return $this->hasOne(Customer::class, 'user_id', 'id');
-
-        // new
-        return $this->hasOne(Customer::class);
-    }
-
-    /**
      *  Functions
      */
+    public function hasShoppingCart(): bool
+    {
+        return $this->shoppingCart != null;
+    }
+
+    public function canCreateOrder(): bool
+    {
+        return ! $this->hasShoppingCart();
+    }
+
+    public function hasProcessingOrder(): bool
+    {
+        return $this->processingOrders()->get()->isNotEmpty();
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
@@ -73,5 +64,54 @@ class User extends Authenticatable implements FilamentUser
         if ($panel->getId() === 'customer') {
             return true;
         }
+    }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
+
+    public function orders(): HasMany
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function activeOrders(): HasMany
+    {
+        return $this->orders()->whereStatus(OrderStatus::ACTIVE);
+    }
+
+    public function processingOrders(): HasMany
+    {
+        return $this->orders()->whereStatus(OrderStatus::PROCESSING);
+    }
+
+    public function shoppingCart(): HasOne
+    {
+        return $this->hasOne(Order::class)
+            ->where('status', OrderStatus::ACTIVE)
+            ->orWhere('status', OrderStatus::PROCESSING);
+    }
+
+    /**
+     * Scopes
+     */
+    public function scopeCustomer(Builder $builder): Builder
+    {
+        return $builder->where('is_admin', false);
+    }
+
+    public function scopeNonActiveOrders(Builder $builder): Builder
+    {
+        return $builder->whereHas('orders', function (Builder $builder): void {
+            $builder->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
+        });
+    }
+
+    public function scopeWithNoWrongOrders(Builder $builder): Builder
+    {
+        return $builder->whereDoesntHave('orders', function (Builder $builder): void {
+            $builder->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
+        });
     }
 }

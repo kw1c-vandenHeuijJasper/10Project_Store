@@ -68,14 +68,14 @@ class ProductResource extends Resource
                     ->maxValue(fn (Product $record): int => $record->stock),
             ])
             ->label(function (): string {
-                if (Auth::user()?->customer?->shoppingCart?->status == OrderStatus::PROCESSING) {
+                if (Auth::user()?->shoppingCart?->status == OrderStatus::PROCESSING) {
                     return 'Complete your current order first!';
                 }
 
                 return 'Add to cart';
             })
             ->hidden(function () {
-                if (Auth::user()->customer) {
+                if (Auth::user()) {
                     return false;
                 }
 
@@ -89,12 +89,13 @@ class ProductResource extends Resource
                 return 'info';
             })
             ->disabled(function ($record): bool {
-                if (Auth::user()->customer?->shoppingCart?->status == OrderStatus::PROCESSING) {
+                if (Auth::user()?->shoppingCart?->status == OrderStatus::PROCESSING) {
                     return true;
                 }
 
-                if (Auth::user()->customer?->shoppingCart?->products) {
-                    $ids = Auth::user()->customer?->shoppingCart?->products->pluck('id');
+                if (Auth::user()?->shoppingCart?->products) {
+                    $ids = Auth::user()?->shoppingCart?->products->pluck('id');
+                    //TODO remove if statement
                     if ($ids->contains($record->id)) {
                         return true;
                     }
@@ -103,15 +104,15 @@ class ProductResource extends Resource
                 return $record->stock == 0;
             })
             ->action(function (Product $record, array $data): void {
-                $customer = Auth::user()?->customer;
-                $shoppingCart = $customer?->shoppingCart;
+                $user = Auth::user();
+                $shoppingCart = $user?->shoppingCart;
 
                 if ($shoppingCart) {
                     $order = $shoppingCart;
                 } else {
                     $order = Order::create([
                         'status' => OrderStatus::ACTIVE,
-                        'customer_id' => $customer->id,
+                        'user_id' => $user->id,
                     ]);
                 }
 

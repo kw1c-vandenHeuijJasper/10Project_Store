@@ -2,7 +2,7 @@
 
 use App\Enums\OrderStatus;
 use App\Models\Address;
-use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->string('reference')->unique()->nullable();
             $table->string('status')->default(OrderStatus::FINISHED);
-            $table->foreignIdFor(Customer::class)->constrained()->cascadeOnDelete();
+            $table->foreignIdFor(User::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(Address::class, 'shipping_address_id')->nullable()->constrained('addresses')->cascadeOnDelete();
             $table->foreignIdFor(Address::class, 'invoice_address_id')->nullable()->constrained('addresses')->cascadeOnDelete();
             $table->timestamps();

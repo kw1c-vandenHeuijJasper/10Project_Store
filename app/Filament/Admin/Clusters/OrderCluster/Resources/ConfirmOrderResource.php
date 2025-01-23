@@ -40,8 +40,8 @@ class ConfirmOrderResource extends Resource
             ->columns([
                 TextColumn::make('reference')
                     ->searchable(),
-                TextColumn::make('customer.user.name')
-                    ->label('Customer')
+                TextColumn::make('user.name')
+                    ->label('user')
                     ->searchable(),
                 TextColumn::make('id')
                     ->label('Total')

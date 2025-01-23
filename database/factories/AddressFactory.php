@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -16,13 +17,12 @@ class AddressFactory extends Factory
      */
     public function definition(): array
     {
-        // dump(\App\Models\Customer::factory()->create());
         return [
             'house_number' => rand(1, 80).fake()->randomElement([null, 'a', 'b', 'c']),
             'street_name' => fake()->streetName(),
             'zip_code' => fake()->postcode(),
             'city' => fake()->city(),
-            'customer_id' => \App\Models\Customer::factory(),
+            'user_id' => User::factory(),
         ];
     }
 }

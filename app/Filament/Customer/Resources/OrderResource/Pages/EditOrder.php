@@ -37,7 +37,8 @@ class EditOrder extends EditRecord
                 ->get()
         ) == collect();
 
-        $is_disabled = $recordContainsNull || $orderHasProducts;
+        $orderIsProcessing = $record->status === OrderStatus::PROCESSING;
+        $is_disabled = $recordContainsNull || $orderHasProducts || $orderIsProcessing;
 
         return [
             $this->actionMaker('Cancel Order', OrderStatus::CANCELLED, false),

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\CustomerResource\Widgets;
+namespace App\Filament\Admin\Resources\UserResource\Widgets;
 
 use App\Helpers\Money;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;

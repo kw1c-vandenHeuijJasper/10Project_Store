@@ -15,7 +15,6 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -31,33 +30,15 @@ class EditProfile extends Page implements HasForms
 
     public ?array $passwordData = [];
 
-    public ?array $customerData = [];
-
-    public static function canGoToPage(): bool
-    {
-        return Auth::user()->customer == null ? false : true;
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return self::canGoToPage();
-    }
-
-    public static function canAccess(): bool
-    {
-        return self::canGoToPage();
-    }
-
     public function mount(): void
     {
-        $this->canGoToPage() == true ? $this->fillForms() : null;
+        $this->fillForms();
     }
 
     protected function getForms(): array
     {
         return [
             'editProfileForm',
-            'editCustomerForm',
             'editPasswordForm',
         ];
     }
@@ -75,18 +56,6 @@ class EditProfile extends Page implements HasForms
                             ->email()
                             ->required()
                             ->unique(ignoreRecord: true),
-                    ]),
-            ])
-            ->model($this->getUser())
-            ->statePath('profileData');
-    }
-
-    public function editCustomerForm(Form $form): Form
-    {
-        return $form
-            ->schema([
-                Forms\Components\Section::make('Extra information')
-                    ->schema([
                         Forms\Components\TextInput::make('phone_number')
                             ->tel()
                             ->required(),
@@ -95,8 +64,8 @@ class EditProfile extends Page implements HasForms
                             ->native(false),
                     ]),
             ])
-            ->model($this->getUser()->customer)
-            ->statePath('customerData');
+            ->model($this->getUser())
+            ->statePath('profileData');
     }
 
     public function editPasswordForm(Form $form): Form
@@ -142,11 +111,9 @@ class EditProfile extends Page implements HasForms
     protected function fillForms(): void
     {
         $userData = $this->getUser()->attributesToArray();
-        $customerData = $this->getUser()->customer->attributesToArray();
 
         $this->editProfileForm->fill($userData);
         $this->editPasswordForm->fill();
-        $this->editCustomerForm->fill($customerData);
     }
 
     protected function getUpdateProfileFormActions(): array
@@ -155,15 +122,6 @@ class EditProfile extends Page implements HasForms
             Action::make('updateProfileAction')
                 ->label('Save Profile')
                 ->submit('editProfileForm'),
-        ];
-    }
-
-    protected function getUpdateCustomerFormActions(): array
-    {
-        return [
-            Action::make('updateCustomerAction')
-                ->label('Save Extra Information')
-                ->submit('editCustomerForm'),
         ];
     }
 
@@ -184,18 +142,6 @@ class EditProfile extends Page implements HasForms
         Notification::make('profileUpdatedNotification')
             ->title('Saved!')
             ->body('Profile saved succesfully!')
-            ->success()
-            ->send();
-    }
-
-    public function updateCustomer(): void
-    {
-        $data = $this->editCustomerForm->getState();
-        $this->handleRecordUpdate($this->getUser()->customer, $data);
-
-        Notification::make('customerUpdatedNotification')
-            ->title('Saved!')
-            ->body('Extra information saved succesfully!')
             ->success()
             ->send();
     }

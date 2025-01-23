@@ -3,9 +3,7 @@
 namespace Database\Seeders;
 
 use App\Enums\OrderStatus;
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use App\Models\Address;
-use App\Models\Customer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
@@ -19,6 +17,7 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         User::factory()->create([
+            'id' => 1,
             'name' => 'ADMIN',
             'password' => 'ADMIN',
             'email' => 'test@test.test',
@@ -28,32 +27,30 @@ class DatabaseSeeder extends Seeder
         /**
          * Fake customer data
          */
-        User::factory()->create([
-            'name' => 'John Doe',
-            'password' => 'Password',
-            'email' => 'john@doe.com',
-            'is_admin' => false,
-        ]);
-        Product::factory(3)->create();
-        Customer::factory()
+        User::factory()
             ->has(Address::factory(rand(1, 3)))
             ->has(Order::factory(3))
             ->create([
-                'user_id' => 2,
+                'id' => 2,
+                'name' => 'John Doe',
+                'password' => 'Password',
+                'email' => 'john@doe.com',
+                'is_admin' => false,
             ]);
+        Product::factory(3)->create();
 
         $this->call([
-            CustomerSeeder::class,
+            UserSeeder::class,
             ProductSeeder::class,
             OrderSeeder::class,
         ]);
 
-        Customer::with('activeOrders')
+        User::with('activeOrders')
             ->get()
-            ->filter(fn (Customer $customer) => $customer->activeOrders->count() > 1)
-            ->each(function (Customer $customer) {
-                $orderIds = $customer->activeOrders
-                    ->reject(fn (Order $order) => $order == $customer->activeOrders->last())
+            ->filter(fn (User $user) => $user->activeOrders->count() > 1)
+            ->each(function (User $user) {
+                $orderIds = $user->activeOrders
+                    ->reject(fn (Order $order) => $order == $user->activeOrders->last())
                     ->pluck('id');
 
                 Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);

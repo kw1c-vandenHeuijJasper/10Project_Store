@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\CustomerResource\RelationManagers;
+namespace App\Filament\Admin\Resources\UserResource\RelationManagers;
 
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 use App\Models\Order;

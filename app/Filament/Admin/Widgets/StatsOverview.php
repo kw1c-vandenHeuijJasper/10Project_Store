@@ -3,10 +3,10 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Helpers\Money;
-use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
@@ -35,17 +35,17 @@ class StatsOverview extends BaseWidget
         $totalAsInt = Money::toInteger($total);
 
         $orderCount = Order::count();
-        $customerCount = Customer::count();
+        $userCount = User::count();
         $productCount = Product::count();
         //FIXME
-        if ($totalAsInt == 0 ?? $customerCount == 0) {
+        if ($totalAsInt == 0 ?? $userCount == 0) {
             $averageSpend = 0;
         } elseif ($totalAsInt == 0) {
             $totalAsInt = 0;
-        } elseif ($customerCount == 0) {
-            $customerCount = 0;
+        } elseif ($userCount == 0) {
+            $userCount = 0;
         } else {
-            $averageSpend = $totalAsInt / $customerCount;
+            $averageSpend = $totalAsInt / $userCount;
         }
 
         return [
@@ -72,11 +72,11 @@ class StatsOverview extends BaseWidget
             )->description('per order'),
 
             $this->statMoney('Average spend', Money::format($averageSpend))
-                ->description('per customer'),
+                ->description('per user'),
 
             Stat::make('Amount of products', $productCount),
             Stat::make('Amount of orders', $orderCount),
-            Stat::make('Amount of customers', $customerCount),
+            Stat::make('Amount of users', $userCount),
         ];
     }
 }

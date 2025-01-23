@@ -3,17 +3,17 @@
 namespace Database\Seeders;
 
 use App\Models\Address;
-use App\Models\Customer;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 
-class CustomerSeeder extends Seeder
+class UserSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Customer::factory(100)
+        User::factory(100)
             ->has(Address::factory(3))
             ->create();
     }

@@ -32,13 +32,13 @@ class AddressRelationManagerFormWidget extends Widget implements HasForms
     {
         return $form
             ->schema([
-                TextInput::make('house_number')
-                    ->required(),
                 TextInput::make('street_name')
                     ->required(),
-                TextInput::make('zip_code')
+                TextInput::make('house_number')
                     ->required(),
                 TextInput::make('city')
+                    ->required(),
+                TextInput::make('zip_code')
                     ->required(),
             ])
             ->statePath('data');
@@ -46,7 +46,7 @@ class AddressRelationManagerFormWidget extends Widget implements HasForms
 
     public function create(): void
     {
-        $state = $this->form->getState() + ['customer_id' => Auth::user()->customer->id];
+        $state = $this->form->getState() + ['user_id' => Auth::id()];
         Address::create($state);
         $this->form->fill();
         $this->dispatch('address-created');
