@@ -33,7 +33,7 @@ Route::get('/loginAsCustomer', function () {
 
     return redirect('/panelPicker');
 });
-Route::get('/panelPicker', fn (): \Illuminate\Support\HtmlString => new HtmlString("
+Route::get('/panelPicker', fn (): HtmlString => new HtmlString("
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -60,24 +60,11 @@ Route::get('/cancelRedundantActiveOrders', function (): void {
 });
 
 Route::get('/tinker', function (): void {
-    // dd("There's nothing here yet 😭");
-    dd(
-        Auth::id()
-    );
+    dd("There's nothing here yet 😭");
 });
 
 // 
 
-// When using auth()->anything, intelephense says this is an error
-// https://github.com/barryvdh/laravel-ide-helper might be able to resolve these fake errors!
-
-// other cool package(s)
-// https://spatie.be/docs/laravel-html/v3/introduction
-
-// [GROUP]General
-// [ ]when making user, also make customer ||
-//      make custom register page ||
-//      merge user and customer into 1 table!
 // [ ]add a 'CANCELLED' reason for orders?
 // [ ]add product pictures & automatic removal of pictures
 

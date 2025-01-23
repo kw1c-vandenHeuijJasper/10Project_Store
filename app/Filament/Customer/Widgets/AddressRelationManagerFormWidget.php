@@ -32,13 +32,13 @@ class AddressRelationManagerFormWidget extends Widget implements HasForms
     {
         return $form
             ->schema([
-                TextInput::make('house_number')
-                    ->required(),
                 TextInput::make('street_name')
                     ->required(),
-                TextInput::make('zip_code')
+                TextInput::make('house_number')
                     ->required(),
                 TextInput::make('city')
+                    ->required(),
+                TextInput::make('zip_code')
                     ->required(),
             ])
             ->statePath('data');

@@ -15,7 +15,6 @@ use Filament\Notifications\Notification;
 use Filament\Pages\Page;
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
@@ -31,33 +30,15 @@ class EditProfile extends Page implements HasForms
 
     public ?array $passwordData = [];
 
-    public ?array $customerData = [];
-
-    public static function canGoToPage(): bool
-    {
-        return Auth::user()->is_admin ? false : true;
-    }
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return self::canGoToPage();
-    }
-
-    public static function canAccess(): bool
-    {
-        return self::canGoToPage();
-    }
-
     public function mount(): void
     {
-        $this->canGoToPage() == true ? $this->fillForms() : null;
+        $this->fillForms();
     }
 
     protected function getForms(): array
     {
         return [
             'editProfileForm',
-            // 'editCustomerForm',
             'editPasswordForm',
         ];
     }
