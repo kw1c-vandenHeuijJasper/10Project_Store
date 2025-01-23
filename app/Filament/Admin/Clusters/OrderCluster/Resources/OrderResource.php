@@ -137,9 +137,6 @@ class OrderResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $savedAddresses = Address::pluck('street_name', 'id')->toArray();
-        $orderProduct = OrderProduct::get();
-
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('id')
@@ -150,24 +147,21 @@ class OrderResource extends Resource
                     ->label('Customer')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
-                Tables\Columns\TextColumn::make('shipping_address_id')
-                    ->label('Shipping address')
-                    ->formatStateUsing(
-                        fn ($state) => self::getAddressesTable($state, $savedAddresses)
-                    ),
-                Tables\Columns\TextColumn::make('invoice_address_id')
-                    ->label('Invoice address')
-                    ->formatStateUsing(
-                        fn ($state) => self::getAddressesTable($state, $savedAddresses)
-                    ),
-                Tables\Columns\TextColumn::make('amount of products')
+                Tables\Columns\TextColumn::make('shippingAddress.street_name')
+                    ->label('Shipping address'),
+                Tables\Columns\TextColumn::make('invoiceAddress.street_name')
+                    ->label('Invoice address'),
+                Tables\Columns\TextColumn::make('pivot_sum_amount')
+                    ->label('Amount of products')
                     ->alignCenter()
-                    ->getStateUsing(fn ($record) => $orderProduct->where('order_id', $record->id)->sum('amount'))
+                    ->sum('pivot', 'amount')
+                    ->default(0)
                     ->toggleable(),
-                Tables\Columns\TextColumn::make('total')
-                    ->getStateUsing(fn ($record): string => Money::prefixFormat(
-                        $orderProduct->where('order_id', $record->id)->sum('total')
-                    ))
+                Tables\Columns\TextColumn::make('pivot_sum_total')
+                    ->label('Total')
+                    ->sum('pivot', 'total')
+                    ->default(0)
+                    ->formatStateUsing(fn (int $state) => Money::prefixFormat($state))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -224,10 +218,5 @@ class OrderResource extends Resource
     {
         $addresses = Address::where('customer_id', $state)->pluck('street_name', 'id');
         $set('addresses', $addresses);
-    }
-
-    public static function getAddressesTable($state, $savedAddresses): string|array|null
-    {
-        return $savedAddresses[$state] ?? null;
     }
 }

@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\Auth;
 
 #[ObservedBy([OrderObserver::class])]
@@ -35,12 +36,17 @@ class Order extends Model
         return $this->belongsToMany(Product::class)->withPivot('amount', 'price', 'total', 'created_at', 'updated_at')->using(OrderProduct::class);
     }
 
-    public function shipping_address_id(): BelongsTo
+    public function pivot(): HasMany
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
+
+    public function shippingAddress(): BelongsTo
     {
         return $this->belongsTo(Address::class);
     }
 
-    public function invoice_address_id(): BelongsTo
+    public function invoiceAddress(): BelongsTo
     {
         return $this->belongsTo(Address::class);
     }

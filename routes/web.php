@@ -60,7 +60,11 @@ Route::get('/cancelRedundantActiveOrders', function (): void {
 });
 
 Route::get('/tinker', function (): void {
-    dd("There's nothing here yet 😭");
+    // dd("There's nothing here yet 😭");
+    dd(
+        Order::first()->pivot,
+        // \App\Models\OrderProduct::take(5)->get(),
+    );
 });
 
 // 
