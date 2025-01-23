@@ -46,7 +46,7 @@ class AddressRelationManagerFormWidget extends Widget implements HasForms
 
     public function create(): void
     {
-        $state = $this->form->getState() + ['customer_id' => Auth::user()->customer->id];
+        $state = $this->form->getState() + ['user_id' => Auth::id()];
         Address::create($state);
         $this->form->fill();
         $this->dispatch('address-created');

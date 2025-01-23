@@ -14,6 +14,10 @@ class CreateOrder extends CreateRecord
 
     protected function mutateFormDataBeforeCreate(array $data): array
     {
+        if (! isset($data['status'])) {
+            $data = $data + ['status' => OrderStatus::ACTIVE];
+        }
+
         $data['status'] = OrderStatus::ACTIVE;
 
         return $data;

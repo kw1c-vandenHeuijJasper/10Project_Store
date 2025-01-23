@@ -30,7 +30,7 @@ class ProductResource extends Resource
                 Stack::make([
                     TextColumn::make('name')
                         ->searchable()
-                        ->formatStateUsing(fn ($state): string => Str::ucfirst($state)),
+                        ->formatStateUsing(fn($state): string => Str::ucfirst($state)),
                     TextColumn::make('description')
                         ->limit(255),
                     TextColumn::make('stock'),
@@ -56,8 +56,8 @@ class ProductResource extends Resource
             ->requiresConfirmation()
             ->modalIcon('heroicon-s-shopping-cart')
             ->modalDescription(
-                fn ($record): string => 'How many '.
-                    Str::ucfirst($record->name).
+                fn($record): string => 'How many ' .
+                    Str::ucfirst($record->name) .
                     ' would you like to add to your shopping cart?'
             )->form([
                 TextInput::make('amount')
@@ -65,17 +65,17 @@ class ProductResource extends Resource
                     ->required()
                     ->default(1)
                     ->minValue(1)
-                    ->maxValue(fn (Product $record): int => $record->stock),
+                    ->maxValue(fn(Product $record): int => $record->stock),
             ])
             ->label(function (): string {
-                if (Auth::user()?->customer?->shoppingCart?->status == OrderStatus::PROCESSING) {
+                if (Auth::user()?->shoppingCart?->status == OrderStatus::PROCESSING) {
                     return 'Complete your current order first!';
                 }
 
                 return 'Add to cart';
             })
             ->hidden(function () {
-                if (Auth::user()->customer) {
+                if (Auth::user()) {
                     return false;
                 }
 
@@ -89,12 +89,13 @@ class ProductResource extends Resource
                 return 'info';
             })
             ->disabled(function ($record): bool {
-                if (Auth::user()->customer?->shoppingCart?->status == OrderStatus::PROCESSING) {
+                if (Auth::user()?->shoppingCart?->status == OrderStatus::PROCESSING) {
                     return true;
                 }
 
-                if (Auth::user()->customer?->shoppingCart?->products) {
-                    $ids = Auth::user()->customer?->shoppingCart?->products->pluck('id');
+                if (Auth::user()?->shoppingCart?->products) {
+                    $ids = Auth::user()?->shoppingCart?->products->pluck('id');
+                    //TODO remove if statement
                     if ($ids->contains($record->id)) {
                         return true;
                     }
@@ -103,15 +104,15 @@ class ProductResource extends Resource
                 return $record->stock == 0;
             })
             ->action(function (Product $record, array $data): void {
-                $customer = Auth::user()?->customer;
-                $shoppingCart = $customer?->shoppingCart;
+                $user = Auth::user();
+                $shoppingCart = $user?->shoppingCart;
 
                 if ($shoppingCart) {
                     $order = $shoppingCart;
                 } else {
                     $order = Order::create([
                         'status' => OrderStatus::ACTIVE,
-                        'customer_id' => $customer->id,
+                        'user_id' => $user->id,
                     ]);
                 }
 
@@ -123,8 +124,8 @@ class ProductResource extends Resource
                 ]);
             })
             ->after(
-                fn (Product $record): Notification => Notification::make('added_to_cart')
-                    ->title('Added '.Str::ucfirst($record->name).' to cart')
+                fn(Product $record): Notification => Notification::make('added_to_cart')
+                    ->title('Added ' . Str::ucfirst($record->name) . ' to cart')
                     ->body("{$record->description}<br><br>{$record->price} <br>{$record->stock}")
                     ->success()
                     ->send()

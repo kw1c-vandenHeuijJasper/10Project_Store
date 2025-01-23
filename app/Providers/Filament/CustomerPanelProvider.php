@@ -2,25 +2,26 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Customer\Resources\OrderResource;
-use Filament\Http\Middleware\Authenticate;
-use Filament\Http\Middleware\DisableBladeIconComponents;
-use Filament\Http\Middleware\DispatchServingFilamentEvent;
-use Filament\Navigation\NavigationItem;
 use Filament\Pages;
 use Filament\Panel;
-use Filament\PanelProvider;
-use Filament\Support\Colors\Color;
 use Filament\Widgets;
-use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use Filament\PanelProvider;
+use Illuminate\Support\Str;
+use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Auth;
+use Filament\Navigation\NavigationItem;
+use Filament\Http\Middleware\Authenticate;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
-use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use App\Filament\Customer\Resources\OrderResource;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\AuthenticateSession;
-use Illuminate\Session\Middleware\StartSession;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\URL;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
+use Filament\Http\Middleware\DisableBladeIconComponents;
+use Filament\Http\Middleware\DispatchServingFilamentEvent;
+use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 
 class CustomerPanelProvider extends PanelProvider
 {
@@ -37,33 +38,33 @@ class CustomerPanelProvider extends PanelProvider
             ])
             ->navigationItems([
                 NavigationItem::make('Admin Panel')
-                    ->visible(fn () => Auth::user()->is_admin)
-                    ->url(fn () => route('filament.admin.auth.login'))
+                    ->visible(fn() => Auth::user()->is_admin)
+                    ->url(fn() => route('filament.admin.auth.login'))
                     ->icon('heroicon-o-presentation-chart-line'),
                 NavigationItem::make('Shopping Cart')
                     ->icon('heroicon-s-shopping-cart')
                     ->group('Orders')
                     ->hidden(function () {
                         if (
-                            \Illuminate\Support\Str::containsAll(URL::current(), [
+                            Str::containsAll(URL::current(), [
                                 'orders',
                                 'edit',
                             ])
                             &&
-                            Auth::user()?->customer?->hasShoppingCart()
+                            Auth::user()?->hasShoppingCart()
                         ) {
                             return true;
                         }
-                        if (! Auth::user()?->customer | ! Auth::user()?->customer?->hasShoppingCart()) {
+                        if (! Auth::user() | ! Auth::user()?->hasShoppingCart()) {
                             return true;
                         }
 
                         return false;
                     })
                     ->url(function () {
-                        if (Auth::user()?->customer?->hasShoppingCart()) {
+                        if (Auth::user()?->hasShoppingCart()) {
                             return OrderResource::getUrl('edit', [
-                                'record' => Auth::user()->customer->shoppingCart->id,
+                                'record' => Auth::user()->shoppingCart->id,
                             ]);
                         }
                     }),
@@ -71,7 +72,7 @@ class CustomerPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
-                Pages\Dashboard::class, // TODO remove
+                Pages\Dashboard::class, // TODO remove or replace with custom welcome page
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([

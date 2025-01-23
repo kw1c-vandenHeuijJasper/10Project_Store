@@ -33,14 +33,19 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
+
         return parent::getEloquentQuery()
-            ->whereCustomerId(Auth::user()?->customer?->id);
+            ->where('user_id', Auth::id());
+        // return parent::getEloquentQuery()
+        //     ->whereCustomerId(Auth::user()?->customer?->id);
     }
 
     public static function form(Form $form): Form
     {
-        $customer = Customer::where('user_id', Auth::id())->first()?->id;
-        $addresses = Address::whereCustomerId($customer)->get();
+        $customer = Auth::id();
+        $addresses = Auth::user()->addresses;
+        // $customer = Customer::where('user_id', Auth::id())->first()?->id;
+        // $addresses = Address::whereCustomerId($customer)->get();
 
         return $form
             ->schema([
@@ -53,9 +58,13 @@ class OrderResource extends Resource
                     ->native(false)
                     ->required()
                     ->hiddenOn('create')
+                    ->formatStateUsing(
+                        fn(?Order $record) =>
+                        $record?->status == OrderStatus::PROCESSING ? OrderStatus::PROCESSING->getLabel() : OrderStatus::ACTIVE
+                    )
                     ->options([OrderStatus::ACTIVE->value => OrderStatus::ACTIVE->getLabel()]),
 
-                TextInput::make('customer_id')
+                TextInput::make('user_id')
                     ->label('')
                     ->columnSpan(2)
                     ->readOnly()
@@ -78,7 +87,7 @@ class OrderResource extends Resource
 
     public static function table(Table $table): Table
     {
-        $addresses = Address::where('customer_id', Auth::user()?->customer?->id)->get();
+        $addresses = Auth::user()?->addresses;
 
         return $table
             ->columns([
@@ -106,14 +115,12 @@ class OrderResource extends Resource
                     ->alignCenter()
                     ->getStateUsing(
                         fn($record) => OrderProduct::where('order_id', $record->id)
-                            // ->pluck('amount')
                             //TODO query duplication
                             ->sum('amount')
                     ),
                 TextColumn::make('total')
                     ->getStateUsing(fn($record): string => Money::prefixFormat(
                         OrderProduct::where('order_id', $record->id)
-                            // ->pluck('total')
                             ->sum('total')
                     )),
             ])
@@ -128,6 +135,7 @@ class OrderResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->hidden(function ($record): bool {
+                        //TODO improve ifs
                         if ($record?->toArray()['status'] == OrderStatus::PROCESSING->value) {
                             return true;
                         }
@@ -173,7 +181,8 @@ class OrderResource extends Resource
 
     public static function canCreate(): bool
     {
-        if (Auth::user()?->customer?->canCreateOrder()) {
+        //TODO remove if statement
+        if (Auth::user()?->canCreateOrder()) {
             return true;
         } else {
             return false;
