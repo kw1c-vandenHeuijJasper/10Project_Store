@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Filament\Admin\Resources\CustomerResource\RelationManagers;
+namespace App\Filament\Admin\Resources\UserResource\RelationManagers;
 
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
 use App\Models\Order;
@@ -23,9 +23,9 @@ class OrdersRelationManager extends RelationManager
             ->actions(
                 \Filament\Tables\Actions\ActionGroup::make([
                     \Filament\Tables\Actions\Action::make('Order')
-                        ->url(fn (Order $record) => OrderResource::getUrl().'/'.$record->id.'/edit'),
+                        ->url(fn(Order $record) => OrderResource::getUrl() . '/' . $record->id . '/edit'),
                     \Filament\Tables\Actions\Action::make('Order in new tab')
-                        ->url(fn (Order $record) => OrderResource::getUrl().'/'.$record->id.'/edit')
+                        ->url(fn(Order $record) => OrderResource::getUrl() . '/' . $record->id . '/edit')
                         ->openUrlInNewTab(),
                 ])
                     ->label('Go to')

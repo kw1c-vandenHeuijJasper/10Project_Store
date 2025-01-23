@@ -4,7 +4,7 @@ namespace Database\Factories;
 
 use App\Enums\OrderStatus;
 use App\Models\Address;
-use App\Models\Customer;
+use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Database\Eloquent\Factories\Factory;
@@ -28,7 +28,7 @@ class OrderFactory extends Factory
             $randomProducts = Product::inRandomOrder()
                 ->limit($limit)
                 ->get()
-                ->map(fn ($item) => $item)
+                ->map(fn($item) => $item)
                 ->whereNotNull();
             $products = $randomProducts->mapWithKeys(function ($item) {
                 return [
@@ -39,7 +39,7 @@ class OrderFactory extends Factory
                 ];
             });
 
-            $products = $products->map(fn ($item) => $item ? $item : null);
+            $products = $products->map(fn($item) => $item ? $item : null);
 
             $order->products()->attach($products);
         });
@@ -52,20 +52,17 @@ class OrderFactory extends Factory
      */
     public function definition(): array
     {
-        // $customer = Customer::inRandomOrder()->where('id', '!=', 1)->first();
-
         return [
             'reference' => function () {
                 $i = random_int(1, 999999999);
                 $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#'.$preOrder;
+                return 'ORD#' . $preOrder;
             },
             'status' => OrderStatus::FINISHED,
-            'customer_id' => Customer::factory()->has(Address::factory(3)),
-            'shipping_address_id' => fn ($attributes) => Address::whereCustomerId($attributes['customer_id'])->inRandomOrder()->first()->id,
-            'invoice_address_id' => fn ($attributes) => Address::whereCustomerId($attributes['customer_id'])->inRandomOrder()->first()->id,
-            // 'invoice_address_id' => $customer->addresses->random()->id,
+            'user_id' => User::factory()->has(Address::factory(3)),
+            'shipping_address_id' => fn($attributes) => Address::where('user_id', $attributes['user_id'])->inRandomOrder()->first()->id,
+            'invoice_address_id' => fn($attributes) => Address::where('user_id', $attributes['user_id'])->inRandomOrder()->first()->id,
         ];
     }
 }

@@ -26,9 +26,9 @@ class Order extends Model
         ];
     }
 
-    public function customer(): BelongsTo
+    public function user(): BelongsTo
     {
-        return $this->belongsTo(Customer::class);
+        return $this->belongsTo(User::class);
     }
 
     public function products(): BelongsToMany
@@ -51,38 +51,37 @@ class Order extends Model
         return $this->belongsTo(Address::class);
     }
 
-    public static function customersActiveOrders(?Order $order = null, ?Customer $customer = null): Builder
+    public static function usersActiveOrders(?Order $order = null, ?User $user = null): Builder
     {
-
         if ($order == null) {
-            $customer_id = Customer::whereUserId(Auth::id())->first()?->id;
+            $user_id = Auth::id();
         } else {
-            $customer_id = $order->customer_id;
+            $user_id = $order->user_id;
         }
-        if ($customer) {
-            $customer_id = $customer->id;
+        if ($user) {
+            $user_id = $user->id;
         }
 
-        return Order::whereCustomerId($customer_id)->where('status', OrderStatus::ACTIVE);
+        return Order::where('user_id', $user_id)->where('status', OrderStatus::ACTIVE);
     }
 
     public static function hasActiveOrder(?Order $order = null): bool
     {
-        return self::customersActiveOrders($order)->count() > 0;
+        return self::usersActiveOrders($order)->count() > 0;
     }
 
     public static function hasNoActiveOrder(?Order $order = null): bool
     {
-        return self::customersActiveOrders($order)->count() == 0;
+        return self::usersActiveOrders($order)->count() == 0;
     }
 
     public static function hasFaultyOrderAmount(?Order $order = null): bool
     {
-        return self::customersActiveOrders($order)->count() > 1;
+        return self::usersActiveOrders($order)->count() > 1;
     }
 
     public static function shoppingCart()
     {
-        return self::customersActiveOrders()->first();
+        return self::usersActiveOrders()->first();
     }
 }

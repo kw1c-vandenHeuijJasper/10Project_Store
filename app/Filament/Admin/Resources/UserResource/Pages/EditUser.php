@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Filament\Admin\Resources\CustomerResource\Pages;
+namespace App\Filament\Admin\Resources\UserResource\Pages;
 
-use App\Filament\Admin\Resources\CustomerResource;
-use App\Filament\Admin\Resources\CustomerResource\Widgets\StatsOverview;
+use App\Filament\Admin\Resources\UserResource;
+use App\Filament\Admin\Resources\UserResource\Widgets\StatsOverview;
 use Filament\Actions;
 use Filament\Resources\Pages\EditRecord;
 
-class EditCustomer extends EditRecord
+class EditUser extends EditRecord
 {
-    protected static string $resource = CustomerResource::class;
+    protected static string $resource = UserResource::class;
 
     public static function getWidgets(): array
     {

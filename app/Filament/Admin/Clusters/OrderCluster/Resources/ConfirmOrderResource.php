@@ -40,12 +40,12 @@ class ConfirmOrderResource extends Resource
             ->columns([
                 TextColumn::make('reference')
                     ->searchable(),
-                TextColumn::make('customer.user.name')
-                    ->label('Customer')
+                TextColumn::make('user.name')
+                    ->label('user')
                     ->searchable(),
                 TextColumn::make('id')
                     ->label('Total')
-                    ->formatStateUsing(fn ($state): string => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
+                    ->formatStateUsing(fn($state): string => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

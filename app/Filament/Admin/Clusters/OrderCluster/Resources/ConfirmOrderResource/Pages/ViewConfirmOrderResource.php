@@ -5,7 +5,7 @@ namespace App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResourc
 use App\Enums\OrderStatus;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\ConfirmOrderResource;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource;
-use App\Filament\Admin\Resources\CustomerResource;
+use App\Filament\Admin\Resources\UserResource;
 use App\Filament\Admin\Resources\ProductResource;
 use App\Helpers\Money;
 use App\Models\Product;
@@ -27,7 +27,7 @@ class ViewConfirmOrderResource extends ViewRecord
 
     public function getOrderProduct()
     {
-        return $this->record->products->map(fn ($item): array => [
+        return $this->record->products->map(fn($item): array => [
             'id' => $item->id,
             'total' => $item->pivot->total,
             'name' => $item->name,
@@ -48,10 +48,10 @@ class ViewConfirmOrderResource extends ViewRecord
                             ->schema([
                                 TextEntry::make('reference'),
                                 TextEntry::make('status'),
-                                TextEntry::make('customer.user.name'),
+                                TextEntry::make('user.name'),
                                 TextEntry::make('quick_confirm')
                                     ->label(
-                                        fn (): HtmlString => $this->quickConfirm() == true ? new HtmlString(
+                                        fn(): HtmlString => $this->quickConfirm() == true ? new HtmlString(
                                             '<span style="color:red">
                                             Order is probably bad!
                                         </span>'
@@ -64,20 +64,20 @@ class ViewConfirmOrderResource extends ViewRecord
                             ])->columnSpanFull(),
                     ]),
                 Actions::make([
-                    InfoAction::make('Go to customer')
-                        ->url(fn ($record): string => CustomerResource::getUrl().'/'.$record->customer_id.'/edit')
+                    InfoAction::make('Go to user')
+                        ->url(fn($record): string => UserResource::getUrl() . '/' . $record->user_id . '/edit')
                         ->color('success'),
-                    InfoAction::make('Go to customer in new tab')
-                        ->url(fn ($record): string => CustomerResource::getUrl().'/'.$record->customer_id.'/edit')
+                    InfoAction::make('Go to user in new tab')
+                        ->url(fn($record): string => UserResource::getUrl() . '/' . $record->user_id . '/edit')
                         ->openUrlInNewTab()
                         ->color('success'),
                 ])->fullWidth(),
                 Actions::make([
                     InfoAction::make('Go to order')
-                        ->url(fn ($record): string => OrderResource::getUrl().'/'.$record->id.'/edit')
+                        ->url(fn($record): string => OrderResource::getUrl() . '/' . $record->id . '/edit')
                         ->color('danger'),
                     InfoAction::make('Go to order in new tab')
-                        ->url(fn ($record): string => OrderResource::getUrl().'/'.$record->id.'/edit')
+                        ->url(fn($record): string => OrderResource::getUrl() . '/' . $record->id . '/edit')
                         ->openUrlInNewTab()
                         ->color('danger'),
                 ])->fullWidth(),
@@ -94,16 +94,16 @@ class ViewConfirmOrderResource extends ViewRecord
                                     ->schema([
                                         TextEntry::make('name')
                                             ->label(
-                                                fn ($record): HtmlString => new HtmlString(
-                                                    '<a href='.ProductResource::getUrl().
-                                                        '/'.$record->id.'/edit'.' target="blank">
+                                                fn($record): HtmlString => new HtmlString(
+                                                    '<a href=' . ProductResource::getUrl() .
+                                                        '/' . $record->id . '/edit' . ' target="blank">
                                                             Product Name
                                                         </a>'
                                                 )
                                             ),
                                         TextEntry::make('stock'),
                                         TextEntry::make('price')
-                                            ->formatStateUsing(fn ($state): string => Money::prefixFormat($state)),
+                                            ->formatStateUsing(fn($state): string => Money::prefixFormat($state)),
                                     ])
                                     ->columnSpan(3),
                                 Fieldset::make('Order')
@@ -111,12 +111,12 @@ class ViewConfirmOrderResource extends ViewRecord
                                     ->schema([
                                         TextEntry::make('pivot.total')
                                             ->label('Total Price')
-                                            ->formatStateUsing(fn ($state): string => Money::prefixFormat($state)),
+                                            ->formatStateUsing(fn($state): string => Money::prefixFormat($state)),
                                         TextEntry::make('pivot.amount')
                                             ->label('Amount'),
                                         TextEntry::make('pivot.price')
                                             ->label('Agreed Price')
-                                            ->formatStateUsing(fn ($state): string => Money::prefixFormat($state)),
+                                            ->formatStateUsing(fn($state): string => Money::prefixFormat($state)),
                                     ])->columnSpan(3),
                             ])->columns(2),
                     ]),
@@ -194,7 +194,7 @@ class ViewConfirmOrderResource extends ViewRecord
                 ->modalDescription("The order will be 'denied ', and turned back into the current shopping cart ")
                 ->modalSubmitActionLabel('Yes, turn it back!')
                 ->color('info')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE])),
 
             Action::make('Cancel')
                 ->requiresConfirmation()
@@ -202,7 +202,7 @@ class ViewConfirmOrderResource extends ViewRecord
                 ->modalDescription('This means the order cannot be interacted with anymore!')
                 ->modalSubmitActionLabel('Yes, cancel!')
                 ->color('danger')
-                ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED])),
+                ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED])),
         ];
     }
 }
