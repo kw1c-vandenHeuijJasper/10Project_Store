@@ -2,31 +2,31 @@
 
 namespace App\Filament\Admin\Clusters\OrderCluster\Resources;
 
-use Filament\Forms;
-use App\Models\User;
-use Filament\Tables;
-use App\Models\Order;
-use App\Helpers\Money;
-use App\Models\Address;
-use Filament\Forms\Get;
-use Filament\Forms\Set;
-use Filament\Forms\Form;
 use App\Enums\OrderStatus;
-use Filament\Tables\Table;
-use App\Models\OrderProduct;
-use Filament\Resources\Resource;
-use Illuminate\Support\Collection;
-use Filament\Forms\Components\Toggle;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Contracts\Support\Htmlable;
 use App\Filament\Admin\Clusters\OrderCluster;
-use App\Filament\Admin\Resources\UserResource;
-use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
+use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\ListOrders;
-use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\CreateOrder;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\RelationManagers\ProductsRelationManager;
+use App\Filament\Admin\Resources\UserResource;
+use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
+use App\Helpers\Money;
+use App\Models\Address;
+use App\Models\Order;
+use App\Models\OrderProduct;
+use App\Models\User;
+use Filament\Forms;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Form;
+use Filament\Forms\Get;
+use Filament\Forms\Set;
+use Filament\Resources\Resource;
+use Filament\Tables;
+use Filament\Tables\Table;
+use Illuminate\Contracts\Support\Htmlable;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Collection;
 
 class OrderResource extends Resource
 {
@@ -83,8 +83,8 @@ class OrderResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->label('user')
                     ->hint("If user has an active order, this is a number. Nothing's wrong!")
-                    ->options(fn() => User::customer()->withNoWrongOrders()->get()->mapWithKeys(
-                        fn(User $user) => [$user->id => $user->name]
+                    ->options(fn () => User::customer()->withNoWrongOrders()->get()->mapWithKeys(
+                        fn (User $user) => [$user->id => $user->name]
                     ))
                     ->searchable()
                     ->required()
@@ -100,12 +100,11 @@ class OrderResource extends Resource
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
                             ->url(function (Get $get, $record) {
-                                if ($get('user_id'))
-                                // dd($record, $get('user_id'));
-                                {
+                                if ($get('user_id')) {
+                                    // dd($record, $get('user_id'));
                                     EditUser::getUrl([$get('user_id')]);
                                 } else {
-                                    '/';
+
                                 }
                             })
                         // ->url(fn(Get $get): string => UserResource::getUrl('edit', [$get('user_id')])),
@@ -125,6 +124,7 @@ class OrderResource extends Resource
                     ->options(function (Get $get, Set $set): Collection {
                         if ($get('user_id')) {
                             self::getAddresses($get('user_id'), $set);
+
                             return $get('addresses');
                         } else {
                             return collect();
@@ -140,6 +140,7 @@ class OrderResource extends Resource
                     ->options(function (Get $get, Set $set) {
                         if ($get('user_id')) {
                             self::getAddresses($get('user_id'), $set);
+
                             return $get('addresses');
                         } else {
                             return collect();
@@ -179,7 +180,7 @@ class OrderResource extends Resource
                     ->label('Total')
                     ->sum('pivot', 'total')
                     ->default(0)
-                    ->formatStateUsing(fn(int $state) => Money::prefixFormat($state))
+                    ->formatStateUsing(fn (int $state) => Money::prefixFormat($state))
                     ->toggleable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -192,15 +193,15 @@ class OrderResource extends Resource
                     ->default(false)
                     ->label('Has product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field): Toggle => $field->inline(false))
-                    ->query(fn(Builder $query): Builder => $query->has('products')),
+                    ->modifyFormFieldUsing(fn (Toggle $field): Toggle => $field->inline(false))
+                    ->query(fn (Builder $query): Builder => $query->has('products')),
 
                 Tables\Filters\Filter::make('no_products')
                     ->default(false)
                     ->label('No product(s)')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field): Toggle => $field->inline(false))
-                    ->query(fn(Builder $query): Builder => $query->doesntHave('products')),
+                    ->modifyFormFieldUsing(fn (Toggle $field): Toggle => $field->inline(false))
+                    ->query(fn (Builder $query): Builder => $query->doesntHave('products')),
 
                 Tables\Filters\SelectFilter::make('status')
                     ->options(OrderStatus::class)

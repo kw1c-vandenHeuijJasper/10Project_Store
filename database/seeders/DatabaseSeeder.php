@@ -39,8 +39,6 @@ class DatabaseSeeder extends Seeder
             ]);
         Product::factory(3)->create();
 
-
-
         $this->call([
             UserSeeder::class,
             ProductSeeder::class,
@@ -49,10 +47,10 @@ class DatabaseSeeder extends Seeder
 
         User::with('activeOrders')
             ->get()
-            ->filter(fn(User $user) => $user->activeOrders->count() > 1)
+            ->filter(fn (User $user) => $user->activeOrders->count() > 1)
             ->each(function (User $user) {
                 $orderIds = $user->activeOrders
-                    ->reject(fn(Order $order) => $order == $user->activeOrders->last())
+                    ->reject(fn (Order $order) => $order == $user->activeOrders->last())
                     ->pluck('id');
 
                 Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);

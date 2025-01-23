@@ -45,7 +45,7 @@ class ConfirmOrderResource extends Resource
                     ->searchable(),
                 TextColumn::make('id')
                     ->label('Total')
-                    ->formatStateUsing(fn($state): string => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
+                    ->formatStateUsing(fn ($state): string => Money::prefixFormat(OrderProduct::whereOrderId($state)->sum('total'))),
             ])
             ->actions([
                 Tables\Actions\ViewAction::make(),

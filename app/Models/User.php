@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
-use Filament\Panel;
 use App\Enums\OrderStatus;
-use Illuminate\Notifications\Notifiable;
-use Illuminate\Database\Eloquent\Builder;
 use Filament\Models\Contracts\FilamentUser;
-use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable implements FilamentUser
 {
@@ -37,11 +37,9 @@ class User extends Authenticatable implements FilamentUser
         ];
     }
 
-
     /**
      *  Functions
      */
-
     public function hasShoppingCart(): bool
     {
         return $this->shoppingCart != null;
@@ -67,7 +65,6 @@ class User extends Authenticatable implements FilamentUser
             return true;
         }
     }
-
 
     public function addresses(): HasMany
     {
@@ -99,7 +96,6 @@ class User extends Authenticatable implements FilamentUser
     /**
      * Scopes
      */
-
     public function scopeCustomer(Builder $builder): Builder
     {
         return $builder->where('is_admin', false);

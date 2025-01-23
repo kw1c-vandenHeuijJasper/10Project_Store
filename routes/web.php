@@ -1,11 +1,11 @@
 <?php
 
-use App\Models\User;
-use App\Models\Order;
 use App\Enums\OrderStatus;
-use Illuminate\Support\HtmlString;
+use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\HtmlString;
 
 Route::get('/', function (): HtmlString {
     return new HtmlString("
@@ -33,7 +33,7 @@ Route::get('/loginAsCustomer', function () {
 
     return redirect('/panelPicker');
 });
-Route::get('/panelPicker', fn(): \Illuminate\Support\HtmlString => new HtmlString("
+Route::get('/panelPicker', fn (): \Illuminate\Support\HtmlString => new HtmlString("
         <h1>
             Do you want to go to the <a href='/admin'>
                 admin
@@ -49,10 +49,10 @@ Route::get('/panelPicker', fn(): \Illuminate\Support\HtmlString => new HtmlStrin
 Route::get('/cancelRedundantActiveOrders', function (): void {
     User::with('activeOrders')
         ->get()
-        ->filter(fn(User $user): bool => $user->activeOrders->count() > 1)
+        ->filter(fn (User $user): bool => $user->activeOrders->count() > 1)
         ->each(function (User $user): void {
             $orderIds = $user->activeOrders
-                ->reject(fn(Order $order): bool => $order == $user->activeOrders->last())
+                ->reject(fn (Order $order): bool => $order == $user->activeOrders->last())
                 ->pluck('id');
 
             Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);

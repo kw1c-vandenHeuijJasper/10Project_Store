@@ -4,9 +4,9 @@ namespace Database\Factories;
 
 use App\Enums\OrderStatus;
 use App\Models\Address;
-use App\Models\User;
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Str;
 
@@ -28,7 +28,7 @@ class OrderFactory extends Factory
             $randomProducts = Product::inRandomOrder()
                 ->limit($limit)
                 ->get()
-                ->map(fn($item) => $item)
+                ->map(fn ($item) => $item)
                 ->whereNotNull();
             $products = $randomProducts->mapWithKeys(function ($item) {
                 return [
@@ -39,7 +39,7 @@ class OrderFactory extends Factory
                 ];
             });
 
-            $products = $products->map(fn($item) => $item ? $item : null);
+            $products = $products->map(fn ($item) => $item ? $item : null);
 
             $order->products()->attach($products);
         });
@@ -57,12 +57,12 @@ class OrderFactory extends Factory
                 $i = random_int(1, 999999999);
                 $preOrder = Str::padLeft($i, 9, 0);
 
-                return 'ORD#' . $preOrder;
+                return 'ORD#'.$preOrder;
             },
             'status' => OrderStatus::FINISHED,
             'user_id' => User::factory()->has(Address::factory(3)),
-            'shipping_address_id' => fn($attributes) => Address::where('user_id', $attributes['user_id'])->inRandomOrder()->first()->id,
-            'invoice_address_id' => fn($attributes) => Address::where('user_id', $attributes['user_id'])->inRandomOrder()->first()->id,
+            'shipping_address_id' => fn ($attributes) => Address::where('user_id', $attributes['user_id'])->inRandomOrder()->first()->id,
+            'invoice_address_id' => fn ($attributes) => Address::where('user_id', $attributes['user_id'])->inRandomOrder()->first()->id,
         ];
     }
 }

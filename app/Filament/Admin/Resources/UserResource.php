@@ -70,7 +70,7 @@ class UserResource extends Resource
                 \Filament\Forms\Components\TextInput::make('password')
                     ->label('Password')
                     ->password()
-                    ->dehydrateStateUsing(fn(string $state): string => Hash::make($state))
+                    ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
                     ->required(),
                 \Filament\Forms\Components\TextInput::make('phone_number')
                     ->tel()
@@ -130,8 +130,8 @@ class UserResource extends Resource
                     ->default(false)
                     ->label('Has Orders')
                     ->toggle()
-                    ->modifyFormFieldUsing(fn(Toggle $field) => $field->inline(false))
-                    ->query(fn(Builder $query) => $query->has('orders')),
+                    ->modifyFormFieldUsing(fn (Toggle $field) => $field->inline(false))
+                    ->query(fn (Builder $query) => $query->has('orders')),
 
             ], layout: \Filament\Tables\Enums\FiltersLayout::AboveContent)
             ->actions([

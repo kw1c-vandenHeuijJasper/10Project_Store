@@ -3,10 +3,10 @@
 namespace App\Filament\Admin\Widgets;
 
 use App\Helpers\Money;
-use App\Models\User;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
+use App\Models\User;
 use Filament\Widgets\StatsOverviewWidget as BaseWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
 
