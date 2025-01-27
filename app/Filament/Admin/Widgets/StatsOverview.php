@@ -19,37 +19,33 @@ class StatsOverview extends BaseWidget
         return 3;
     }
 
-    private function statMoney($label, $input): Stat
+    private function statMoney(string $label, $input): Stat
     {
-        return Stat::make('Total price', Money::HtmlString($input, true));
+        return Stat::make($label, Money::HtmlString($input, true));
     }
 
     protected function getStats(): array
     {
-        $total = Money::format(
-            OrderProduct::get()
-                ->pluck('total')
-                ->sum()
-        );
+        $total = Money::format(OrderProduct::get()->sum('total'));
 
         $totalAsInt = Money::toInteger($total);
 
         $orderCount = Order::count();
-        $userCount = User::count();
+        $customerCount = User::count();
         $productCount = Product::count();
-        //FIXME
-        if ($totalAsInt == 0 ?? $userCount == 0) {
+
+        if ($totalAsInt == 0 ?? $customerCount == 0) {
             $averageSpend = 0;
         } elseif ($totalAsInt == 0) {
             $totalAsInt = 0;
-        } elseif ($userCount == 0) {
-            $userCount = 0;
+        } elseif ($customerCount == 0) {
+            $customerCount = 0;
         } else {
-            $averageSpend = $totalAsInt / $userCount;
+            $averageSpend = $totalAsInt / $customerCount;
         }
 
         return [
-            $this->statMoney('total price', $total)
+            $this->statMoney('Total price', $total)
                 ->description('of all orders combined'),
 
             Stat::make(
@@ -72,11 +68,11 @@ class StatsOverview extends BaseWidget
             )->description('per order'),
 
             $this->statMoney('Average spend', Money::format($averageSpend))
-                ->description('per user'),
+                ->description('per customer'),
 
             Stat::make('Amount of products', $productCount),
             Stat::make('Amount of orders', $orderCount),
-            Stat::make('Amount of users', $userCount),
+            Stat::make('Amount of customers', $customerCount),
         ];
     }
 }

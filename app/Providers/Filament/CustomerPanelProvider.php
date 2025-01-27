@@ -51,18 +51,18 @@ class CustomerPanelProvider extends PanelProvider
                                 'edit',
                             ])
                             &&
-                            Auth::user()?->hasShoppingCart()
+                            Auth::user()->hasShoppingCart
                         ) {
                             return true;
                         }
-                        if (! Auth::user() | ! Auth::user()?->hasShoppingCart()) {
+                        if (! Auth::user() | ! Auth::user()->hasShoppingCart) {
                             return true;
                         }
 
                         return false;
                     })
                     ->url(function () {
-                        if (Auth::user()?->hasShoppingCart()) {
+                        if (Auth::user()->hasShoppingCart) {
                             return OrderResource::getUrl('edit', [
                                 'record' => Auth::user()->shoppingCart->id,
                             ]);

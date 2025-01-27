@@ -8,12 +8,16 @@ use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Toggle;
 use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\Layout\Stack;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -44,8 +48,12 @@ class ProductResource extends Resource
                 'md' => 2,
             ])
             ->filters([
-                // TODO filters
-            ]);
+                Filter::make('in stock')
+                    ->query(fn (Builder $query): Builder => $query->where('stock', '>', 0))
+                    ->toggle()
+                    ->modifyFormFieldUsing(fn (Toggle $field): Toggle => $field->inline(false))
+                    ->default(),
+            ], layout: FiltersLayout::AboveContent);
     }
 
     private static function addToCartAction(): Tables\Actions\Action
@@ -95,10 +103,8 @@ class ProductResource extends Resource
 
                 if (Auth::user()?->shoppingCart?->products) {
                     $ids = Auth::user()?->shoppingCart?->products->pluck('id');
-                    //TODO remove if statement
-                    if ($ids->contains($record->id)) {
-                        return true;
-                    }
+
+                    return $ids->contains($record->id);
                 }
 
                 return $record->stock == 0;

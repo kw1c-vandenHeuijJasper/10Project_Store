@@ -6,6 +6,7 @@ use App\Enums\OrderStatus;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
@@ -40,20 +41,7 @@ class User extends Authenticatable implements FilamentUser
     /**
      *  Functions
      */
-    public function hasShoppingCart(): bool
-    {
-        return $this->shoppingCart != null;
-    }
 
-    public function canCreateOrder(): bool
-    {
-        return ! $this->hasShoppingCart();
-    }
-
-    public function hasProcessingOrder(): bool
-    {
-        return $this->processingOrders()->get()->isNotEmpty();
-    }
 
     public function canAccessPanel(Panel $panel): bool
     {
@@ -113,5 +101,23 @@ class User extends Authenticatable implements FilamentUser
         return $builder->whereDoesntHave('orders', function (Builder $builder): void {
             $builder->whereIn('status', [OrderStatus::ACTIVE, OrderStatus::PROCESSING]);
         });
+    }
+
+    /**
+     * Attributes
+     */
+    public function hasShoppingCart(): Attribute
+    {
+        return Attribute::get(fn(): ?bool => $this->shoppingCart != null);
+    }
+
+    public function canCreateOrder(): Attribute
+    {
+        return Attribute::get(fn(): bool => !$this->hasShoppingCart);
+    }
+
+    public function hasProcessingOrder(): Attribute
+    {
+        return Attribute::get(fn(): bool => $this->processingOrders()->get()->isNotEmpty());
     }
 }

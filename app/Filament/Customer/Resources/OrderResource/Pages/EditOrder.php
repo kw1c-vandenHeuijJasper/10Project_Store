@@ -49,8 +49,7 @@ class EditOrder extends EditRecord
     protected function getCancelFormAction(): Action
     {
         return Action::make('back')
-            //TODO convert to url
-            ->action(fn () => redirect(OrderResource::getUrl()));
+            ->url(fn () => OrderResource::getUrl());
     }
 
     private function actionMaker(string $label, OrderStatus $newStatus, bool $is_disabled): Action

@@ -68,13 +68,11 @@ Route::get('/tinker', function (): void {
 // [ ]add a 'CANCELLED' reason for orders?
 // [ ]add product pictures & automatic removal of pictures
 
-// [GROUP]Customer panel
+// Customer panel
 // [ ]products "show" link like in ordersrelationmanager,
 
-// Admin panel
-
-// [GROUP]Invoices
+// Invoices
 // [ ]suitcase icon
 
-// [GROUP]Mailing
+// Mailing
 // [ ]get mail when order is set to 'FINISHED' or 'CANCELLED'

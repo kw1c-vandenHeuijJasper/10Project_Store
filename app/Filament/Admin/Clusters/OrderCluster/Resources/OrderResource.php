@@ -8,7 +8,6 @@ use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\Creat
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\EditOrder;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\Pages\ListOrders;
 use App\Filament\Admin\Clusters\OrderCluster\Resources\OrderResource\RelationManagers\ProductsRelationManager;
-use App\Filament\Admin\Resources\UserResource;
 use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
 use App\Helpers\Money;
 use App\Models\Address;
@@ -30,7 +29,6 @@ use Illuminate\Support\Collection;
 
 class OrderResource extends Resource
 {
-    //TODO model count in debugbar
     protected static ?string $model = Order::class;
 
     protected static ?string $cluster = OrderCluster::class;
@@ -57,11 +55,11 @@ class OrderResource extends Resource
     public static function getGlobalSearchResultDetails(Model $record): array
     {
         return [
-            'User' => $record->user->name,
-            'Shipping Address' => Address::find($record->shipping_address_id)->street_name,
-            'Invoice Address' => Address::find($record->invoice_address_id)->street_name,
-            'Total Price' => Money::prefixFormat(OrderProduct::whereOrderId($record->id)->pluck('total')->sum()),
-            'Product Count' => OrderProduct::whereOrderId($record->id)->pluck('amount')->sum(),
+            'Customer' => $record->user->name,
+            'Shipping Address' => $record->shippingAddress->street_name,
+            'Invoice Address' => $record->invoiceAddress->street_name,
+            'Total Price' => Money::prefixFormat(OrderProduct::where('order_id', $record->id)->sum('total')),
+            'Product Count' => OrderProduct::where('order_id', $record->id)->sum('amount'),
         ];
     }
 
@@ -81,7 +79,7 @@ class OrderResource extends Resource
                     ->columnSpan(1),
 
                 Forms\Components\Select::make('user_id')
-                    ->label('user')
+                    ->label('Customer')
                     ->hint("If user has an active order, this is a number. Nothing's wrong!")
                     ->options(fn () => User::customer()->withNoWrongOrders()->get()->mapWithKeys(
                         fn (User $user) => [$user->id => $user->name]
@@ -93,27 +91,27 @@ class OrderResource extends Resource
                         $set('shipping_address_id', null);
                         $set('invoice_address_id', null);
                     })
-                    ->suffix('Go to user')
+                    ->suffix('Go to customer')
                     ->suffixActions([
                         Forms\Components\Actions\Action::make('here')
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
-                            ->url(function (Get $get, $record) {
+                            ->url(function (Get $get) {
                                 if ($get('user_id')) {
-                                    // dd($record, $get('user_id'));
-                                    EditUser::getUrl([$get('user_id')]);
-                                } else {
-
+                                    return EditUser::getUrl([$get('user_id')]);
                                 }
-                            })
-                        // ->url(fn(Get $get): string => UserResource::getUrl('edit', [$get('user_id')])),
-                        ,
+                            }),
+
                         Forms\Components\Actions\Action::make('new tab')
                             ->label('in new tab')
                             ->icon('heroicon-o-arrow-right-circle')
                             ->color('success')
-                            // ->url(fn(Get $get): string => UserResource::getUrl('edit', [$get('user_id')]))
+                            ->url(function (Get $get) {
+                                if ($get('user_id')) {
+                                    return EditUser::getUrl([$get('user_id')]);
+                                }
+                            })
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(2),
@@ -163,7 +161,7 @@ class OrderResource extends Resource
                 Tables\Columns\TextColumn::make('reference')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('user.name')
-                    ->label('User')
+                    ->label('Customer')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('status'),
                 Tables\Columns\TextColumn::make('shippingAddress.street_name')
