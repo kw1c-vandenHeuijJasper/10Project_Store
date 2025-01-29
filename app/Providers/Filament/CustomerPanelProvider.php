@@ -72,12 +72,12 @@ class CustomerPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Customer/Resources'), for: 'App\\Filament\\Customer\\Resources')
             ->discoverPages(in: app_path('Filament/Customer/Pages'), for: 'App\\Filament\\Customer\\Pages')
             ->pages([
-                Pages\Dashboard::class, // TODO remove or replace with custom welcome page
+                Pages\Dashboard::class,
             ])
             ->discoverWidgets(in: app_path('Filament/Customer/Widgets'), for: 'App\\Filament\\Customer\\Widgets')
             ->widgets([
-                Widgets\AccountWidget::class, // TODO make this wider or add another widget beside it?
-                // Widgets\FilamentInfoWidget::class,
+                Widgets\AccountWidget::class,
+                \App\Filament\Customer\Widgets\EditProfileWidget::class,
             ])
             ->middleware([
                 EncryptCookies::class,

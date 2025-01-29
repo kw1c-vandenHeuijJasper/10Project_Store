@@ -9,7 +9,7 @@ if (App::isLocal()) {
     Route::get('/loginAsAdmin', [LoginController::class, 'loginAsAdmin']);
     Route::get('/loginAsCustomer', [LoginController::class, 'loginAsCustomer']);
 } else {
-    Route::redirect('/', route('filament.customer.auth.login'));
+    Route::get('/', fn () => to_route('filament.customer.auth.login'));
 }
 
 Route::get('/tinker', function () {
@@ -19,7 +19,6 @@ Route::get('/tinker', function () {
 // 
 
 // [ ]add a 'CANCELLED' reason for orders?
-// [ ]add product pictures & automatic removal of pictures
 
-// Customer panel
 // [ ]products "show" link like in ordersrelationmanager,
+// [ ]add product pictures & automatic removal of pictures

@@ -6,8 +6,6 @@ use App\Enums\OrderStatus;
 use App\Filament\Customer\Resources\OrderResource\Pages;
 use App\Filament\Customer\Resources\OrderResource\RelationManagers\ProductsRelationManager;
 use App\Helpers\Money;
-use App\Models\Address;
-use App\Models\Customer;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use Filament\Forms\Components\Select;
@@ -33,19 +31,14 @@ class OrderResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-
         return parent::getEloquentQuery()
             ->where('user_id', Auth::id());
-        // return parent::getEloquentQuery()
-        //     ->whereCustomerId(Auth::user()?->customer?->id);
     }
 
     public static function form(Form $form): Form
     {
         $customer = Auth::id();
         $addresses = Auth::user()->addresses;
-        // $customer = Customer::where('user_id', Auth::id())->first()?->id;
-        // $addresses = Address::whereCustomerId($customer)->get();
 
         return $form
             ->schema([
