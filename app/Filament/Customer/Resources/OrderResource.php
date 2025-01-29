@@ -59,7 +59,7 @@ class OrderResource extends Resource
                     ->required()
                     ->hiddenOn('create')
                     ->formatStateUsing(
-                        fn(?Order $record) => $record?->status == OrderStatus::PROCESSING ? OrderStatus::PROCESSING->getLabel() : OrderStatus::ACTIVE
+                        fn (?Order $record) => $record?->status == OrderStatus::PROCESSING ? OrderStatus::PROCESSING->getLabel() : OrderStatus::ACTIVE
                     )
                     ->options([OrderStatus::ACTIVE->value => OrderStatus::ACTIVE->getLabel()]),
 
@@ -72,13 +72,13 @@ class OrderResource extends Resource
 
                 Select::make('shipping_address_id')
                     ->label('Shipping Address')
-                    ->options(fn() => $addresses->pluck('street_name', 'id'))
+                    ->options(fn () => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
 
                 Select::make('invoice_address_id')
                     ->label('Invoice Address')
-                    ->options(fn() => $addresses->pluck('street_name', 'id'))
+                    ->options(fn () => $addresses->pluck('street_name', 'id'))
                     ->searchable()
                     ->required(),
             ]);
@@ -113,11 +113,11 @@ class OrderResource extends Resource
                 TextColumn::make('amount of products')
                     ->alignCenter()
                     ->getStateUsing(
-                        fn($record) => OrderProduct::where('order_id', $record->id)
+                        fn ($record) => OrderProduct::where('order_id', $record->id)
                             ->sum('amount')
                     ),
                 TextColumn::make('total')
-                    ->getStateUsing(fn($record): string => Money::prefixFormat(
+                    ->getStateUsing(fn ($record): string => Money::prefixFormat(
                         OrderProduct::where('order_id', $record->id)
                             ->sum('total')
                     )),
@@ -152,8 +152,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn($record) => $record->update(['status' => OrderStatus::CANCELLED]))
-                    ->after(fn() => redirect(self::getUrl()))
+                    ->action(fn ($record) => $record->update(['status' => OrderStatus::CANCELLED]))
+                    ->after(fn () => redirect(self::getUrl()))
                     ->requiresConfirmation(),
                 Tables\Actions\Action::make('reactivate')
                     ->label('Reactivate')
@@ -165,8 +165,8 @@ class OrderResource extends Resource
 
                         return true;
                     })
-                    ->action(fn($record) => $record->update(['status' => OrderStatus::ACTIVE]))
-                    ->after(fn() => redirect(self::getUrl()))
+                    ->action(fn ($record) => $record->update(['status' => OrderStatus::ACTIVE]))
+                    ->after(fn () => redirect(self::getUrl()))
                     ->requiresConfirmation(),
             ])
             ->recordUrl(null)

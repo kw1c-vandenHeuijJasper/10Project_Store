@@ -41,8 +41,6 @@ class User extends Authenticatable implements FilamentUser
     /**
      *  Functions
      */
-
-
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
@@ -108,16 +106,16 @@ class User extends Authenticatable implements FilamentUser
      */
     public function hasShoppingCart(): Attribute
     {
-        return Attribute::get(fn(): ?bool => $this->shoppingCart != null);
+        return Attribute::get(fn (): ?bool => $this->shoppingCart != null);
     }
 
     public function canCreateOrder(): Attribute
     {
-        return Attribute::get(fn(): bool => !$this->hasShoppingCart);
+        return Attribute::get(fn (): bool => ! $this->hasShoppingCart);
     }
 
     public function hasProcessingOrder(): Attribute
     {
-        return Attribute::get(fn(): bool => $this->processingOrders()->get()->isNotEmpty());
+        return Attribute::get(fn (): bool => $this->processingOrders()->get()->isNotEmpty());
     }
 }

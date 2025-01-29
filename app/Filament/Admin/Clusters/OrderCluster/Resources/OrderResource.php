@@ -81,9 +81,7 @@ class OrderResource extends Resource
                 Forms\Components\Select::make('user_id')
                     ->label('Customer')
                     ->hint("If user has an active order, this is a number. Nothing's wrong!")
-                    ->options(fn () => User::customer()->withNoWrongOrders()->get()->mapWithKeys(
-                        fn (User $user) => [$user->id => $user->name]
-                    ))
+                    ->options(fn () => User::customer()->withNoWrongOrders()->pluck('name', 'id'))
                     ->searchable()
                     ->required()
                     ->live()
@@ -97,21 +95,13 @@ class OrderResource extends Resource
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
                             ->color('primary')
-                            ->url(function (Get $get) {
-                                if ($get('user_id')) {
-                                    return EditUser::getUrl([$get('user_id')]);
-                                }
-                            }),
+                            ->url(fn (Get $get) => $get('user_id') ? EditUser::getUrl([$get('user_id')]) : null),
 
                         Forms\Components\Actions\Action::make('new tab')
                             ->label('in new tab')
                             ->icon('heroicon-o-arrow-right-circle')
                             ->color('success')
-                            ->url(function (Get $get) {
-                                if ($get('user_id')) {
-                                    return EditUser::getUrl([$get('user_id')]);
-                                }
-                            })
+                            ->url(fn (Get $get) => $get('user_id') ? EditUser::getUrl([$get('user_id')]) : null)
                             ->openUrlInNewTab(),
                     ])
                     ->columnSpan(2),
@@ -120,13 +110,9 @@ class OrderResource extends Resource
                     ->label('Shipping Address')
                     ->live()
                     ->options(function (Get $get, Set $set): Collection {
-                        if ($get('user_id')) {
-                            self::getAddresses($get('user_id'), $set);
+                        self::getAddresses($get('user_id'), $set);
 
-                            return $get('addresses');
-                        } else {
-                            return collect();
-                        }
+                        return $get('addresses');
                     })
                     ->searchable()
                     ->required()
@@ -135,17 +121,7 @@ class OrderResource extends Resource
                 Forms\Components\Select::make('invoice_address_id')
                     ->label('Invoice Address')
                     ->live()
-                    ->options(function (Get $get, Set $set) {
-                        if ($get('user_id')) {
-                            self::getAddresses($get('user_id'), $set);
-
-                            return $get('addresses');
-                        } else {
-                            return collect();
-                        }
-                        // self::getAddresses($get('user_id'), $set);
-                        // return $get('addresses');
-                    })
+                    ->options(fn (Get $get) => $get('addresses'))
                     ->searchable()
                     ->required()
                     ->columnSpan(2),
@@ -231,9 +207,9 @@ class OrderResource extends Resource
         ];
     }
 
-    public static function getAddresses(int $state, Set $set): void
+    public static function getAddresses(?int $state, Set $set): void
     {
-        $addresses = Address::where('user_id', $state)->pluck('street_name', 'id');
+        $addresses = Address::where('user_id', $state)->pluck('street_name', 'id') ?? collect();
         $set('addresses', $addresses);
     }
 }
