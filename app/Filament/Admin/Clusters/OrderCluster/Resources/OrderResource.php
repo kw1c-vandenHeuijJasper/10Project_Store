@@ -12,6 +12,7 @@ use App\Filament\Admin\Resources\UserResource\Pages\EditUser;
 use App\Helpers\Money;
 use App\Models\Address;
 use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\User;
 use Filament\Forms;
 use Filament\Forms\Components\Toggle;
@@ -57,8 +58,8 @@ class OrderResource extends Resource
             'Customer' => $record->user->name,
             'Shipping Address' => $record->shippingAddress->street_name,
             'Invoice Address' => $record->invoiceAddress->street_name,
-            'Total Price' => Money::prefixFormat($record->pivot->sum('total')),
-            'Product Count' => $record->pivot->sum('amount'),
+            'Total Price' => Money::prefixFormat(OrderProduct::where('order_id', $record->id)->sum('total')),
+            'Product Count' => OrderProduct::where('order_id', $record->id)->sum('amount'),
         ];
     }
 
