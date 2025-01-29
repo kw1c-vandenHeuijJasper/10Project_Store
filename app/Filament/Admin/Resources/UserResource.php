@@ -77,7 +77,6 @@ class UserResource extends Resource
                     ->required(),
                 \Filament\Forms\Components\DatePicker::make('date_of_birth')
                     ->required(),
-
             ]);
     }
 

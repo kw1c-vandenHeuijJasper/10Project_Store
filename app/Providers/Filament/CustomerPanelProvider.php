@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Customer\Pages\Auth\Register;
 use App\Filament\Customer\Resources\OrderResource;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,7 +33,7 @@ class CustomerPanelProvider extends PanelProvider
             ->path('customer') // TODO set to '' for no suffix of the URL
             ->brandName('Store')
             ->login()
-            ->registration()
+            ->registration(Register::class)
             ->colors([
                 'primary' => Color::Amber,
             ])
