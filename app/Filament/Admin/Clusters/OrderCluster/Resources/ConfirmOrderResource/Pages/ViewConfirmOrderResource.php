@@ -154,7 +154,7 @@ class ViewConfirmOrderResource extends ViewRecord
     {
         return [
             Action::make('Back to processing')
-                ->color(\Filament\Support\Colors\Color::Yellow)
+                ->color('warning')
                 ->requiresConfirmation()
                 ->modalHeading('Take the order back to processing?')
                 ->modalDescription('This means the stock will be re-added, this cannot be undone! Only press when approved accidentally!')

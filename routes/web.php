@@ -22,7 +22,5 @@ if (app()->isLocal()) {
 // now that my customer and user are the same, I now can use a customer edit-profile page...
 // This one took to long im not going to change it over
 
-// [ ]add a 'CANCELLED' reason for orders?
-
 // [ ]products "show" link like in ordersrelationmanager,
 // [ ]add product pictures & automatic removal of pictures
