@@ -49,10 +49,11 @@ class Money
      */
     public static function toInteger(string $input): int
     {
-        $withoutCommas = Str::of($input)
+        $withoutCommas = str($input)
             ->explode(',')
             ->toArray();
-        $withoutDots = Str::of(implode($withoutCommas))
+
+        $withoutDots = str(implode($withoutCommas))
             ->explode('.')
             ->toArray();
 
@@ -64,7 +65,7 @@ class Money
      */
     public static function HtmlString(string|int $input, bool $prefixed = false): HtmlString
     {
-        $prefixed = $prefixed == true ? Money::prefix() : false;
+        $prefixed = $prefixed == true ? self::prefix() : false;
 
         return new HtmlString(
             '<span style=color:lime;>'.$prefixed.'</span>'.

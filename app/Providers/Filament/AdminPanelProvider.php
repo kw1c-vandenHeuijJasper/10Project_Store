@@ -31,11 +31,10 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->colors([
                 'primary' => Color::Blue,
-                // 'primary' => Color::Amber,
             ])
             ->navigationItems([
                 NavigationItem::make('Customer Panel')
-                    ->url('http://10project_store.test/customer') // TODO when customer panel done switch this to the good link
+                    ->url(fn () => route('filament.customer.auth.login'))
                     ->icon('heroicon-o-presentation-chart-line'),
             ])
             ->discoverClusters(in: app_path('Filament/Admin/Clusters'), for: 'App\\Filament\\Admin\\Clusters')

@@ -93,7 +93,7 @@ class OrderResource extends Resource
                         Forms\Components\Actions\Action::make('here')
                             ->label('here')
                             ->icon('heroicon-o-arrow-right')
-                            ->color('primary')
+                            ->color('warning')
                             ->url(fn (Get $get) => $get('user_id') ? EditUser::getUrl([$get('user_id')]) : null),
 
                         Forms\Components\Actions\Action::make('new tab')
@@ -111,7 +111,7 @@ class OrderResource extends Resource
                     ->options(function (Get $get, Set $set): Collection {
                         self::getAddresses($get('user_id'), $set);
 
-                        return $get('addresses');
+                        return $get('addresses') ?? collect();
                     })
                     ->searchable()
                     ->required()
@@ -120,7 +120,7 @@ class OrderResource extends Resource
                 Forms\Components\Select::make('invoice_address_id')
                     ->label('Invoice Address')
                     ->live()
-                    ->options(fn (Get $get) => $get('addresses'))
+                    ->options(fn (Get $get): Collection => $get('addresses') ?? collect())
                     ->searchable()
                     ->required()
                     ->columnSpan(2),
@@ -133,30 +133,39 @@ class OrderResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('reference')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Customer')
                     ->searchable(),
+
                 Tables\Columns\TextColumn::make('status'),
+
                 Tables\Columns\TextColumn::make('shippingAddress.street_name')
                     ->label('Shipping address'),
+
                 Tables\Columns\TextColumn::make('invoiceAddress.street_name')
                     ->label('Invoice address'),
+
                 Tables\Columns\TextColumn::make('pivot_sum_amount')
                     ->label('Amount of products')
                     ->alignCenter()
                     ->sum('pivot', 'amount')
                     ->default(0)
                     ->toggleable(),
+
                 Tables\Columns\TextColumn::make('pivot_sum_total')
                     ->label('Total')
                     ->sum('pivot', 'total')
                     ->default(0)
                     ->formatStateUsing(fn (int $state) => Money::prefixFormat($state))
                     ->toggleable(),
+
                 Tables\Columns\TextColumn::make('created_at')
                     ->toggleable(isToggledHiddenByDefault: true),
+
                 Tables\Columns\TextColumn::make('updated_at')
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
@@ -206,9 +215,9 @@ class OrderResource extends Resource
         ];
     }
 
-    public static function getAddresses(?int $state, Set $set): void
+    public static function getAddresses(?int $user_id, Set $set): void
     {
-        $addresses = Address::where('user_id', $state)->pluck('street_name', 'id') ?? collect();
+        $addresses = Address::where('user_id', $user_id)->pluck('street_name', 'id') ?? collect();
         $set('addresses', $addresses);
     }
 }

@@ -1,65 +1,18 @@
 <?php
 
-use App\Enums\OrderStatus;
-use App\Models\Order;
-use App\Models\User;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\LoginController;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\HtmlString;
 
-Route::get('/', function (): HtmlString {
-    return new HtmlString("
-            <h1>
-                Do you want to go log in as <a href='/loginAsAdmin'>
-                    admin
-                </a>
-                or  
-                <a href='/loginAsCustomer'>
-                    customer
-                </a>
-                ?
-            </h1>
-        ");
-});
+if (App::isLocal()) {
+    Route::get('/', [LoginController::class, 'index']);
+    Route::get('/loginAsAdmin', [LoginController::class, 'loginAsAdmin']);
+    Route::get('/loginAsCustomer', [LoginController::class, 'loginAsCustomer']);
+} else {
+    Route::redirect('/', route('filament.customer.auth.login'));
+}
 
-Route::get('/loginAsAdmin', function () {
-    Auth::loginUsingId(1);
-
-    return redirect('/panelPicker');
-});
-
-Route::get('/loginAsCustomer', function () {
-    Auth::loginUsingId(2);
-
-    return redirect('/panelPicker');
-});
-Route::get('/panelPicker', fn (): HtmlString => new HtmlString("
-        <h1>
-            Do you want to go to the <a href='/admin'>
-                admin
-            </a> 
-            or the 
-            <a href='/customer'>
-                customer panel
-            </a>
-            ?
-        </h1>
-    "));
-
-Route::get('/cancelRedundantActiveOrders', function (): void {
-    User::with('activeOrders')
-        ->get()
-        ->filter(fn (User $user): bool => $user->activeOrders->count() > 1)
-        ->each(function (User $user): void {
-            $orderIds = $user->activeOrders
-                ->reject(fn (Order $order): bool => $order == $user->activeOrders->last())
-                ->pluck('id');
-
-            Order::whereIn('id', $orderIds)->update(['status' => OrderStatus::CANCELLED]);
-        });
-});
-
-Route::get('/tinker', function (): void {
+Route::get('/tinker', function () {
     dd("There's nothing here yet 😭");
 });
 
@@ -70,9 +23,3 @@ Route::get('/tinker', function (): void {
 
 // Customer panel
 // [ ]products "show" link like in ordersrelationmanager,
-
-// Invoices
-// [ ]suitcase icon
-
-// Mailing
-// [ ]get mail when order is set to 'FINISHED' or 'CANCELLED'
