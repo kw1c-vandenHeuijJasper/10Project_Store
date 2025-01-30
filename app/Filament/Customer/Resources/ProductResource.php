@@ -4,6 +4,7 @@ namespace App\Filament\Customer\Resources;
 
 use App\Enums\OrderStatus;
 use App\Filament\Customer\Resources\ProductResource\Pages;
+use App\Helpers\Money;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -34,7 +35,7 @@ class ProductResource extends Resource
                 Stack::make([
                     TextColumn::make('name')
                         ->searchable()
-                        ->formatStateUsing(fn ($state): string => Str::ucfirst($state)),
+                        ->formatStateUsing(fn($state): string => Str::ucfirst($state)),
                     TextColumn::make('description')
                         ->limit(255),
                     TextColumn::make('stock'),
@@ -49,9 +50,9 @@ class ProductResource extends Resource
             ])
             ->filters([
                 Filter::make('in stock')
-                    ->query(fn (Builder $query): Builder => $query->where('stock', '>', 0))
+                    ->query(fn(Builder $query): Builder => $query->where('stock', '>', 0))
                     ->toggle()
-                    ->modifyFormFieldUsing(fn (Toggle $field): Toggle => $field->inline(false))
+                    ->modifyFormFieldUsing(fn(Toggle $field): Toggle => $field->inline(false))
                     ->default(),
             ], layout: FiltersLayout::AboveContent);
     }
@@ -64,8 +65,8 @@ class ProductResource extends Resource
             ->requiresConfirmation()
             ->modalIcon('heroicon-s-shopping-cart')
             ->modalDescription(
-                fn ($record): string => 'How many '.
-                    Str::ucfirst($record->name).
+                fn($record): string => 'How many ' .
+                    Str::ucfirst($record->name) .
                     ' would you like to add to your shopping cart?'
             )->form([
                 TextInput::make('amount')
@@ -73,7 +74,7 @@ class ProductResource extends Resource
                     ->required()
                     ->default(1)
                     ->minValue(1)
-                    ->maxValue(fn (Product $record): int => $record->stock),
+                    ->maxValue(fn(Product $record): int => $record->stock),
             ])
             ->label(function (): string {
                 if (Auth::user()?->shoppingCart?->status == OrderStatus::PROCESSING) {
@@ -128,21 +129,33 @@ class ProductResource extends Resource
                     'price' => $record->price,
                     'amount' => $data['amount'],
                 ]);
-            })
-            ->after(
-                fn (Product $record): Notification => Notification::make('added_to_cart')
-                    ->title('Added '.Str::ucfirst($record->name).' to cart')
-                    ->body("{$record->description}<br><br>{$record->price} <br>{$record->stock}")
+
+                Notification::make('added_to_cart')
+                    ->title('Product added to your cart!')
+                    ->body(str($record->name)->ucFirst() . ' was added to your cart <br />
+                for the price of ' . Money::prefixFormat($record->price) . " per product. <br />
+                {$record->description}<br />")
+                    ->actions([
+                        \Filament\Notifications\Actions\Action::make('go to your shopping cart')
+                            ->url(fn() => OrderResource::getUrl('edit', [
+                                'record' => $order->id,
+                            ]))
+                            ->color('info')
+                            ->button()
+                            ->outlined(),
+                    ])
                     ->success()
-                    ->send()
-            );
+                    ->send();
+            });
+        // ->after(
+        //     fn(Product $record): Notification => 
+        // );
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListProducts::route('/'),
-            // TODO product view page?
         ];
     }
 }

@@ -16,11 +16,3 @@ if (app()->isLocal()) {
         dd("There's nothing here yet 😭");
     });
 }
-
-// 
-
-// now that my customer and user are the same, I now can use a customer edit-profile page...
-// This one took to long im not going to change it over
-
-// [ ]products "show" link like in ordersrelationmanager,
-// [ ]add product pictures & automatic removal of pictures
